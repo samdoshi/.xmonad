@@ -1,0 +1,23 @@
+name:                xmonad-samdoshi
+version:             0.1.0.0
+homepage:            https://github.com/samdoshi/.xmonad
+author:              Sam Doshi
+copyright:           2016 Sam Doshi
+category:            System
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable xmonad
+  hs-source-dirs:      src
+  -- don't use -threaded
+  ghc-options:         -Wall
+  main-is:             xmonad.hs
+  default-language:    Haskell2010
+  other-modules:       Solarized
+  build-depends:       base >= 4.9 && < 5
+                     , containers
+                     , data-default
+                     , filepath
+                     , X11
+                     , xmonad
+                     , xmonad-contrib
