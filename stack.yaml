@@ -1,7 +1,10 @@
 resolver: lts-7.2
 packages:
-- '.'
+- location: .
+- location: vendor/xmonad
+  extra-dep: true
+- location: vendor/xmonad-contrib
+  extra-dep: true
 extra-deps:
-- xmonad-contrib-0.12
 - X11-xft-0.3.1
 flags: {}

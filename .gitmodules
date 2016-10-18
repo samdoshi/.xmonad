@@ -1,0 +1,6 @@
+[submodule "vendor/xmonad"]
+	path = vendor/xmonad
+	url = git@github.com:samdoshi/xmonad.git
+[submodule "vendor/xmonad-contrib"]
+	path = vendor/xmonad-contrib
+	url = git@github.com:samdoshi/xmonad-contrib.git
