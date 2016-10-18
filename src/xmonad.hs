@@ -34,6 +34,9 @@ import           XMonad.Operations            (focus, kill, mouseMoveWindow,
                                                mouseResizeWindow, refresh,
                                                screenWorkspace, sendMessage,
                                                setLayout, windows, withFocused)
+import           XMonad.Prompt                (XPConfig, XPPosition (Top))
+import qualified XMonad.Prompt                as XP (XPConfig (..))
+import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
 
 import           Solarized
@@ -83,7 +86,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- launch terminal
       ((mm .|. shiftMask, xK_Return), spawn $ XC.terminal conf)
       -- launch dmenu
-    , ((mm,               xK_p     ), spawn "dmenu_run")
+    , ((mm, xK_p                   ), shellPrompt myXPConfig)
+    , ((mm .|. shiftMask, xK_p     ), spawn "dmenu_run")
 
       -- kill the focused window
     , ((mm .|. shiftMask, xK_c     ), kill)
@@ -147,6 +151,16 @@ mouseBindings XConfig {XC.modMask = mm} = M.fromList
                                          >> windows W.shiftMaster)
     ]
 
+myXPConfig :: XPConfig
+myXPConfig = def { XP.font = "xft:Roboto Mono:size=12"
+                 , XP.bgColor = base1
+                 , XP.fgColor = base03
+                 , XP.fgHLight = base3
+                 , XP.bgHLight = base1
+                 , XP.borderColor = base03
+                 , XP.position = Top
+                 , XP.height = 30
+                 }
 
 -- ewmh support enables other windows to activate gracefully
 -- (see `emacsclient -n`)
