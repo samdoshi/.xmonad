@@ -35,7 +35,8 @@ import           XMonad.Operations            (focus, kill, mouseMoveWindow,
                                                mouseResizeWindow, refresh,
                                                screenWorkspace, sendMessage,
                                                setLayout, windows, withFocused)
-import           XMonad.Prompt                (XPConfig, XPPosition (Top))
+import           XMonad.Prompt                (XPConfig,
+                                               XPPosition (CenteredAt))
 import qualified XMonad.Prompt                as XP (XPConfig (..))
 import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
@@ -154,14 +155,15 @@ mouseBindings XConfig {XC.modMask = mm} = M.fromList
     ]
 
 myXPConfig :: XPConfig
-myXPConfig = def { XP.font = "xft:Roboto Mono:size=12"
-                 , XP.bgColor = base1
-                 , XP.fgColor = base03
-                 , XP.fgHLight = base3
-                 , XP.bgHLight = base1
-                 , XP.borderColor = base03
-                 , XP.position = Top
-                 , XP.height = 30
+myXPConfig = def { XP.font = "xft:Roboto Mono:size=16"
+                 , XP.bgColor = base02
+                 , XP.fgColor = base1
+                 , XP.fgHLight = orange
+                 , XP.bgHLight = base02
+                 , XP.borderColor = base01
+                 , XP.promptBorderWidth = 5
+                 , XP.position = CenteredAt 0.25 0.5
+                 , XP.height = 50
                  }
 
 -- ewmh support enables other windows to activate gracefully
