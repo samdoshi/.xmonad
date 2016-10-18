@@ -1,7 +1,7 @@
 import           Control.Monad.IO.Class       (liftIO)
 import           Data.Bits                    ((.|.))
 import qualified Data.Map                     as M
-import           Data.Monoid                  (All)
+import           Data.Monoid                  (All, (<>))
 import           System.Exit                  (exitSuccess)
 
 import           Data.Default                 (def)
@@ -21,6 +21,7 @@ import           XMonad.Core                  (Layout, ManageHook, WorkspaceId,
 import qualified XMonad.Core                  as XC (XConfig (..))
 import           XMonad.Hooks.DynamicLog      (xmobar)
 import           XMonad.Hooks.EwmhDesktops    (ewmh, fullscreenEventHook)
+import           XMonad.Hooks.ManageDocks     (docksEventHook)
 import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Choose, Full (Full),
                                                IncMasterN (IncMasterN),
@@ -73,6 +74,7 @@ layoutHook = tiled ||| Mirror tiled ||| Full
 eventHook :: Event -> X All
 eventHook = fullscreenEventHook -- extra hook to get chrome to work
                                 -- not included in ewmh
+            <> docksEventHook   -- make xmobar (et al.) appear immediately
 
 manageHook :: ManageHook
 manageHook = def
