@@ -67,7 +67,7 @@ focusedBorderColour = red
 type TallLayout = ModifiedLayout SmartSpacing Tall
 type LayoutHook = Choose TallLayout (Choose (Mirror TallLayout) Full)
 
-layoutHook :: LayoutHook a
+layoutHook :: LayoutHook Window
 layoutHook = tiled ||| Mirror tiled ||| Full
   where
      tiled = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
@@ -168,20 +168,20 @@ myXPConfig = def { XP.font = "xft:Roboto Mono:size=16"
 
 -- ewmh support enables other windows to activate gracefully
 -- (see `emacsclient -n`)
-myConfig :: XConfig LayoutHook
-myConfig = ewmh def { XC.modMask = modMask
-                    , XC.terminal = terminal
-                    , XC.borderWidth = borderWidth
-                    , XC.normalBorderColor = normalBorderColour
-                    , XC.focusedBorderColor = focusedBorderColour
-                    , XC.workspaces = workspaces
-                    , XC.handleEventHook = eventHook
-                    , XC.logHook = logHook
-                    , XC.manageHook = manageHook
-                    , XC.layoutHook = layoutHook
-                    , XC.keys = keys
-                    , XC.mouseBindings = mouseBindings
-                    }
+myConfig :: a Window -> XConfig a
+myConfig l = ewmh def { XC.modMask = modMask
+                      , XC.terminal = terminal
+                      , XC.borderWidth = borderWidth
+                      , XC.normalBorderColor = normalBorderColour
+                      , XC.focusedBorderColor = focusedBorderColour
+                      , XC.workspaces = workspaces
+                      , XC.handleEventHook = eventHook
+                      , XC.logHook = logHook
+                      , XC.manageHook = manageHook
+                      , XC.layoutHook = l
+                      , XC.keys = keys
+                      , XC.mouseBindings = mouseBindings
+                      }
 
 main :: IO ()
-main = xmonad =<< xmobar myConfig
+main = xmonad =<< xmobar (myConfig layoutHook)
