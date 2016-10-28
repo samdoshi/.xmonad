@@ -32,7 +32,6 @@ import           XMonad.Hooks.ManageDocks     (AvoidStruts,
 import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Choose, Full (Full),
                                                IncMasterN (IncMasterN),
-                                               Mirror (Mirror),
                                                Resize (Expand, Shrink),
                                                Tall (Tall), (|||))
 import           XMonad.Layout.LayoutModifier (ModifiedLayout)
@@ -73,11 +72,11 @@ focusedBorderColour :: String
 focusedBorderColour = orange
 
 type TallLayout = ModifiedLayout SmartSpacing Tall
-type ChooseLayout = Choose TallLayout (Choose (Mirror TallLayout) Full)
+type ChooseLayout = Choose TallLayout Full
 type LayoutHook = ModifiedLayout AvoidStruts ChooseLayout
 
 layoutHook :: LayoutHook Window
-layoutHook = avoidStruts $ tiled ||| Mirror tiled ||| Full
+layoutHook = avoidStruts $ tiled ||| Full
   where
      tiled = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
 
