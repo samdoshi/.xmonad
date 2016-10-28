@@ -35,6 +35,7 @@ import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Resize (Expand, Shrink),
                                                Tall (Tall), (|||))
 import           XMonad.Layout.LayoutModifier (ModifiedLayout)
+import           XMonad.Layout.NoBorders      (SmartBorder, smartBorders)
 import           XMonad.Layout.Spacing        (SmartSpacing, smartSpacing)
 import           XMonad.Main                  (xmonad)
 import           XMonad.Operations            (focus, kill, mouseMoveWindow,
@@ -47,6 +48,7 @@ import qualified XMonad.Prompt                as XP (XPConfig (..))
 import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
+import XMonad.Layout.Renamed (renamed, Rename(Replace))
 
 import           Solarized
 
@@ -60,10 +62,10 @@ terminal :: String
 terminal = "urxvt"
 
 borderWidth :: Dimension
-borderWidth = 5
+borderWidth = 3
 
 spacingWidth :: Int
-spacingWidth = 2
+spacingWidth = 3
 
 normalBorderColour :: String
 normalBorderColour = base01
@@ -71,14 +73,15 @@ normalBorderColour = base01
 focusedBorderColour :: String
 focusedBorderColour = orange
 
-type TallLayout = ModifiedLayout SmartSpacing Tall
-type ChooseLayout = Choose TallLayout Full
+type TallLayout = ModifiedLayout Rename (ModifiedLayout SmartSpacing Tall)
+type FullLayout = ModifiedLayout SmartBorder Full
+type ChooseLayout = Choose TallLayout FullLayout
 type LayoutHook = ModifiedLayout AvoidStruts ChooseLayout
 
 layoutHook :: LayoutHook Window
-layoutHook = avoidStruts $ tiled ||| Full
-  where
-     tiled = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
+layoutHook = avoidStruts $ tall' ||| smartBorders Full
+  where tall = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
+        tall' = renamed [Replace "Tall"] tall
 
 eventHook :: Event -> X All
 eventHook = fullscreenEventHook -- extra hook to get chrome to work
@@ -177,23 +180,21 @@ xpConfig = def { XP.font = "xft:Roboto Mono:size=16"
                , XP.height = 50
                }
 
--- ewmh support enables other windows to activate gracefully
--- (see `emacsclient -n`)
 pureConfig :: a Window -> XConfig a
-pureConfig l = ewmh def { XC.modMask = modMask
-                        , XC.terminal = terminal
-                        , XC.borderWidth = borderWidth
-                        , XC.normalBorderColor = normalBorderColour
-                        , XC.focusedBorderColor = focusedBorderColour
-                        , XC.workspaces = workspaces
-                        , XC.handleEventHook = eventHook
-                        , XC.logHook = logHook
-                        , XC.manageHook = manageHook
-                        , XC.layoutHook = l
-                        , XC.startupHook = startupHook
-                        , XC.keys = keys
-                        , XC.mouseBindings = mouseBindings
-                        }
+pureConfig l = def { XC.modMask = modMask
+                   , XC.terminal = terminal
+                   , XC.borderWidth = borderWidth
+                   , XC.normalBorderColor = normalBorderColour
+                   , XC.focusedBorderColor = focusedBorderColour
+                   , XC.workspaces = workspaces
+                   , XC.handleEventHook = eventHook
+                   , XC.logHook = logHook
+                   , XC.manageHook = manageHook
+                   , XC.layoutHook = l
+                   , XC.startupHook = startupHook
+                   , XC.keys = keys
+                   , XC.mouseBindings = mouseBindings
+                   }
 
 
 xmobar :: XConfig a -> IO (XConfig a)
@@ -202,7 +203,7 @@ xmobar c = do
     pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
   where pp h = def { ppCurrent = xmobarColor blue ""
                    , ppHidden  = xmobarColor base0 ""
-                   , ppTitle   = xmobarColor green "" . shorten 128
+                   , ppTitle   = xmobarColor blue "" . shorten 128
                    , ppVisible = wrap "(" ")" -- Xinerama only
                    , ppUrgent  = xmobarColor red yellow
                    , ppOutput  = hPutStrLn h
@@ -213,5 +214,7 @@ xmobar c = do
                      | otherwise     = take (n - length end) xs ++ end
         end = "..."
 
+-- ewmh support enables other windows to activate gracefully
+-- (see `emacsclient -n`)
 main :: IO ()
-main = xmonad =<< xmobar (pureConfig layoutHook)
+main = xmonad =<< xmobar (ewmh $ pureConfig layoutHook)
