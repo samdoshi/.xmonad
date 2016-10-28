@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 import           Control.Monad.IO.Class       (liftIO)
 import           Data.Bits                    ((.|.))
 import qualified Data.Map                     as M
@@ -8,7 +11,7 @@ import           Data.Default                 (def)
 import           Graphics.X11.Types           (Button, KeyMask, KeySym, Window,
                                                button1, button2, button3,
                                                mod4Mask, shiftMask, xK_1, xK_9,
-                                               xK_Return, xK_Tab, xK_c,
+                                               xK_Return, xK_Tab, xK_b, xK_c,
                                                xK_comma, xK_e, xK_h, xK_j, xK_k,
                                                xK_l, xK_m, xK_n, xK_p,
                                                xK_period, xK_q, xK_r, xK_space,
@@ -19,9 +22,13 @@ import           XMonad.Core                  (Layout, ManageHook, WorkspaceId,
                                                X, XConfig (XConfig), spawn,
                                                whenJust)
 import qualified XMonad.Core                  as XC (XConfig (..))
-import           XMonad.Hooks.DynamicLog      (xmobar)
+import           XMonad.Hooks.DynamicLog      (PP (..), dynamicLogWithPP,
+                                               xmobarColor)
 import           XMonad.Hooks.EwmhDesktops    (ewmh, fullscreenEventHook)
-import           XMonad.Hooks.ManageDocks     (docksEventHook)
+import           XMonad.Hooks.ManageDocks     (AvoidStruts,
+                                               ToggleStruts (ToggleStruts),
+                                               avoidStruts, docksEventHook,
+                                               manageDocks)
 import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Choose, Full (Full),
                                                IncMasterN (IncMasterN),
@@ -40,6 +47,7 @@ import           XMonad.Prompt                (XPConfig,
 import qualified XMonad.Prompt                as XP (XPConfig (..))
 import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
+import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
 
 import           Solarized
 
@@ -53,22 +61,23 @@ terminal :: String
 terminal = "urxvt"
 
 borderWidth :: Dimension
-borderWidth = 2
+borderWidth = 5
 
 spacingWidth :: Int
-spacingWidth = 3
+spacingWidth = 2
 
 normalBorderColour :: String
 normalBorderColour = base01
 
 focusedBorderColour :: String
-focusedBorderColour = red
+focusedBorderColour = orange
 
 type TallLayout = ModifiedLayout SmartSpacing Tall
-type LayoutHook = Choose TallLayout (Choose (Mirror TallLayout) Full)
+type ChooseLayout = Choose TallLayout (Choose (Mirror TallLayout) Full)
+type LayoutHook = ModifiedLayout AvoidStruts ChooseLayout
 
 layoutHook :: LayoutHook Window
-layoutHook = tiled ||| Mirror tiled ||| Full
+layoutHook = avoidStruts $ tiled ||| Mirror tiled ||| Full
   where
      tiled = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
 
@@ -78,10 +87,13 @@ eventHook = fullscreenEventHook -- extra hook to get chrome to work
             <> docksEventHook   -- make xmobar (et al.) appear immediately
 
 manageHook :: ManageHook
-manageHook = def
+manageHook = manageDocks
 
 logHook :: X ()
 logHook = pure ()
+
+startupHook :: X ()
+startupHook = spawn $ "xsetroot -solid \"" ++ base0 ++ "\""
 
 keys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 keys conf@XConfig {XC.modMask = mm} = M.fromList $
@@ -89,7 +101,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- launch terminal
       ((mm .|. shiftMask, xK_Return), spawn $ XC.terminal conf)
       -- launch dmenu
-    , ((mm, xK_p                   ), shellPrompt myXPConfig)
+    , ((mm,               xK_p     ), shellPrompt xpConfig)
     , ((mm .|. shiftMask, xK_p     ), spawn "dmenu_run")
 
       -- kill the focused window
@@ -103,6 +115,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. shiftMask, xK_space ), setLayout $ XC.layoutHook conf)
       -- resize viewed windows to the correct size
     , ((mm,               xK_n     ), refresh)
+      -- toggle struts
+    , ((mm,               xK_b     ), sendMessage ToggleStruts)
 
     -- move focus up or down the window stack
     , ((mm,               xK_Tab   ), windows W.focusDown)
@@ -145,43 +159,60 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
 mouseBindings :: XConfig Layout -> M.Map (KeyMask, Button) (Window -> X ())
 mouseBindings XConfig {XC.modMask = mm} = M.fromList
     -- set the window to floating mode and move by dragging
-    [ ((mm, button1), \w -> focus w >> mouseMoveWindow w
-                                          >> windows W.shiftMaster)
+    [ ((mm, button1), \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster)
     -- raise the window to the top of the stack
     , ((mm, button2), windows . (W.shiftMaster .) . W.focusWindow)
     -- set the window to floating mode and resize by dragging
-    , ((mm, button3), \w -> focus w >> mouseResizeWindow w
-                                         >> windows W.shiftMaster)
+    , ((mm, button3), \w -> focus w >> mouseResizeWindow w >> windows W.shiftMaster)
     ]
 
-myXPConfig :: XPConfig
-myXPConfig = def { XP.font = "xft:Roboto Mono:size=16"
-                 , XP.bgColor = base02
-                 , XP.fgColor = base1
-                 , XP.fgHLight = orange
-                 , XP.bgHLight = base02
-                 , XP.borderColor = base01
-                 , XP.promptBorderWidth = 5
-                 , XP.position = CenteredAt 0.25 0.5
-                 , XP.height = 50
-                 }
+xpConfig :: XPConfig
+xpConfig = def { XP.font = "xft:Roboto Mono:size=16"
+               , XP.bgColor = base02
+               , XP.fgColor = base1
+               , XP.fgHLight = orange
+               , XP.bgHLight = base02
+               , XP.borderColor = base01
+               , XP.promptBorderWidth = 5
+               , XP.position = CenteredAt 0.25 0.5
+               , XP.height = 50
+               }
 
 -- ewmh support enables other windows to activate gracefully
 -- (see `emacsclient -n`)
-myConfig :: a Window -> XConfig a
-myConfig l = ewmh def { XC.modMask = modMask
-                      , XC.terminal = terminal
-                      , XC.borderWidth = borderWidth
-                      , XC.normalBorderColor = normalBorderColour
-                      , XC.focusedBorderColor = focusedBorderColour
-                      , XC.workspaces = workspaces
-                      , XC.handleEventHook = eventHook
-                      , XC.logHook = logHook
-                      , XC.manageHook = manageHook
-                      , XC.layoutHook = l
-                      , XC.keys = keys
-                      , XC.mouseBindings = mouseBindings
-                      }
+pureConfig :: a Window -> XConfig a
+pureConfig l = ewmh def { XC.modMask = modMask
+                        , XC.terminal = terminal
+                        , XC.borderWidth = borderWidth
+                        , XC.normalBorderColor = normalBorderColour
+                        , XC.focusedBorderColor = focusedBorderColour
+                        , XC.workspaces = workspaces
+                        , XC.handleEventHook = eventHook
+                        , XC.logHook = logHook
+                        , XC.manageHook = manageHook
+                        , XC.layoutHook = l
+                        , XC.startupHook = startupHook
+                        , XC.keys = keys
+                        , XC.mouseBindings = mouseBindings
+                        }
+
+
+xmobar :: XConfig a -> IO (XConfig a)
+xmobar c = do
+    h <- spawnPipe "xmobar /home/sam/.xmonad/xmobarrc"
+    pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
+  where pp h = def { ppCurrent = xmobarColor blue ""
+                   , ppHidden  = xmobarColor base0 ""
+                   , ppTitle   = xmobarColor green "" . shorten 128
+                   , ppVisible = wrap "(" ")" -- Xinerama only
+                   , ppUrgent  = xmobarColor red yellow
+                   , ppOutput  = hPutStrLn h
+                   }
+        wrap _ _ "" = ""
+        wrap l r m  = l ++ m ++ r
+        shorten n xs | length xs < n = xs
+                     | otherwise     = take (n - length end) xs ++ end
+        end = "..."
 
 main :: IO ()
-main = xmonad =<< xmobar (myConfig layoutHook)
+main = xmonad =<< xmobar (pureConfig layoutHook)

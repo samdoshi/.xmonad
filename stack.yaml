@@ -7,4 +7,11 @@ packages:
   extra-dep: true
 extra-deps:
 - X11-xft-0.3.1
-flags: {}
+- xmobar-0.24.3
+flags:
+  xmobar:
+    with_inotify: true
+    with_mpd: true
+    with_utf8: true
+    with_xft: true
+    with_xpm: true
