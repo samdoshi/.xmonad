@@ -10,10 +10,10 @@ import           System.Exit                  (exitSuccess)
 import           Data.Default                 (def)
 import           Graphics.X11.Types           (Button, KeyMask, KeySym, Window,
                                                button1, button2, button3,
-                                               mod4Mask, shiftMask, xK_1, xK_9,
-                                               xK_Return, xK_Tab, xK_b, xK_c,
-                                               xK_comma, xK_e, xK_h, xK_j, xK_k,
-                                               xK_l, xK_m, xK_n, xK_p,
+                                               mod4Mask, shiftMask, xK_0, xK_1,
+                                               xK_9, xK_Return, xK_Tab, xK_b,
+                                               xK_c, xK_comma, xK_e, xK_h, xK_j,
+                                               xK_k, xK_l, xK_m, xK_n, xK_p,
                                                xK_period, xK_q, xK_r, xK_space,
                                                xK_t, xK_w)
 import           Graphics.X11.Xlib.Extras     (Event)
@@ -53,7 +53,10 @@ import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
 import           Solarized
 
 workspaces :: [WorkspaceId]
-workspaces = ["1", "2", "3"]
+workspaces = [ "home", "alpha", "beta", "media", "float"
+             , "6", "7", "8", "9"
+             , "minimised"
+             ]
 
 modMask :: KeyMask
 modMask = mod4Mask
@@ -153,7 +156,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     -- mod-[1..9] - switch to workspace N
     -- mod-shift-[1..9] - move client to workspace N
     [((m .|. mm, k), windows $ f i)
-        | (i, k) <- zip (XC.workspaces conf) [xK_1 .. xK_9]
+        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
     -- mod-{w,e,r} - switch to physical/Xinerama screens 1, 2, or 3
@@ -205,19 +208,33 @@ xmobar :: XConfig a -> IO (XConfig a)
 xmobar c = do
     h <- spawnPipe "xmobar /home/sam/.xmonad/xmobarrc"
     pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
-  where pp h = def { ppCurrent = xmobarColor blue "" . fnBold
-                   , ppHidden  = xmobarColor base0 ""
-                   , ppTitle   = xmobarColor blue "" . fnBold . shorten 128
-                   , ppVisible = wrap "(" ")" -- Xinerama only
-                   , ppUrgent  = xmobarColor red yellow
-                   , ppOutput  = hPutStrLn h
-                   }
-        wrap _ _ "" = ""
-        wrap l r m  = l ++ m ++ r
-        fnBold = wrap "<fn=1>" "</fn>"
-        shorten n xs | length xs < n = xs
-                     | otherwise     = take (n - length end) xs ++ end
-        end = "..."
+  where
+    pp h = def { ppCurrent         = xmobarColor blue "" . fnBold . awesome
+               , ppHidden          = xmobarColor base1 "" . awesome
+               , ppHiddenNoWindows = xmobarColor base03 "" . awesome . hideEmpty
+               , ppTitle           = xmobarColor blue "" . fnBold . shorten 128
+               , ppVisible         = wrap "(" ")" -- Xinerama only
+               , ppUrgent          = xmobarColor red yellow
+               , ppSep             = "  "
+               , ppWsSep           = " "
+               , ppOutput          = hPutStrLn h
+               }
+    awesome "home"      = fnAwesome "\xf015"
+    awesome "alpha"     = "\x03b1"
+    awesome "beta"      = "\x03b2"
+    awesome "media"     = fnAwesome "\xf03e"
+    awesome "float"     = "f" -- fnAwesome "\xf2d2" (needs FontAwesome 4.7)
+    awesome "minimised" = fnAwesome "\xf00a"
+    awesome x           = x
+    hideEmpty x | x `elem` ["6", "7", "8", "9"] = ""
+                | otherwise                     = x
+    fnBold = wrap "<fn=1>" "</fn>"
+    fnAwesome = wrap "<fn=2>" "</fn>"
+    wrap _ _ "" = ""
+    wrap l r m  = l ++ m ++ r
+    shorten n xs | length xs < n = xs
+                 | otherwise     = take (n - length end) xs ++ end
+    end = "..."
 
 -- ewmh support enables other windows to activate gracefully
 -- (see `emacsclient -n`)
