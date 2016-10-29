@@ -2,6 +2,7 @@ Config
   { -- appearance
     font             = "xft:Roboto Mono:pixelsize=14"
   , additionalFonts  = [ "xft:Roboto Mono:style=bold:pixelsize=14"
+                       , "xft:FontAwesome:pixelsize=14"
                        ]
   , bgColor          = "#073642"
   , fgColor          = "#839496"
@@ -14,11 +15,11 @@ Config
   , sepChar          = "%"
   , alignSep         = "}{"
   , template         = " %StdinReader% }{ \
-                       \%multicpu% | \
-                       \%coretemp% | \
-                       \%memory% | \
-                       \%dynnetwork% | \
-                       \%EGGD% | \
+                       \%multicpu%  \
+                       \%coretemp%  \
+                       \%memory%  \
+                       \%dynnetwork%  \
+                       \%EGGD%  \
                        \%date% "
   -- general behavior
   , lowerOnStart     = True  -- send to bottom of window stack on start
@@ -31,7 +32,8 @@ Config
     [ -- weather monitor
       Run Weather "EGGD"
                   [ "--template"
-                  , "EGGD <skyCondition> \
+                  , "<fn=2>\xf0c2</fn> \
+                    \EGGD <skyCondition> \
                     \<fc=#268bd2><tempC></fc>°C \
                     \<fc=#268bd2><rh></fc>% \
                     \<fc=#268bd2><pressure></fc>hPa"
@@ -39,7 +41,8 @@ Config
                   36000
 
     -- network activity monitor (dynamic interface resolution)
-    , Run DynNetwork [ "--template" , "<dev>: <tx>kB/s <rx>kB/s"
+    , Run DynNetwork [ "--template" , "<fn=2>\xf093</fn><tx>kB/s \
+                                      \<fn=2>\xf019</fn><rx>kB/s"
                      , "--Low"      , "100000"       -- units: b/s
                      , "--High"     , "500000"       -- units: b/s
                      , "--low"      , "#859900"
@@ -61,7 +64,7 @@ Config
                    10
 
     -- cpu core temperature monitor
-    , Run CoreTemp [ "--template" , "temp: <core0>°C <core1>°C"
+    , Run CoreTemp [ "--template" , "temp: <core0>°C"
                    , "--Low"      , "50"        -- units: °C
                    , "--High"     , "80"        -- units: °C
                    , "--low"      , "#859900"
@@ -72,7 +75,7 @@ Config
 
     -- memory usage monitor
     , Run Memory [ "--template" ,"mem: <usedratio>%"
-                 , "--Low"      , "20"        -- units: %
+                 , "--Low"      , "30"        -- units: %
                  , "--High"     , "90"        -- units: %
                  , "--low"      , "#859900"
                  , "--normal"   , "#b58900"
@@ -82,7 +85,7 @@ Config
 
     -- time and date indicator
     --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-    , Run Date "%a %F <fn=1><fc=#eee8d5>%T</fc></fn>" "date" 10
+    , Run Date "<fn=2>\xf073</fn> %a %F <fc=#eee8d5><fn=1>%T</fn></fc>" "date" 10
 
     , Run StdinReader
     ]
