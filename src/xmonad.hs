@@ -36,7 +36,8 @@ import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Tall (Tall), (|||))
 import           XMonad.Layout.LayoutModifier (ModifiedLayout)
 import           XMonad.Layout.NoBorders      (SmartBorder, smartBorders)
-import           XMonad.Layout.Spacing        (SmartSpacing, smartSpacing)
+import           XMonad.Layout.Renamed        (Rename (Replace), renamed)
+import           XMonad.Layout.Spacing        (Spacing, spacing)
 import           XMonad.Main                  (xmonad)
 import           XMonad.Operations            (focus, kill, mouseMoveWindow,
                                                mouseResizeWindow, refresh,
@@ -48,7 +49,6 @@ import qualified XMonad.Prompt                as XP (XPConfig (..))
 import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
-import XMonad.Layout.Renamed (renamed, Rename(Replace))
 
 import           Solarized
 
@@ -73,14 +73,15 @@ normalBorderColour = base01
 focusedBorderColour :: String
 focusedBorderColour = orange
 
-type TallLayout = ModifiedLayout Rename (ModifiedLayout SmartSpacing Tall)
-type FullLayout = ModifiedLayout SmartBorder Full
+type ML = ModifiedLayout
+type TallLayout = ML Rename (ML AvoidStruts (ML Spacing Tall))
+type FullLayout = ML SmartBorder Full
 type ChooseLayout = Choose TallLayout FullLayout
-type LayoutHook = ModifiedLayout AvoidStruts ChooseLayout
+type LayoutHook = ChooseLayout
 
 layoutHook :: LayoutHook Window
-layoutHook = avoidStruts $ tall' ||| smartBorders Full
-  where tall = smartSpacing spacingWidth $ Tall 1 (2/100) (1/2)
+layoutHook = tall' ||| smartBorders Full
+  where tall = avoidStruts $ spacing spacingWidth $ Tall 1 (2/100) (1/2)
         tall' = renamed [Replace "Tall"] tall
 
 eventHook :: Event -> X All
