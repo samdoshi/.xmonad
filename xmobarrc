@@ -1,13 +1,15 @@
 Config {
    -- appearance
-     font =         "xft:Roboto Mono:pixelsize=14"
-   , bgColor =      "#073642"
-   , fgColor =      "#839496"
-   , position =     TopSize C 100 24
-   , textOffset = 16
-   , border =       NoBorder
-   , borderColor =  "#002b36"
-   , borderWidth =  3
+     font =            "xft:Roboto Mono:pixelsize=14"
+   , additionalFonts = [ "xft:Roboto Mono:style=bold:pixelsize=14"
+                       ]
+   , bgColor =         "#073642"
+   , fgColor =         "#839496"
+   , position =        TopSize C 100 24
+   , textOffset =      16
+   , border =          NoBorder
+   , borderColor =     "#002b36"
+   , borderWidth =     3
 
    -- layout
    , sepChar =  "%"
@@ -67,7 +69,7 @@ Config {
 
         -- time and date indicator
         --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-        , Run Date           "%a %F <fc=#eee8d5>%T</fc>" "date" 10
+        , Run Date           "%a %F <fn=1><fc=#eee8d5>%T</fc></fn>" "date" 10
 
         , Run StdinReader
 

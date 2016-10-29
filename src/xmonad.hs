@@ -205,15 +205,16 @@ xmobar :: XConfig a -> IO (XConfig a)
 xmobar c = do
     h <- spawnPipe "xmobar /home/sam/.xmonad/xmobarrc"
     pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
-  where pp h = def { ppCurrent = xmobarColor blue ""
+  where pp h = def { ppCurrent = xmobarColor blue "" . fnBold
                    , ppHidden  = xmobarColor base0 ""
-                   , ppTitle   = xmobarColor blue "" . shorten 128
+                   , ppTitle   = xmobarColor blue "" . fnBold . shorten 128
                    , ppVisible = wrap "(" ")" -- Xinerama only
                    , ppUrgent  = xmobarColor red yellow
                    , ppOutput  = hPutStrLn h
                    }
         wrap _ _ "" = ""
         wrap l r m  = l ++ m ++ r
+        fnBold = wrap "<fn=1>" "</fn>"
         shorten n xs | length xs < n = xs
                      | otherwise     = take (n - length end) xs ++ end
         end = "..."
