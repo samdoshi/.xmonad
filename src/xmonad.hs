@@ -28,7 +28,7 @@ import           XMonad.Hooks.EwmhDesktops    (ewmh, fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks     (AvoidStruts,
                                                ToggleStruts (ToggleStruts),
                                                avoidStruts, docksEventHook,
-                                               manageDocks)
+                                               docksStartupHook, manageDocks)
 import           XMonad.Layout                (ChangeLayout (NextLayout),
                                                Choose, Full (Full),
                                                IncMasterN (IncMasterN),
@@ -96,7 +96,9 @@ logHook :: X ()
 logHook = pure ()
 
 startupHook :: X ()
-startupHook = spawn $ "xsetroot -solid \"" ++ base0 ++ "\""
+startupHook = do
+  spawn $ "xsetroot -solid \"" ++ base0 ++ "\""
+  docksStartupHook
 
 keys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 keys conf@XConfig {XC.modMask = mm} = M.fromList $
@@ -115,7 +117,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- rotate through available layouts
     , ((mm,               xK_space ), sendMessage NextLayout)
       -- reset the layouts on the current workspace to default
-    , ((mm .|. shiftMask, xK_space ), setLayout $ XC.layoutHook conf)
+    , ((mm .|. shiftMask, xK_space ), setLayout (XC.layoutHook conf)
+                                      >> docksStartupHook) -- find docks again
       -- resize viewed windows to the correct size
     , ((mm,               xK_n     ), refresh)
       -- toggle struts
