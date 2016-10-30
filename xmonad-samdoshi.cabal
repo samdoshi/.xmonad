@@ -13,11 +13,13 @@ executable xmonad
   ghc-options:         -Wall
   main-is:             xmonad.hs
   default-language:    Haskell2010
-  other-modules:       Solarized
+  other-modules:       BringWorkspace
+                     , Solarized
   build-depends:       base >= 4.9 && < 5
                      , containers
                      , data-default
                      , filepath
+                     , mtl
                      , X11
                      , xmonad
                      , xmonad-contrib

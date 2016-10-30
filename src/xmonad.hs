@@ -13,11 +13,12 @@ import           Graphics.X11.Types           (Button, KeyMask, KeySym, Window,
                                                mod4Mask, shiftMask, xK_0, xK_1,
                                                xK_9, xK_Return, xK_Tab, xK_b,
                                                xK_c, xK_comma, xK_e, xK_h, xK_j,
-                                               xK_k, xK_l, xK_m, xK_n, xK_p,
-                                               xK_period, xK_q, xK_r, xK_space,
-                                               xK_t, xK_w)
+                                               xK_k, xK_l, xK_m, xK_m, xK_n,
+                                               xK_p, xK_period, xK_q, xK_r,
+                                               xK_space, xK_t, xK_w)
 import           Graphics.X11.Xlib.Extras     (Event)
 import           Graphics.X11.Xlib.Types      (Dimension)
+import           XMonad.Actions.GridSelect    (GSConfig (..), HasColorizer)
 import           XMonad.Core                  (Layout, ManageHook, WorkspaceId,
                                                X, XConfig (XConfig), spawn,
                                                whenJust)
@@ -50,12 +51,16 @@ import           XMonad.Prompt.Shell          (shellPrompt)
 import qualified XMonad.StackSet              as W
 import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
 
+import           BringWorkspace
 import           Solarized
+
+minimisedWS :: WorkspaceId
+minimisedWS = "minimised"
 
 workspaces :: [WorkspaceId]
 workspaces = [ "home", "alpha", "beta", "media", "float"
              , "6", "7", "8", "9"
-             , "minimised"
+             , minimisedWS
              ]
 
 modMask :: KeyMask
@@ -132,7 +137,11 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. shiftMask, xK_Tab   ), windows W.focusUp)
     , ((mm,               xK_j     ), windows W.focusDown)
     , ((mm,               xK_k     ), windows W.focusUp)
-    , ((mm,               xK_m     ), windows W.focusMaster)
+
+    -- move window to minimsed workspace
+    , ((mm,               xK_m     ), withFocused
+                                      $ windows . W.shiftWin minimisedWS)
+    , ((mm .|. shiftMask, xK_m     ), bringWorkspaceWindow minimisedWS gsConfig)
 
     -- modifying the window order
     , ((mm,               xK_Return), windows W.swapMaster)
@@ -185,6 +194,15 @@ xpConfig = def { XP.font = "xft:Roboto Mono:size=16"
                , XP.promptBorderWidth = 5
                , XP.position = CenteredAt 0.25 0.5
                , XP.height = 50
+               }
+
+gsConfig :: HasColorizer a => GSConfig a
+gsConfig = def { gs_cellheight = 40
+               , gs_cellwidth = 400
+               , gs_cellpadding = 5
+               , gs_font = "xft:Roboto Mono:pixelsize=16"
+               , gs_originFractX = 1/2
+               , gs_originFractY = 1/3
                }
 
 pureConfig :: a Window -> XConfig a
