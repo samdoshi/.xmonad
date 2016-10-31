@@ -54,12 +54,30 @@ import           XMonad.Util.Run              (hPutStrLn, spawnPipe)
 import           BringWorkspace
 import           Solarized
 
+homeWS :: WorkspaceId
+homeWS = "home"
+
+alphaWS :: WorkspaceId
+alphaWS = "alpha"
+
+betaWS :: WorkspaceId
+betaWS = "beta"
+
+mediaWS :: WorkspaceId
+mediaWS = "media"
+
+gamesWS :: WorkspaceId
+gamesWS = "games"
+
+floatWS :: WorkspaceId
+floatWS = "float"
+
 minimisedWS :: WorkspaceId
 minimisedWS = "minimised"
 
 workspaces :: [WorkspaceId]
-workspaces = [ "home", "alpha", "beta", "media", "float"
-             , "6", "7", "8", "9"
+workspaces = [ homeWS, alphaWS, betaWS, mediaWS, floatWS, gamesWS
+             , "7", "8", "9"
              , minimisedWS
              ]
 
@@ -237,14 +255,15 @@ xmobar c = do
                , ppWsSep           = " "
                , ppOutput          = hPutStrLn h
                }
-    awesome "home"      = fnAwesome "\xf015"
-    awesome "alpha"     = "\x03b1"
-    awesome "beta"      = "\x03b2"
-    awesome "media"     = fnAwesome "\xf03e"
-    awesome "float"     = "f" -- fnAwesome "\xf2d2" (needs FontAwesome 4.7)
-    awesome "minimised" = fnAwesome "\xf00a"
-    awesome x           = x
-    hideEmpty x | x `elem` ["6", "7", "8", "9"] = ""
+    awesome x | x == homeWS      = fnAwesome "\xf015"
+              | x == alphaWS     = "\x03b1"
+              | x == betaWS      = "\x03b2"
+              | x == mediaWS     = fnAwesome "\xf03e"
+              | x == gamesWS     = fnAwesome "\xf11b"
+              | x == floatWS     = "f" -- fnAwesome "\xf2d2" (needs FA 4.7)
+              | x == minimisedWS = fnAwesome "\xf00a"
+              | otherwise = x
+    hideEmpty x | x `elem` ["7", "8", "9"] = ""
                 | otherwise                     = x
     fnBold = wrap "<fn=1>" "</fn>"
     fnAwesome = wrap "<fn=2>" "</fn>"
