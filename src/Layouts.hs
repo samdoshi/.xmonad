@@ -20,6 +20,7 @@ import           XMonad.Layout.SimplestFloat      (SimplestFloat, simplestFloat)
 import           XMonad.Layout.Spacing            (Spacing, spacing)
 import           XMonad.Layout.WindowArranger     (WindowArranger)
 
+import           OneBig             (OneBig(OneBig))
 import           Solarized
 import           Workspaces
 
@@ -28,9 +29,10 @@ type ML = ModifiedLayout
 type CH = Choose
 type PW = PerWorkspace
 
-type LayoutHook = PW FloatChoice DefaultChoice
+type LayoutHook = PW FloatChoice (PW MediaChoice DefaultChoice)
 layoutHook :: LayoutHook Window
 layoutHook = onWorkspace floatWS floatChoice
+             $ onWorkspace mediaWS mediaChoice
              defaultChoice
 
 type DefaultChoice = CH TiledLayout FullLayout
@@ -40,6 +42,16 @@ defaultChoice = tiled ||| full
 type FloatChoice = CH FloatLayout FullLayout
 floatChoice :: FloatChoice Window
 floatChoice = float ||| full
+
+type MediaChoice = CH BigLayout FullLayout
+mediaChoice :: MediaChoice Window
+mediaChoice = big ||| full
+
+type BigLayout = ML AvoidStruts (ML Spacing OneBig)
+big :: BigLayout a
+big = avoidStruts
+      $ spacing 3
+      $ OneBig (3/4) (3/4)
 
 type FloatLayout = ML Rename
                    (ML CustomDecoration

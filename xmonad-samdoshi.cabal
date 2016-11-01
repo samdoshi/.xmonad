@@ -18,6 +18,7 @@ executable xmonad
                      , GridSelectConfig
                      , Keys
                      , Layouts
+                     , OneBig
                      , PromptConfig
                      , Solarized
                      , Workspaces
