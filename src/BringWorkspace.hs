@@ -1,8 +1,9 @@
 module BringWorkspace ( bringWorkspaceWindow
                       ) where
 
-import           Control.Monad.State       (gets)
 import           Data.List                 (nub)
+
+import           Control.Monad.State       (gets)
 import           Graphics.X11.Types        (Window)
 import           XMonad.Actions.GridSelect (GSConfig, gridselect)
 import           XMonad.Core               (WindowSet, WorkspaceId, X,

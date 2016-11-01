@@ -14,7 +14,14 @@ executable xmonad
   main-is:             xmonad.hs
   default-language:    Haskell2010
   other-modules:       BringWorkspace
+                     , Config
+                     , GridSelectConfig
+                     , Keys
+                     , Layouts
+                     , PromptConfig
                      , Solarized
+                     , Workspaces
+                     , XmobarConfig
   build-depends:       base >= 4.9 && < 5
                      , containers
                      , data-default
