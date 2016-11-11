@@ -16,8 +16,7 @@ import           Graphics.X11.Types       (Button, KeyMask, KeySym, Window,
 import           XMonad.Core              (Layout, X, XConfig (XConfig), spawn,
                                            whenJust)
 import qualified XMonad.Core              as XC (XConfig (..))
-import           XMonad.Hooks.ManageDocks (ToggleStruts (ToggleStruts),
-                                           docksStartupHook)
+import           XMonad.Hooks.ManageDocks (ToggleStruts (ToggleStruts))
 import           XMonad.Layout            (ChangeLayout (NextLayout),
                                            IncMasterN (IncMasterN),
                                            Resize (Expand, Shrink))
@@ -50,8 +49,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- rotate through available layouts
     , ((mm,               xK_space ), sendMessage NextLayout)
       -- reset the layouts on the current workspace to default
-    , ((mm .|. shiftMask, xK_space ), setLayout (XC.layoutHook conf)
-                                      >> docksStartupHook) -- find docks again
+    , ((mm .|. shiftMask, xK_space ), setLayout (XC.layoutHook conf))
       -- resize viewed windows to the correct size
     , ((mm,               xK_n     ), refresh)
       -- toggle struts
