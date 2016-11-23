@@ -36,7 +36,7 @@ awesome x | x == homeWS      = fnAwesome "\xf015"
           | x == betaWS      = "\x03b2"
           | x == mediaWS     = fnAwesome "\xf03e"
           | x == gamesWS     = fnAwesome "\xf11b"
-          | x == floatWS     = "f" -- fnAwesome "\xf2d2" (needs FA 4.7)
+          | x == floatWS     = fnAwesome "\xf2d2"
           | x == minimisedWS = fnAwesome "\xf00a"
           | otherwise = x
 
