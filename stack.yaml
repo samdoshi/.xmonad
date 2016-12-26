@@ -6,6 +6,7 @@ packages:
 - location: vendor/xmonad-contrib
   extra-dep: true
 extra-deps:
+- X11-1.7
 - X11-xft-0.3.1
 - xmobar-0.24.3
 flags:
