@@ -15,7 +15,7 @@ import           Workspaces
 
 xmobar :: XConfig a -> IO (XConfig a)
 xmobar c = do
-    h <- spawnPipe "xmobar /home/sam/.xmonad/xmobarrc"
+    h <- spawnPipe "xmobar /home/sam/.xmonad/xmobar/xmobarrc"
     pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
 
 pp :: Handle -> PP
@@ -42,7 +42,7 @@ awesome x | x == homeWS      = fnAwesome "\xf015"
 
 hideEmpty :: String -> String
 hideEmpty x | x `elem` ["7", "8", "9"] = ""
-            | otherwise                     = x
+            | otherwise                = x
 
 fnBold :: String -> String
 fnBold = wrap "<fn=1>" "</fn>"
