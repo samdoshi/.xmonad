@@ -21,7 +21,7 @@ import           XMonad.Layout            (ChangeLayout (NextLayout),
                                            IncMasterN (IncMasterN),
                                            Resize (Expand, Shrink))
 import           XMonad.Operations        (focus, kill, mouseMoveWindow,
-                                           mouseResizeWindow, refresh,
+                                           mouseResizeWindow, refresh, restart,
                                            screenWorkspace, sendMessage,
                                            setLayout, windows, withFocused)
 import           XMonad.Prompt.Shell      (shellPrompt)
@@ -82,7 +82,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
 
     -- quit, or restart
     , ((mm .|. shiftMask, xK_q     ), liftIO exitSuccess)
-    , ((mm              , xK_q     ), spawn "xmonad --restart")
+    , ((mm              , xK_q     ), restart "xmonad" True)
     ]
     ++
     -- mod-[1..9] - switch to workspace N

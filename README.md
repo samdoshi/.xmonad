@@ -14,4 +14,4 @@ This will install the `xmonad` binary to `~/.local/bin`, that version must be fi
 
 ## Disabling XMonad recompilation
 
-If XMonad does not find a `~/.xmonad/xmonad.hs` file it will not attempt to recompile. Instead it will use it's current config.
+By using `XMonad.Main.launch` we can disable the built-in recompilation support, we also need to use `XMonad.Operations.restart` to restart.
