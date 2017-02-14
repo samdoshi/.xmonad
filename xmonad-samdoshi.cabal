@@ -21,6 +21,7 @@ executable xmonad
                      , OneBig
                      , PromptConfig
                      , Solarized
+                     , Tile
                      , Workspaces
                      , XmobarConfig
   build-depends:       base >= 4.9 && < 5

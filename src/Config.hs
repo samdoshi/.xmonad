@@ -5,12 +5,14 @@ import           Data.Monoid               (All, (<>))
 
 import           Data.Default              (def)
 import           Graphics.X11.Types        (Window, mod4Mask)
+import           Graphics.X11.Xlib.Cursor  (xC_left_ptr)
 import           Graphics.X11.Xlib.Extras  (Event)
 import           XMonad.Core               (ManageHook, X, XConfig, spawn)
 import qualified XMonad.Core               as XC (XConfig (..))
 import           XMonad.Hooks.EwmhDesktops (fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks  (docksEventHook, docksStartupHook,
                                             manageDocks)
+import           XMonad.Util.Cursor        (setDefaultCursor)
 
 import           Keys                      (keys, mouseBindings)
 import           Solarized
@@ -19,7 +21,7 @@ import           Workspaces                (workspaces)
 pureConfig :: a Window -> XConfig a
 pureConfig l = def { XC.modMask            = mod4Mask
                    , XC.terminal           = "urxvt"
-                   , XC.borderWidth        = 3
+                   , XC.borderWidth        = 4
                    , XC.normalBorderColor  = base01
                    , XC.focusedBorderColor = orange
                    , XC.focusFollowsMouse  = False
@@ -48,5 +50,6 @@ logHook = pure ()
 startupHook :: X ()
 startupHook = do
   spawn $ "xsetroot -solid \"" ++ base0 ++ "\""
+  setDefaultCursor xC_left_ptr
   docksStartupHook
 

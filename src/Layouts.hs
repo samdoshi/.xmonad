@@ -5,8 +5,7 @@ import           Data.Default                     (def)
 import           Graphics.X11.Types               (Window)
 import           XMonad.Actions.MouseResize       (MouseResize, mouseResize)
 import           XMonad.Hooks.ManageDocks         (AvoidStruts, avoidStruts)
-import           XMonad.Layout                    (Choose, Full (Full),
-                                                   Tall (Tall), (|||))
+import           XMonad.Layout                    (Choose, Full (Full), (|||))
 import           XMonad.Layout.Decoration         (Decoration, DefaultShrinker,
                                                    Theme, shrinkText)
 import qualified XMonad.Layout.Decoration         as T (Theme (..))
@@ -20,8 +19,10 @@ import           XMonad.Layout.SimplestFloat      (SimplestFloat, simplestFloat)
 import           XMonad.Layout.Spacing            (Spacing, spacing)
 import           XMonad.Layout.WindowArranger     (WindowArranger)
 
-import           OneBig             (OneBig(OneBig))
+import           OneBig                           (OneBig (OneBig))
 import           Solarized
+import           Tile                             (MouseResizableTile (..),
+                                                   mouseResizableTile)
 import           Workspaces
 
 -- Shorten some common types
@@ -54,21 +55,25 @@ big = avoidStruts
       $ OneBig (3/4) (3/4)
 
 type FloatLayout = ML Rename
-                   (ML CustomDecoration
-                    (ML MouseResize
-                     (ML WindowArranger SimplestFloat)))
-float :: Eq a => FloatLayout a
+                   (ML AvoidStruts
+                    (ML CustomDecoration
+                     (ML MouseResize
+                      (ML WindowArranger SimplestFloat))))
+float :: FloatLayout Window
 float = renamed [Replace "float"]
+        $ avoidStruts
         $ customDecoration
         $ mouseResize
         simplestFloat
 
-type TiledLayout = ML Rename (ML AvoidStruts (ML Spacing Tall))
-tiled :: TiledLayout a
+type TiledLayout = ML Rename (ML AvoidStruts (ML Spacing MouseResizableTile))
+tiled :: TiledLayout Window
 tiled = renamed [Replace "tiled"]
         $ avoidStruts
         $ spacing 3
-        $ Tall 1 (2/100) (1/2)
+        $ mouseResizableTile { masterFrac = 1/2
+                             , fracIncrement = 2/100
+                             }
 
 type FullLayout = ML Rename (ML SmartBorder Full)
 full :: FullLayout a
