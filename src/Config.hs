@@ -1,25 +1,28 @@
 module Config ( pureConfig
               ) where
 
-import           Data.Monoid               (All, (<>))
+import           Data.Monoid                 (All, (<>))
 
-import           Data.Default              (def)
-import           Graphics.X11.Types        (Window, mod4Mask)
-import           Graphics.X11.Xlib.Cursor  (xC_left_ptr)
-import           Graphics.X11.Xlib.Extras  (Event)
-import           XMonad.Core               (ManageHook, X, XConfig, spawn)
-import qualified XMonad.Core               as XC (XConfig (..))
-import           XMonad.Hooks.EwmhDesktops (fullscreenEventHook)
-import           XMonad.Hooks.ManageDocks  (docksEventHook, docksStartupHook,
-                                            manageDocks)
-import           XMonad.Util.Cursor        (setDefaultCursor)
+import           Data.Default                (def)
+import           Graphics.X11.Types          (Window, mod4Mask)
+import           Graphics.X11.Xlib.Cursor    (xC_left_ptr)
+import           Graphics.X11.Xlib.Extras    (Event)
+import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
+import           XMonad.Core                 (ManageHook, X, XConfig, spawn)
+import qualified XMonad.Core                 as XC (XConfig (..))
+import           XMonad.Hooks.EwmhDesktops   (fullscreenEventHook)
+import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
+                                              manageDocks)
+import           XMonad.Util.Cursor          (setDefaultCursor)
 
-import           Keys                      (keys, mouseBindings)
+import           Keys                        (keys, mouseBindings,
+                                              navigation2DConfig)
 import           Solarized
-import           Workspaces                (workspaces)
+import           Workspaces                  (workspaces)
 
 pureConfig :: a Window -> XConfig a
-pureConfig l = def { XC.modMask            = mod4Mask
+pureConfig l = withNavigation2DConfig navigation2DConfig $
+               def { XC.modMask            = mod4Mask
                    , XC.terminal           = "urxvt"
                    , XC.borderWidth        = 4
                    , XC.normalBorderColor  = base01

@@ -1,4 +1,7 @@
 module Layouts ( layoutHook
+               , floatName
+               , tiledName
+               , fullName
                ) where
 
 import           Data.Default                     (def)
@@ -54,30 +57,39 @@ big = avoidStruts
       $ spacing 3
       $ OneBig (3/4) (3/4)
 
+floatName :: String
+floatName = "float"
+
 type FloatLayout = ML Rename
                    (ML AvoidStruts
                     (ML CustomDecoration
                      (ML MouseResize
                       (ML WindowArranger SimplestFloat))))
 float :: FloatLayout Window
-float = renamed [Replace "float"]
+float = renamed [Replace floatName]
         $ avoidStruts
         $ customDecoration
         $ mouseResize
         simplestFloat
 
+tiledName :: String
+tiledName = "tiled"
+
 type TiledLayout = ML Rename (ML AvoidStruts (ML Spacing MouseResizableTile))
 tiled :: TiledLayout Window
-tiled = renamed [Replace "tiled"]
+tiled = renamed [Replace tiledName]
         $ avoidStruts
         $ spacing 3
         $ mouseResizableTile { masterFrac = 1/2
                              , fracIncrement = 2/100
                              }
 
+fullName :: String
+fullName = "full"
+
 type FullLayout = ML Rename (ML SmartBorder Full)
 full :: FullLayout a
-full = renamed [Replace "full"] $ smartBorders Full
+full = renamed [Replace fullName] $ smartBorders Full
 
 type CustomDecoration = Decoration NoFrillsDecoration DefaultShrinker
 customDecoration :: Eq a => l a -> ML CustomDecoration l a
