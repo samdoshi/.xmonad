@@ -13,10 +13,36 @@ module Tile ( mouseResizableTile
             , MouseResizableTile
             ) where
 
-import           XMonad             hiding (splitHorizontallyBy,
-                                     splitVertically, tile)
-import qualified XMonad.StackSet    as W
-import           XMonad.Util.XUtils
+import           Control.Monad.Reader      (asks)
+import           Data.Bits                 ((.|.))
+import           Data.Typeable             (Typeable)
+import           Graphics.X11.Types        (Window, buttonPress,
+                                            buttonPressMask, cWOverrideRedirect,
+                                            exposureMask, inputOnly)
+import           Graphics.X11.Xlib.Cursor  (xC_sb_h_double_arrow,
+                                            xC_sb_v_double_arrow)
+import           Graphics.X11.Xlib.Display (defaultScreenOfDisplay)
+import           Graphics.X11.Xlib.Event   (selectInput)
+import           Graphics.X11.Xlib.Extras  (Event (ButtonEvent), ev_event_type,
+                                            ev_window)
+import           Graphics.X11.Xlib.Font    (Glyph)
+import           Graphics.X11.Xlib.Misc    (allocaSetWindowAttributes,
+                                            createFontCursor, defineCursor,
+                                            freeCursor, set_override_redirect)
+import           Graphics.X11.Xlib.Screen  (defaultVisualOfScreen)
+import           Graphics.X11.Xlib.Types   (Dimension, Display, Position,
+                                            Rectangle (Rectangle))
+import           Graphics.X11.Xlib.Window  (createWindow)
+import           XMonad.Core               (LayoutClass (description, doLayout, handleMessage),
+                                            LayoutMessages (Hide, ReleaseResources),
+                                            Message, X, borderWidth, config,
+                                            fromMessage, io, theRoot,
+                                            withDisplay)
+import           XMonad.Layout             (IncMasterN (IncMasterN),
+                                            Resize (Expand, Shrink))
+import           XMonad.Operations         (mouseDrag, sendMessage)
+import qualified XMonad.StackSet           as W
+import           XMonad.Util.XUtils        (deleteWindow, showWindow)
 
 
 data MRTMessage = SetMasterFraction Rational
@@ -140,9 +166,9 @@ modifySlave st delta =
                 else st
 
 replaceAtPos :: (Num t, Eq t) => Rational -> [Rational] -> t -> Rational -> [Rational]
-replaceAtPos _ [] 0 x' = [x']
-replaceAtPos d [] pos x' = d : replaceAtPos d [] (pos - 1) x'
-replaceAtPos _ (_:xs) 0 x' = x' : xs
+replaceAtPos _ [] 0 x'       = [x']
+replaceAtPos d [] pos x'     = d : replaceAtPos d [] (pos - 1) x'
+replaceAtPos _ (_:xs) 0 x'   = x' : xs
 replaceAtPos d (x:xs) pos x' = x : replaceAtPos d xs (pos -1 ) x'
 
 sanitizeRectangle :: Rectangle -> Rectangle -> Rectangle
