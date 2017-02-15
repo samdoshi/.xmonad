@@ -19,7 +19,7 @@ xmobar c = do
     pure $ c { XC.logHook = XC.logHook c >> dynamicLogWithPP (pp h) }
 
 pp :: Handle -> PP
-pp h = def { ppCurrent         = xmobarColor blue "" . fnBold . awesome
+pp h = def { ppCurrent         = xmobarColor orange "" . fnBold . awesome
            , ppHidden          = xmobarColor base1 "" . awesome
            , ppHiddenNoWindows = xmobarColor base03 "" . awesome . hideEmpty
            , ppTitle           = xmobarColor blue "" . fnBold . shorten 128
