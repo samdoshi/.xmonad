@@ -1,4 +1,5 @@
-{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Layouts ( layoutHook
                , tiledName
@@ -16,6 +17,7 @@ import           XMonad.Layout                    (Choose, Full (Full), (|||))
 import           XMonad.Layout.Decoration         (Decoration, DefaultShrinker,
                                                    Theme, shrinkText)
 import qualified XMonad.Layout.Decoration         as T (Theme (..))
+import           XMonad.Layout.Grid               (Grid (Grid))
 import           XMonad.Layout.LayoutModifier     (ModifiedLayout)
 import           XMonad.Layout.NoBorders          (SmartBorder, WithBorder,
                                                    noBorders, smartBorders)
@@ -39,10 +41,13 @@ type CH = Choose
 type PW = PerWorkspace
 
 -- The main layout hook, uses `PerWorkspace`
-type LayoutHook = PW FloatChoice (PW MediaChoice DefaultChoice)
+type LayoutHook = PW FloatChoice
+                  (PW MediaChoice
+                   (PW MinimisedChoice DefaultChoice))
 layoutHook :: LayoutHook Window
 layoutHook = onWorkspace floatWS floatChoice
              $ onWorkspace mediaWS mediaChoice
+             $ onWorkspace minimisedWS minimisedChoice
              defaultChoice
 
 -- Predefined layout choices
@@ -57,6 +62,10 @@ floatChoice = float ||| full
 type MediaChoice = CH BigLayout FullLayout
 mediaChoice :: MediaChoice Window
 mediaChoice = big ||| full
+
+type MinimisedChoice = GridLayout
+minimisedChoice :: MinimisedChoice Window
+minimisedChoice = grid
 
 -- Standard tiled layout
 tiledName :: String
@@ -85,6 +94,14 @@ fullName = "full"
 type FullLayout = ML Rename (ML SmartBorder Full)
 full :: FullLayout a
 full = rename fullName $ smartBorders Full
+
+-- Grid layout
+gridName :: String
+gridName = "grid"
+
+type GridLayout = EmbellishedLayout Grid
+grid :: GridLayout Window
+grid = embellish gridName Grid
 
 -- Floating layout
 floatName :: String
