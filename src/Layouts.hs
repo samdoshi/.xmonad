@@ -1,19 +1,24 @@
+{-# LANGUAGE FlexibleContexts     #-}
+
 module Layouts ( layoutHook
-               , floatName
                , tiledName
+               , bigName
                , fullName
+               , floatName
                ) where
 
 import           Data.Default                     (def)
 import           Graphics.X11.Types               (Window)
 import           XMonad.Actions.MouseResize       (MouseResize, mouseResize)
+import           XMonad.Core                      (LayoutClass)
 import           XMonad.Hooks.ManageDocks         (AvoidStruts, avoidStruts)
 import           XMonad.Layout                    (Choose, Full (Full), (|||))
 import           XMonad.Layout.Decoration         (Decoration, DefaultShrinker,
                                                    Theme, shrinkText)
 import qualified XMonad.Layout.Decoration         as T (Theme (..))
 import           XMonad.Layout.LayoutModifier     (ModifiedLayout)
-import           XMonad.Layout.NoBorders          (SmartBorder, smartBorders)
+import           XMonad.Layout.NoBorders          (SmartBorder, WithBorder,
+                                                   noBorders, smartBorders)
 import           XMonad.Layout.NoFrillsDecoration (NoFrillsDecoration,
                                                    noFrillsDeco)
 import           XMonad.Layout.PerWorkspace       (PerWorkspace, onWorkspace)
@@ -33,12 +38,14 @@ type ML = ModifiedLayout
 type CH = Choose
 type PW = PerWorkspace
 
+-- The main layout hook, uses `PerWorkspace`
 type LayoutHook = PW FloatChoice (PW MediaChoice DefaultChoice)
 layoutHook :: LayoutHook Window
 layoutHook = onWorkspace floatWS floatChoice
              $ onWorkspace mediaWS mediaChoice
              defaultChoice
 
+-- Predefined layout choices
 type DefaultChoice = CH TiledLayout FullLayout
 defaultChoice :: DefaultChoice Window
 defaultChoice = tiled ||| full
@@ -51,60 +58,104 @@ type MediaChoice = CH BigLayout FullLayout
 mediaChoice :: MediaChoice Window
 mediaChoice = big ||| full
 
-type BigLayout = ML AvoidStruts (ML Spacing OneBig)
-big :: BigLayout a
-big = avoidStruts
-      $ spacing 3
-      $ OneBig (3/4) (3/4)
-
-floatName :: String
-floatName = "float"
-
-type FloatLayout = ML Rename
-                   (ML AvoidStruts
-                    (ML CustomDecoration
-                     (ML MouseResize
-                      (ML WindowArranger SimplestFloat))))
-float :: FloatLayout Window
-float = renamed [Replace floatName]
-        $ avoidStruts
-        $ customDecoration
-        $ mouseResize
-        simplestFloat
-
+-- Standard tiled layout
 tiledName :: String
 tiledName = "tiled"
 
-type TiledLayout = ML Rename (ML AvoidStruts (ML Spacing MouseResizableTile))
+type TiledLayout = EmbellishedLayout MouseResizableTile
 tiled :: TiledLayout Window
-tiled = renamed [Replace tiledName]
-        $ avoidStruts
-        $ spacing 3
+tiled = embellish tiledName
         $ mouseResizableTile { masterFrac = 1/2
                              , fracIncrement = 2/100
                              }
 
+-- Widescreen `OneBig` layout
+bigName :: String
+bigName = "big"
+
+type BigLayout = EmbellishedLayout OneBig
+big :: BigLayout Window
+big = embellish bigName
+      $ OneBig (3/4) (3/4)
+
+-- Full screen layout
 fullName :: String
 fullName = "full"
 
 type FullLayout = ML Rename (ML SmartBorder Full)
 full :: FullLayout a
-full = renamed [Replace fullName] $ smartBorders Full
+full = rename fullName $ smartBorders Full
 
-type CustomDecoration = Decoration NoFrillsDecoration DefaultShrinker
-customDecoration :: Eq a => l a -> ML CustomDecoration l a
-customDecoration = noFrillsDeco shrinkText theme
+-- Floating layout
+floatName :: String
+floatName = "float"
 
-theme :: Theme
-theme = def { T.activeColor = orange
-            , T.inactiveColor = base01
-            , T.urgentColor = red
-            , T.activeBorderColor = orange
-            , T.inactiveBorderColor = base01
-            , T.urgentBorderColor = red
-            , T.activeTextColor = base2
-            , T.inactiveTextColor = base1
-            , T.urgentTextColor = base2
-            , T.fontName = "xft:Roboto Mono:pixelsize=14"
-            , T.decoHeight = 24
-            }
+type FloatLayout = ML Rename
+                   (ML AvoidStruts
+                    (ML FloatDecoration
+                     (ML MouseResize
+                      (ML WindowArranger SimplestFloat))))
+float :: FloatLayout Window
+float = rename floatName
+        $ avoidStruts
+        $ floatDecoration
+        $ mouseResize
+        simplestFloat
+
+-- Helpers
+
+rename :: String -> l a -> ML Rename l a
+rename s = renamed [Replace s]
+
+type EmbellishedLayout a = ML Rename
+                           (ML AvoidStruts
+                            (ML WithBorder
+                             (ML TopBarDecoration
+                              (ML Spacing a))))
+embellish :: LayoutClass l Window
+          => String
+          -> l Window
+          -> EmbellishedLayout l Window
+embellish s l = rename s
+              $ avoidStruts
+              $ noBorders
+              $ topBarDecoration
+              $ spacing 3 l
+
+-- Themes
+
+type FloatDecoration = Decoration NoFrillsDecoration DefaultShrinker
+floatDecoration :: Eq a => l a -> ML FloatDecoration l a
+floatDecoration = noFrillsDeco shrinkText floatTheme
+
+floatTheme :: Theme
+floatTheme = def { T.activeColor = orange
+                 , T.inactiveColor = inactive
+                 , T.urgentColor = red
+                 , T.activeBorderColor = active
+                 , T.inactiveBorderColor = inactive
+                 , T.urgentBorderColor = red
+                 , T.activeTextColor = base2
+                 , T.inactiveTextColor = base1
+                 , T.urgentTextColor = base2
+                 , T.fontName = "xft:Roboto Mono:pixelsize=10"
+                 , T.decoHeight = 16
+                 }
+
+type TopBarDecoration = Decoration NoFrillsDecoration DefaultShrinker
+topBarDecoration :: Eq a => l a -> ML TopBarDecoration l a
+topBarDecoration = noFrillsDeco shrinkText topBarTheme
+
+topBarTheme :: Theme
+topBarTheme = def { T.activeColor = orange
+                  , T.inactiveColor = inactive
+                  , T.urgentColor = red
+                  , T.activeBorderColor = active
+                  , T.inactiveBorderColor = inactive
+                  , T.urgentBorderColor = red
+                  , T.activeTextColor = orange
+                  , T.inactiveTextColor = inactive
+                  , T.urgentTextColor = red
+                  , T.fontName = "xft:Roboto Mono:pixelsize=5"
+                  , T.decoHeight = 6
+                  }

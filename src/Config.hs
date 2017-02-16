@@ -24,9 +24,9 @@ pureConfig :: a Window -> XConfig a
 pureConfig l = withNavigation2DConfig navigation2DConfig $
                def { XC.modMask            = mod4Mask
                    , XC.terminal           = "urxvt"
-                   , XC.borderWidth        = 4
-                   , XC.normalBorderColor  = base01
-                   , XC.focusedBorderColor = orange
+                   , XC.borderWidth        = 2
+                   , XC.normalBorderColor  = inactive
+                   , XC.focusedBorderColor = active
                    , XC.focusFollowsMouse  = False
                    , XC.clickJustFocuses   = True
                    , XC.workspaces         = workspaces
