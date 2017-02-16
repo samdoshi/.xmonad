@@ -14,10 +14,11 @@ import           Graphics.X11.Types          (Button, KeyMask, KeySym, Window,
                                               button1, button2, button3,
                                               controlMask, shiftMask, xK_0,
                                               xK_1, xK_9, xK_Return, xK_Tab,
-                                              xK_b, xK_c, xK_comma, xK_e, xK_h,
-                                              xK_j, xK_k, xK_l, xK_m, xK_m,
-                                              xK_n, xK_p, xK_period, xK_q, xK_r,
-                                              xK_space, xK_t, xK_w)
+                                              xK_b, xK_c, xK_comma, xK_e, xK_f,
+                                              xK_h, xK_j, xK_k, xK_l, xK_m,
+                                              xK_m, xK_n, xK_p, xK_period, xK_q,
+                                              xK_r, xK_space, xK_t, xK_w)
+import           XMonad.Actions.GridSelect   (bringSelected, goToSelected)
 import           XMonad.Actions.Navigation2D (Navigation2DConfig,
                                               centerNavigation,
                                               defaultTiledNavigation,
@@ -118,10 +119,14 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- toggle struts
     , ((mm,        xK_b     ), sendMessage ToggleStruts)
 
+    -- go to window
+    , ((mm,        xK_f     ), goToSelected $ gsConfig mm)
+    -- bring window
+    , ((mm .|. sm, xK_f     ), bringSelected $ gsConfig mm)
     -- move window to minimsed workspace
     , ((mm,        xK_m     ), withFocused
                                $ windows . W.shiftWin minimisedWS)
-    , ((mm .|. sm, xK_m     ), bringWorkspaceWindow minimisedWS gsConfig)
+    , ((mm .|. sm, xK_m     ), bringWorkspaceWindow minimisedWS $ gsConfig mm)
 
     ]
     ++
