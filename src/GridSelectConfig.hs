@@ -17,6 +17,7 @@ gsConfig mm = def { gs_cellheight = 40
                   , gs_navigate = navigation mm
                   , gs_originFractX = 1/2
                   , gs_originFractY = 1/3
+                  , gs_bordercolor = base1
                   }
 
 navigation :: KeyMask -> TwoD a (Maybe a)
