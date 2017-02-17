@@ -3,36 +3,42 @@
 
 module Layouts ( layoutHook
                , tiledName
+               , bspName
                , bigName
                , fullName
                , floatName
                ) where
 
-import           Data.Default                     (def)
-import           Graphics.X11.Types               (Window)
-import           XMonad.Actions.MouseResize       (MouseResize, mouseResize)
-import           XMonad.Core                      (LayoutClass)
-import           XMonad.Hooks.ManageDocks         (AvoidStruts, avoidStruts)
-import           XMonad.Layout                    (Choose, Full (Full), (|||))
-import           XMonad.Layout.Decoration         (Decoration, DefaultShrinker,
-                                                   Theme, shrinkText)
-import qualified XMonad.Layout.Decoration         as T (Theme (..))
-import           XMonad.Layout.Grid               (Grid (Grid))
-import           XMonad.Layout.LayoutModifier     (ModifiedLayout)
-import           XMonad.Layout.NoBorders          (SmartBorder, WithBorder,
-                                                   noBorders, smartBorders)
-import           XMonad.Layout.NoFrillsDecoration (NoFrillsDecoration,
-                                                   noFrillsDeco)
-import           XMonad.Layout.PerWorkspace       (PerWorkspace, onWorkspace)
-import           XMonad.Layout.Renamed            (Rename (Replace), renamed)
-import           XMonad.Layout.SimplestFloat      (SimplestFloat, simplestFloat)
-import           XMonad.Layout.Spacing            (Spacing, spacing)
-import           XMonad.Layout.WindowArranger     (WindowArranger)
+import           Data.Default                       (def)
+import           Graphics.X11.Types                 (Window)
+import           XMonad.Actions.MouseResize         (MouseResize, mouseResize)
+import           XMonad.Core                        (LayoutClass)
+import           XMonad.Hooks.ManageDocks           (AvoidStruts, avoidStruts)
+import           XMonad.Layout                      (Choose, Full (Full), (|||))
+import           XMonad.Layout.BinarySpacePartition (BinarySpacePartition,
+                                                     emptyBSP)
+import           XMonad.Layout.BorderResize         (BorderResize, borderResize)
+import           XMonad.Layout.Decoration           (Decoration,
+                                                     DefaultShrinker, Theme,
+                                                     shrinkText)
+import qualified XMonad.Layout.Decoration           as T (Theme (..))
+import           XMonad.Layout.Grid                 (Grid (Grid))
+import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
+import           XMonad.Layout.NoBorders            (SmartBorder, WithBorder,
+                                                     noBorders, smartBorders)
+import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
+                                                     noFrillsDeco)
+import           XMonad.Layout.PerWorkspace         (PerWorkspace, onWorkspace)
+import           XMonad.Layout.Renamed              (Rename (Replace), renamed)
+import           XMonad.Layout.SimplestFloat        (SimplestFloat,
+                                                     simplestFloat)
+import           XMonad.Layout.Spacing              (Spacing, spacing)
+import           XMonad.Layout.WindowArranger       (WindowArranger)
 
-import           OneBig                           (OneBig (OneBig))
+import           OneBig                             (OneBig (OneBig))
 import           Solarized
-import           Tile                             (MouseResizableTile (..),
-                                                   mouseResizableTile)
+import           Tile                               (MouseResizableTile (..),
+                                                     mouseResizableTile)
 import           Workspaces
 
 -- Shorten some common types
@@ -51,9 +57,9 @@ layoutHook = onWorkspace floatWS floatChoice
              defaultChoice
 
 -- Predefined layout choices
-type DefaultChoice = CH TiledLayout FullLayout
+type DefaultChoice = CH TiledLayout (CH BSPLayout FullLayout)
 defaultChoice :: DefaultChoice Window
-defaultChoice = tiled ||| full
+defaultChoice = tiled ||| bsp ||| full
 
 type FloatChoice = CH FloatLayout FullLayout
 floatChoice :: FloatChoice Window
@@ -77,6 +83,14 @@ tiled = embellish tiledName
         $ mouseResizableTile { masterFrac = 1/2
                              , fracIncrement = 2/100
                              }
+
+-- BSP layout
+bspName :: String
+bspName = "bsp"
+
+type BSPLayout = ML BorderResize (EmbellishedLayout BinarySpacePartition)
+bsp :: BSPLayout Window
+bsp = borderResize $ embellish bspName emptyBSP
 
 -- Widescreen `OneBig` layout
 bigName :: String
