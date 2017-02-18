@@ -30,15 +30,19 @@ import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
                                                      noFrillsDeco)
 import           XMonad.Layout.PerWorkspace         (PerWorkspace, onWorkspace)
 import           XMonad.Layout.Renamed              (Rename (Replace), renamed)
+import           XMonad.Layout.ResizableTile        (ResizableTall (ResizableTall))
+import           XMonad.Layout.Simplest             (Simplest (Simplest))
 import           XMonad.Layout.SimplestFloat        (SimplestFloat,
                                                      simplestFloat)
 import           XMonad.Layout.Spacing              (Spacing, spacing)
+import           XMonad.Layout.SubLayouts           (Sublayout, subLayout)
+import           XMonad.Layout.Tabbed               (TabbedDecoration, addTabs)
 import           XMonad.Layout.WindowArranger       (WindowArranger)
+import           XMonad.Layout.WindowNavigation     (WindowNavigation,
+                                                     windowNavigation)
 
 import           OneBig                             (OneBig (OneBig))
 import           Solarized
-import           Tile                               (MouseResizableTile (..),
-                                                     mouseResizableTile)
 import           Workspaces
 
 -- Shorten some common types
@@ -77,12 +81,9 @@ minimisedChoice = grid
 tiledName :: String
 tiledName = "tiled"
 
-type TiledLayout = EmbellishedLayout MouseResizableTile
+type TiledLayout = EmbellishedLayout ResizableTall
 tiled :: TiledLayout Window
-tiled = embellish tiledName
-        $ mouseResizableTile { masterFrac = 1/2
-                             , fracIncrement = 2/100
-                             }
+tiled = embellish tiledName $ ResizableTall 1 (2/100) (1/2) []
 
 -- BSP layout
 bspName :: String
@@ -140,18 +141,26 @@ rename s = renamed [Replace s]
 
 type EmbellishedLayout a = ML Rename
                            (ML AvoidStruts
-                            (ML WithBorder
-                             (ML TopBarDecoration
-                              (ML Spacing a))))
+                            (ML WindowNavigation
+                             (ML WithBorder
+                              (ML TopBarDecoration
+                               (ML (Decoration TabbedDecoration DefaultShrinker)
+                                (ML (Sublayout Simplest)
+                                 (ML Spacing
+                                  a)))))))
 embellish :: LayoutClass l Window
           => String
           -> l Window
           -> EmbellishedLayout l Window
 embellish s l = rename s
               $ avoidStruts
+              $ windowNavigation -- needed for subLayouts
               $ noBorders
               $ topBarDecoration
-              $ spacing 3 l
+              $ addTabs shrinkText floatTheme
+              $ subLayout [] Simplest
+              $ spacing 3
+              l
 
 -- Themes
 
@@ -160,7 +169,7 @@ floatDecoration :: Eq a => l a -> ML FloatDecoration l a
 floatDecoration = noFrillsDeco shrinkText floatTheme
 
 floatTheme :: Theme
-floatTheme = def { T.activeColor = orange
+floatTheme = def { T.activeColor = active
                  , T.inactiveColor = inactive
                  , T.urgentColor = red
                  , T.activeBorderColor = active
@@ -178,13 +187,13 @@ topBarDecoration :: Eq a => l a -> ML TopBarDecoration l a
 topBarDecoration = noFrillsDeco shrinkText topBarTheme
 
 topBarTheme :: Theme
-topBarTheme = def { T.activeColor = orange
+topBarTheme = def { T.activeColor = active
                   , T.inactiveColor = inactive
                   , T.urgentColor = red
                   , T.activeBorderColor = active
                   , T.inactiveBorderColor = inactive
                   , T.urgentBorderColor = red
-                  , T.activeTextColor = orange
+                  , T.activeTextColor = active
                   , T.inactiveTextColor = inactive
                   , T.urgentTextColor = red
                   , T.fontName = "xft:Roboto Mono:pixelsize=5"

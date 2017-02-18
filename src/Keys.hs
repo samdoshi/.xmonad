@@ -13,13 +13,15 @@ import           System.Exit                        (exitSuccess)
 import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
-                                                     shiftMask, xK_0, xK_1,
-                                                     xK_9, xK_Return, xK_Tab,
+                                                     mod1Mask, shiftMask, xK_0,
+                                                     xK_1, xK_9, xK_Return,
+                                                     xK_Tab, xK_apostrophe,
                                                      xK_b, xK_c, xK_comma, xK_e,
                                                      xK_f, xK_h, xK_j, xK_k,
                                                      xK_l, xK_m, xK_m, xK_n,
                                                      xK_p, xK_period, xK_q,
-                                                     xK_r, xK_space, xK_t, xK_w)
+                                                     xK_r, xK_semicolon,
+                                                     xK_space, xK_t, xK_w)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
 import           XMonad.Actions.MessageFeedback     (tryMessage_)
@@ -42,6 +44,9 @@ import           XMonad.Layout                      (ChangeLayout (NextLayout),
 import           XMonad.Layout.BinarySpacePartition (ResizeDirectional (ExpandTowards, ShrinkFrom),
                                                      Rotate (Rotate),
                                                      Swap (Swap))
+import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
+import           XMonad.Layout.SubLayouts           (GroupMsg (UnMerge),
+                                                     onGroup, pullGroup, toSubl)
 import           XMonad.Operations                  (focus, kill,
                                                      mouseMoveWindow,
                                                      mouseResizeWindow, refresh,
@@ -56,7 +61,6 @@ import           BringWorkspace
 import           GridSelectConfig
 import           Layouts                            (fullName)
 import           PromptConfig
-import           Tile                               (MRTMessage (ExpandSlave, ShrinkSlave))
 import           Workspaces
 
 sm :: KeyMask
@@ -64,6 +68,9 @@ sm = shiftMask
 
 cm :: KeyMask
 cm = controlMask
+
+am :: KeyMask
+am = mod1Mask
 
 navigation2DConfig :: Navigation2DConfig
 navigation2DConfig = def { defaultTiledNavigation = hybridNavigation
@@ -78,74 +85,84 @@ keys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
 keys conf@XConfig {XC.modMask = mm} = M.fromList $
     [
       -- quit
-      ((mm .|. sm,        xK_q     ), liftIO exitSuccess)
+      ((mm .|. sm,        xK_q         ), liftIO exitSuccess)
       -- restart
-    , ((mm,               xK_q     ), restart "xmonad" True)
+    , ((mm,               xK_q         ), restart "xmonad" True)
 
       -- move focus up or down the window stack
-    , ((mm,               xK_Tab   ), windows W.focusDown)
-    , ((mm .|. sm,        xK_Tab   ), windows W.focusUp)
+    , ((mm,               xK_Tab       ), windows W.focusDown)
+    , ((mm .|. sm,        xK_Tab       ), windows W.focusUp)
 
       -- modifying the window order
-    , ((mm,               xK_Return), windows W.swapMaster)
+    , ((mm,               xK_Return    ), windows W.swapMaster)
 
       -- 2D navigation
-    , ((mm,               xK_h     ), windowGo L True)
-    , ((mm,               xK_j     ), windowGo D True)
-    , ((mm,               xK_k     ), windowGo U True)
-    , ((mm,               xK_l     ), windowGo R True)
+    , ((mm,               xK_h         ), windowGo L True)
+    , ((mm,               xK_j         ), windowGo D True)
+    , ((mm,               xK_k         ), windowGo U True)
+    , ((mm,               xK_l         ), windowGo R True)
 
       -- 2D swapping
-    , ((mm .|. cm,        xK_h     ), windowSwap L False)
-    , ((mm .|. cm,        xK_j     ), windowSwap D False)
-    , ((mm .|. cm,        xK_k     ), windowSwap U False)
-    , ((mm .|. cm,        xK_l     ), windowSwap R False)
+    , ((mm .|. cm,        xK_h         ), windowSwap L False)
+    , ((mm .|. cm,        xK_j         ), windowSwap D False)
+    , ((mm .|. cm,        xK_k         ), windowSwap U False)
+    , ((mm .|. cm,        xK_l         ), windowSwap R False)
 
       -- resizing the master/slave ratio
-    , ((mm .|. sm,        xK_h     ), tryMsg (ExpandTowards L) Shrink)
-    , ((mm .|. sm,        xK_j     ), tryMsg (ExpandTowards D) ExpandSlave)
-    , ((mm .|. sm,        xK_k     ), tryMsg (ExpandTowards U) ShrinkSlave)
-    , ((mm .|. sm,        xK_l     ), tryMsg (ExpandTowards R) Expand)
-    , ((mm .|. cm .|. sm, xK_h     ), tryMsg (ShrinkFrom R) Shrink)
-    , ((mm .|. cm .|. sm, xK_j     ), tryMsg (ShrinkFrom D) ExpandSlave)
-    , ((mm .|. cm .|. sm, xK_k     ), tryMsg (ShrinkFrom U) ShrinkSlave)
-    , ((mm .|. cm .|. sm, xK_l     ), tryMsg (ShrinkFrom L) Expand)
+    , ((mm .|. sm,        xK_h         ), tryMsg (ExpandTowards L) Shrink)
+    , ((mm .|. sm,        xK_j         ), tryMsg (ExpandTowards D) MirrorShrink)
+    , ((mm .|. sm,        xK_k         ), tryMsg (ExpandTowards U) MirrorExpand)
+    , ((mm .|. sm,        xK_l         ), tryMsg (ExpandTowards R) Expand)
+    , ((mm .|. cm .|. sm, xK_h         ), tryMsg (ShrinkFrom R) Shrink)
+    , ((mm .|. cm .|. sm, xK_j         ), tryMsg (ShrinkFrom D) MirrorExpand)
+    , ((mm .|. cm .|. sm, xK_k         ), tryMsg (ShrinkFrom U) MirrorShrink)
+    , ((mm .|. cm .|. sm, xK_l         ), tryMsg (ShrinkFrom L) Expand)
 
       -- increase or decrease number of windows in the master area
       -- or rotate and swap in BSP
-    , ((mm,               xK_comma ), tryMsg Rotate (IncMasterN 1))
-    , ((mm,               xK_period), tryMsg Swap (IncMasterN (-1)))
+    , ((mm,               xK_comma     ), tryMsg Rotate (IncMasterN 1))
+    , ((mm,               xK_period    ), tryMsg Swap (IncMasterN (-1)))
+
+      -- tabs
+    , ((mm .|. am,        xK_h         ), sendMessage $ pullGroup L)
+    , ((mm .|. am,        xK_j         ), sendMessage $ pullGroup D)
+    , ((mm .|. am,        xK_k         ), sendMessage $ pullGroup U)
+    , ((mm .|. am,        xK_l         ), sendMessage $ pullGroup R)
+    , ((mm,               xK_semicolon ), onGroup W.focusDown')
+    , ((mm,               xK_apostrophe), onGroup W.focusUp')
+    , ((mm .|. sm,        xK_semicolon ), withFocused (sendMessage . UnMerge))
+    , ((mm .|. sm,        xK_apostrophe), toSubl NextLayout)
 
       -- launch terminal
-    , ((mm .|. sm,        xK_Return), spawn $ XC.terminal conf)
+    , ((mm .|. sm,        xK_Return    ), spawn $ XC.terminal conf)
       -- launch prompt
-    , ((mm,               xK_p     ), shellPrompt xpConfig)
+    , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- launch dmenu
-    , ((mm .|. sm,        xK_p     ), spawn "dmenu_run")
+    , ((mm .|. sm,        xK_p         ), spawn "dmenu_run")
 
       -- kill the focused window
-    , ((mm .|. sm,        xK_c     ), kill)
+    , ((mm .|. sm,        xK_c         ), kill)
       -- unfloat the current window
-    , ((mm,               xK_t     ), withFocused $ windows . W.sink)
+    , ((mm,               xK_t         ), withFocused $ windows . W.sink)
 
       -- rotate through available layouts
-    , ((mm,               xK_space ), sendMessage NextLayout)
+    , ((mm,               xK_space     ), sendMessage NextLayout)
       -- reset the layouts on the current workspace to default
-    , ((mm .|. sm,        xK_space ), setLayout (XC.layoutHook conf))
+    , ((mm .|. sm,        xK_space     ), setLayout (XC.layoutHook conf))
       -- resize viewed windows to the correct size
-    , ((mm,               xK_n     ), refresh)
+    , ((mm,               xK_n         ), refresh)
       -- toggle struts
-    , ((mm,               xK_b     ), sendMessage ToggleStruts)
+    , ((mm,               xK_b         ), sendMessage ToggleStruts)
 
       -- go to window
-    , ((mm,               xK_f     ), goToSelected $ gsConfig mm)
+    , ((mm,               xK_f         ), goToSelected $ gsConfig mm)
       -- bring window
-    , ((mm .|. sm,        xK_f     ), bringSelected $ gsConfig mm)
+    , ((mm .|. sm,        xK_f         ), bringSelected $ gsConfig mm)
       -- move window to minimsed workspace
-    , ((mm,               xK_m     ), withFocused
-                                      $ windows . W.shiftWin minimisedWS)
-    , ((mm .|. sm,        xK_m     ), bringWorkspaceWindow minimisedWS
-                                      $ gsConfig mm)
+    , ((mm,               xK_m         ), withFocused
+                                          $ windows . W.shiftWin minimisedWS)
+    , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
+                                          $ gsConfig mm)
     ]
     ++
     -- mod-[1..9] - switch to workspace N
