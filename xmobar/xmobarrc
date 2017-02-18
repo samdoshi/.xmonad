@@ -34,10 +34,9 @@ Config
       Run Weather "EGGD"
                   [ "--template"
                   , "<fn=2>\xf0c2</fn> \
-                    \EGGD <skyCondition> \
+                    \<skyCondition> \
                     \<fc=#268bd2><tempC></fc>°C \
-                    \<fc=#268bd2><rh></fc>% \
-                    \<fc=#268bd2><pressure></fc>hPa"
+                    \<fc=#268bd2><rh></fc>%"
                   ]
                   36000
 
