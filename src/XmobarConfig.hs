@@ -24,7 +24,7 @@ pp h = def { ppCurrent         = xmobarColor orange "" . fnBold . awesome
            , ppHiddenNoWindows = xmobarColor base03 "" . awesome . hideEmpty
            , ppTitle           = xmobarColor blue "" . fnBold . shorten 128
            , ppVisible         = wrap "(" ")" -- Xinerama only
-           , ppUrgent          = xmobarColor red yellow
+           , ppUrgent          = xmobarColor urgent "" . fnBold . awesome
            , ppSep             = "  "
            , ppWsSep           = " "
            , ppOutput          = hPutStrLn h

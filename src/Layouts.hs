@@ -171,10 +171,10 @@ floatDecoration = noFrillsDeco shrinkText floatTheme
 floatTheme :: Theme
 floatTheme = def { T.activeColor = active
                  , T.inactiveColor = inactive
-                 , T.urgentColor = red
+                 , T.urgentColor = urgent
                  , T.activeBorderColor = active
                  , T.inactiveBorderColor = inactive
-                 , T.urgentBorderColor = red
+                 , T.urgentBorderColor = urgent
                  , T.activeTextColor = base2
                  , T.inactiveTextColor = base1
                  , T.urgentTextColor = base2
@@ -189,10 +189,10 @@ topBarDecoration = noFrillsDeco shrinkText topBarTheme
 topBarTheme :: Theme
 topBarTheme = def { T.activeColor = active
                   , T.inactiveColor = inactive
-                  , T.urgentColor = red
+                  , T.urgentColor = urgent
                   , T.activeBorderColor = active
                   , T.inactiveBorderColor = inactive
-                  , T.urgentBorderColor = red
+                  , T.urgentBorderColor = urgent
                   , T.activeTextColor = active
                   , T.inactiveTextColor = inactive
                   , T.urgentTextColor = red

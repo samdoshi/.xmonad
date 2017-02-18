@@ -20,6 +20,7 @@ blue    = "#268bd2"
 cyan    = "#2aa198"
 green   = "#859900"
 
-active, inactive :: String
+active, inactive, urgent :: String
 active = orange
 inactive = base01
+urgent = magenta
