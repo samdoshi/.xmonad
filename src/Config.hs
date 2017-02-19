@@ -12,7 +12,7 @@ import           Graphics.X11.Xlib.Cursor    (xC_left_ptr)
 import           Graphics.X11.Xlib.Extras    (Event)
 import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
 import           XMonad.Core                 (LayoutClass, ManageHook, X,
-                                              XConfig, spawn)
+                                              XConfig)
 import qualified XMonad.Core                 as XC (XConfig (..))
 import           XMonad.Hooks.EwmhDesktops   (fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
@@ -23,6 +23,7 @@ import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
                                               UrgencyConfig (UrgencyConfig),
                                               withUrgencyHookC)
 import           XMonad.Util.Cursor          (setDefaultCursor)
+import           XMonad.Util.Run             (safeSpawn)
 
 import           Keys                        (keys, mouseBindings,
                                               navigation2DConfig)
@@ -62,7 +63,8 @@ logHook = pure ()
 
 startupHook :: X ()
 startupHook = do
-  spawn $ "xsetroot -solid \"" ++ base0 ++ "\""
+  safeSpawn "xsetroot" ["-solid", base0]
+  safeSpawn "unclutter" ["-b"]
   setDefaultCursor xC_left_ptr
   docksStartupHook
 

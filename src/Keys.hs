@@ -34,7 +34,7 @@ import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
 import           XMonad.Core                        (Layout, Message, X,
-                                                     XConfig (XConfig), spawn,
+                                                     XConfig (XConfig),
                                                      whenJust)
 import qualified XMonad.Core                        as XC (XConfig (..))
 import           XMonad.Hooks.ManageDocks           (ToggleStruts (ToggleStruts))
@@ -55,6 +55,7 @@ import           XMonad.Operations                  (focus, kill,
                                                      windows, withFocused)
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
+import           XMonad.Util.Run                    (safeSpawnProg)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
 import           BringWorkspace
@@ -134,11 +135,11 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_apostrophe), toSubl NextLayout)
 
       -- launch terminal
-    , ((mm .|. sm,        xK_Return    ), spawn $ XC.terminal conf)
+    , ((mm .|. sm,        xK_Return    ), safeSpawnProg $ XC.terminal conf)
       -- launch prompt
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- launch dmenu
-    , ((mm .|. sm,        xK_p         ), spawn "dmenu_run")
+    , ((mm .|. sm,        xK_p         ), safeSpawnProg "dmenu_run")
 
       -- kill the focused window
     , ((mm .|. sm,        xK_c         ), kill)
