@@ -17,11 +17,12 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_1, xK_9, xK_Return,
                                                      xK_Tab, xK_apostrophe,
                                                      xK_b, xK_c, xK_comma, xK_e,
-                                                     xK_f, xK_g, xK_h, xK_j,
-                                                     xK_k, xK_l, xK_m, xK_m, xK_s,
-                                                     xK_n, xK_p, xK_period,
-                                                     xK_q, xK_r, xK_semicolon,
-                                                     xK_space, xK_t, xK_w)
+                                                     xK_f, xK_g, xK_h, xK_i,
+                                                     xK_j, xK_k, xK_l, xK_m,
+                                                     xK_m, xK_n, xK_o, xK_p,
+                                                     xK_period, xK_q, xK_r,
+                                                     xK_s, xK_semicolon,
+                                                     xK_space, xK_t, xK_u, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -34,6 +35,7 @@ import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      layoutNavigation,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
+import           XMonad.Actions.WindowGo            (raiseNextMaybe)
 import           XMonad.Core                        (Layout, Message, X,
                                                      XConfig (XConfig),
                                                      whenJust)
@@ -63,6 +65,7 @@ import           GridHelpers
 import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleFull),
                                                      fullName)
+import           ProgramHelper
 import           PromptConfig
 import           Workspaces
 
@@ -137,11 +140,18 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_apostrophe), toSubl NextLayout)
 
       -- launch terminal
-    , ((mm .|. sm,        xK_Return    ), safeSpawnProg $ XC.terminal conf)
+    , ((mm .|. sm,        xK_Return    ), runTerminal)
       -- launch prompt
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- launch dmenu
     , ((mm .|. sm,        xK_p         ), safeSpawnProg "dmenu_run")
+      -- raise next or run
+    , ((mm,               xK_u         ), raiseNextMaybe runTerminal isTerminal')
+    , ((mm .|. sm,        xK_u         ), runTerminal)
+    , ((mm,               xK_i         ), raiseNextMaybe runBrowser isBrowser')
+    , ((mm .|. sm,        xK_i         ), runBrowser)
+    , ((mm,               xK_o         ), raiseNextMaybe runEmacs isEmacs')
+    , ((mm .|. sm,        xK_o         ), runEmacs)
 
       -- kill the focused window
     , ((mm .|. sm,        xK_c         ), kill1)

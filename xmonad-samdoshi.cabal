@@ -19,6 +19,7 @@ executable xmonad
                      , Keys
                      , Layouts
                      , OneBig
+                     , ProgramHelper
                      , PromptConfig
                      , Solarized
                      , Tile

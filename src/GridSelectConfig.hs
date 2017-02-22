@@ -14,6 +14,7 @@ import qualified XMonad.Actions.GridSelect as GS (GSConfig (..))
 import           XMonad.Core               (X, runQuery)
 import           XMonad.ManageHook         (className)
 
+import           ProgramHelper
 import           Solarized
 
 gsConfig :: KeyMask -> GSConfig Window
@@ -64,7 +65,7 @@ windowClassColouriser win act = do
     else return (base02, colour)
 
 colourForClass :: String -> String
-colourForClass "URxvt"    = yellow
-colourForClass "Emacs"    = violet
-colourForClass "Chromium" = blue
-colourForClass _          = base1
+colourForClass c | isBrowser c  = blue
+                 | isEmacs c    = violet
+                 | isTerminal c = yellow
+                 | otherwise    = base1
