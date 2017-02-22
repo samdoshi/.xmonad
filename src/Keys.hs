@@ -18,10 +18,11 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_Tab, xK_apostrophe,
                                                      xK_b, xK_c, xK_comma, xK_e,
                                                      xK_f, xK_g, xK_h, xK_j,
-                                                     xK_k, xK_l, xK_m, xK_m,
+                                                     xK_k, xK_l, xK_m, xK_m, xK_s,
                                                      xK_n, xK_p, xK_period,
                                                      xK_q, xK_r, xK_semicolon,
                                                      xK_space, xK_t, xK_w)
+import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
 import           XMonad.Actions.MessageFeedback     (tryMessage_)
@@ -48,8 +49,7 @@ import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
 import           XMonad.Layout.SubLayouts           (GroupMsg (UnMerge),
                                                      onGroup, pullGroup, toSubl)
-import           XMonad.Operations                  (focus, kill,
-                                                     mouseMoveWindow,
+import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      mouseResizeWindow, refresh,
                                                      restart, screenWorkspace,
                                                      sendMessage, setLayout,
@@ -59,7 +59,7 @@ import qualified XMonad.StackSet                    as W
 import           XMonad.Util.Run                    (safeSpawnProg)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
-import           BringWorkspace
+import           GridHelpers
 import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleFull),
                                                      fullName)
@@ -144,7 +144,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_p         ), safeSpawnProg "dmenu_run")
 
       -- kill the focused window
-    , ((mm .|. sm,        xK_c         ), kill)
+    , ((mm .|. sm,        xK_c         ), kill1)
       -- unfloat the current window
     , ((mm,               xK_t         ), withFocused $ windows . W.sink)
 
@@ -163,6 +163,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_g         ), goToSelected $ gsConfig mm)
       -- bring window
     , ((mm .|. sm,        xK_g         ), bringSelected $ gsConfig mm)
+    , -- copy window to focus workspace (make it sticky)
+      ((mm,               xK_s         ), bringWindowCopy $ gsConfig mm)
       -- move window to minimsed workspace
     , ((mm,               xK_m         ), withFocused
                                           $ windows . W.shiftWin minimisedWS)

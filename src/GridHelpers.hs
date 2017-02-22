@@ -1,11 +1,14 @@
-module BringWorkspace ( bringWorkspaceWindow
-                      ) where
+module GridHelpers ( bringWorkspaceWindow
+                   , bringWindowCopy
+                   ) where
 
 import           Data.List                 (nub)
 
 import           Control.Monad.State       (gets)
 import           Graphics.X11.Types        (Window)
-import           XMonad.Actions.GridSelect (GSConfig, gridselect)
+import           XMonad.Actions.CopyWindow (copyWindow)
+import           XMonad.Actions.GridSelect (GSConfig, gridselect,
+                                            withSelectedWindow)
 import           XMonad.Core               (WindowSet, WorkspaceId, X,
                                             windowset)
 import           XMonad.Operations         (focus, windows)
@@ -29,7 +32,7 @@ withWorkspaceWindow ws callback conf = do
     windowSet <- gets windowset
     mbWindow <- windowMap (workspaceWindows ws windowSet) >>= gridselect conf
     case mbWindow of
-        Just w -> callback w
+        Just w  -> callback w
         Nothing -> pure ()
 
 workspaceWindows :: WorkspaceId -> WindowSet -> [Window]
@@ -40,3 +43,11 @@ windowMap :: [Window] -> X [(String, Window)]
 windowMap = mapM keyValuePair
  where keyValuePair w = flip (,) w <$> decorateName w
        decorateName w = show <$> getName w
+
+bringWindowCopy :: GSConfig Window -> X ()
+bringWindowCopy = withSelectedWindow copyWindowToCurrent
+
+copyWindowToCurrent :: Window -> X ()
+copyWindowToCurrent w = do
+  tag <- W.currentTag <$> gets windowset
+  windows (copyWindow w tag)
