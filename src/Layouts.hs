@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 
 module Layouts ( layoutHook
                , tiledName
@@ -7,9 +8,11 @@ module Layouts ( layoutHook
                , bigName
                , fullName
                , floatName
+               , ToggleFull(ToggleFull)
                ) where
 
 import           Data.Default                       (def)
+import           Data.Typeable                      (Typeable)
 import           Graphics.X11.Types                 (Window)
 import           XMonad.Actions.MouseResize         (MouseResize, mouseResize)
 import           XMonad.Core                        (LayoutClass)
@@ -24,6 +27,9 @@ import           XMonad.Layout.Decoration           (Decoration,
 import qualified XMonad.Layout.Decoration           as T (Theme (..))
 import           XMonad.Layout.Grid                 (Grid (Grid))
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
+import           XMonad.Layout.MultiToggle          (EOT, HCons, MultiToggle,
+                                                     Transformer (transform),
+                                                     mkToggle, single)
 import           XMonad.Layout.NoBorders            (SmartBorder, WithBorder,
                                                      noBorders, smartBorders)
 import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
@@ -61,9 +67,9 @@ layoutHook = onWorkspace floatWS floatChoice
              defaultChoice
 
 -- Predefined layout choices
-type DefaultChoice = CH TiledLayout (CH BSPLayout FullLayout)
+type DefaultChoice = CH TiledLayout BSPLayout
 defaultChoice :: DefaultChoice Window
-defaultChoice = tiled ||| bsp ||| full
+defaultChoice = tiled ||| bsp
 
 type FloatChoice = CH FloatLayout FullLayout
 floatChoice :: FloatChoice Window
@@ -139,20 +145,33 @@ float = rename floatName
 rename :: String -> l a -> ML Rename l a
 rename s = renamed [Replace s]
 
-type EmbellishedLayout a = ML Rename
-                           (ML AvoidStruts
-                            (ML WindowNavigation
-                             (ML WithBorder
-                              (ML TopBarDecoration
-                               (ML (Decoration TabbedDecoration DefaultShrinker)
-                                (ML (Sublayout Simplest)
-                                 (ML Spacing
-                                  a)))))))
+data ToggleFull = ToggleFull
+                deriving (Show, Read, Eq, Typeable)
+
+instance Transformer ToggleFull Window where
+  transform ToggleFull x k = k full (const x)
+
+toggleFull :: LayoutClass l Window
+           => l Window
+           -> MultiToggle (HCons ToggleFull EOT) l Window
+toggleFull = mkToggle (single ToggleFull)
+
+type EmbellishedLayout a = MultiToggle (HCons ToggleFull EOT)
+                           (ML Rename
+                            (ML AvoidStruts
+                             (ML WindowNavigation
+                              (ML WithBorder
+                               (ML TopBarDecoration
+                                (ML (Decoration TabbedDecoration DefaultShrinker)
+                                 (ML (Sublayout Simplest)
+                                  (ML Spacing
+                                   a))))))))
 embellish :: LayoutClass l Window
           => String
           -> l Window
           -> EmbellishedLayout l Window
-embellish s l = rename s
+embellish s l = toggleFull
+              $ rename s
               $ avoidStruts
               $ windowNavigation -- needed for subLayouts
               $ noBorders

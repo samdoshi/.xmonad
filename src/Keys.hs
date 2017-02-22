@@ -17,10 +17,10 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_1, xK_9, xK_Return,
                                                      xK_Tab, xK_apostrophe,
                                                      xK_b, xK_c, xK_comma, xK_e,
-                                                     xK_f, xK_h, xK_j, xK_k,
-                                                     xK_l, xK_m, xK_m, xK_n,
-                                                     xK_p, xK_period, xK_q,
-                                                     xK_r, xK_semicolon,
+                                                     xK_f, xK_g, xK_h, xK_j,
+                                                     xK_k, xK_l, xK_m, xK_m,
+                                                     xK_n, xK_p, xK_period,
+                                                     xK_q, xK_r, xK_semicolon,
                                                      xK_space, xK_t, xK_w)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -44,6 +44,7 @@ import           XMonad.Layout                      (ChangeLayout (NextLayout),
 import           XMonad.Layout.BinarySpacePartition (ResizeDirectional (ExpandTowards, ShrinkFrom),
                                                      Rotate (Rotate),
                                                      Swap (Swap))
+import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
 import           XMonad.Layout.SubLayouts           (GroupMsg (UnMerge),
                                                      onGroup, pullGroup, toSubl)
@@ -60,7 +61,8 @@ import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
 import           BringWorkspace
 import           GridSelectConfig
-import           Layouts                            (fullName)
+import           Layouts                            (ToggleFull (ToggleFull),
+                                                     fullName)
 import           PromptConfig
 import           Workspaces
 
@@ -152,13 +154,15 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_space     ), setLayout (XC.layoutHook conf))
       -- resize viewed windows to the correct size
     , ((mm,               xK_n         ), refresh)
+    , -- toggle fullscreen
+      ((mm,               xK_f         ), sendMessage $ Toggle ToggleFull)
       -- toggle struts
     , ((mm,               xK_b         ), sendMessage ToggleStruts)
 
       -- go to window
-    , ((mm,               xK_f         ), goToSelected $ gsConfig mm)
+    , ((mm,               xK_g         ), goToSelected $ gsConfig mm)
       -- bring window
-    , ((mm .|. sm,        xK_f         ), bringSelected $ gsConfig mm)
+    , ((mm .|. sm,        xK_g         ), bringSelected $ gsConfig mm)
       -- move window to minimsed workspace
     , ((mm,               xK_m         ), withFocused
                                           $ windows . W.shiftWin minimisedWS)
