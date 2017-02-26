@@ -3,7 +3,7 @@ set -e
 
 # store cache ids, SIGN_ID, ENCRYPT_ID  in gpg-cache-ids.sh
 # obtain ids with `gpg --list-secret-keys --with-keygrip`, the id is the keygrip
-source ~/.xmonad/xmobar/gpg-cache-ids.sh
+source ~/.xmonad/bin/gpg-cache-ids.sh
 
 function gpg_keyinfo() {
     local output=$(gpg-connect-agent "KEYINFO $1" /bye)

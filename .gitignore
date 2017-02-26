@@ -1,5 +1,4 @@
 /.stack-work
-/TAGS
+/bin/gpg-cache-ids.sh
 /prompt-history
 /xmonad.state
-/xmobar/gpg-cache-ids.sh

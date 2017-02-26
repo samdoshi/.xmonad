@@ -83,7 +83,7 @@ Config
                  ]
                  10
 
-    , Run Com "/home/sam/.xmonad/xmobar/gpg-status.sh" [] "gpg" 600
+    , Run Com "/home/sam/.xmonad/bin/gpg-status.sh" [] "gpg" 600
 
     -- time and date indicator
     --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
