@@ -64,7 +64,6 @@ logHook = pure ()
 startupHook :: X ()
 startupHook = do
   safeSpawn "xsetroot" ["-solid", base0]
-  safeSpawn "unclutter" ["-b"]
   setDefaultCursor xC_left_ptr
   docksStartupHook
 
