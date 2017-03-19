@@ -5,7 +5,9 @@ module Config ( pureConfig
               ) where
 
 import           Data.Monoid                 (All, (<>))
+import           System.Environment          (setEnv)
 
+import           Control.Monad.IO.Class      (liftIO)
 import           Data.Default                (def)
 import           Graphics.X11.Types          (Window, mod4Mask)
 import           Graphics.X11.Xlib.Cursor    (xC_left_ptr)
@@ -63,6 +65,7 @@ logHook = pure ()
 
 startupHook :: X ()
 startupHook = do
+  liftIO $ setEnv "_JAVA_AWT_WM_NONREPARENTING" "1" -- fix Java (e.g. Arduino)
   safeSpawn "xsetroot" ["-solid", base0]
   setDefaultCursor xC_left_ptr
   docksStartupHook
