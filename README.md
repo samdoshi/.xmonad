@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-git clone git@github.com:samdoshi/.xmonad.git ~/.xmonad
+git clone --recursive git@github.com:samdoshi/.xmonad.git ~/.xmonad
 cd ~/.xmonad
 make install
 ```
