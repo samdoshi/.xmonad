@@ -4,6 +4,7 @@
 
 module Layouts ( layoutHook
                , tiledName
+
                , bspName
                , bigName
                , fullName
@@ -27,6 +28,7 @@ import           XMonad.Layout.Decoration           (Decoration,
 import qualified XMonad.Layout.Decoration           as T (Theme (..))
 import           XMonad.Layout.Fullscreen           (FullscreenFocus,
                                                      fullscreenFocus)
+import           XMonad.Layout.Gaps
 import           XMonad.Layout.Grid                 (Grid (Grid))
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
 import           XMonad.Layout.MultiToggle          (EOT (EOT), HCons,
@@ -56,8 +58,13 @@ import           Workspaces
 
 -- Constants
 
+-- How much gap between windows
 windowGaps :: Int
 windowGaps = 6
+
+-- How wide should windows be in narrow mode
+narrowWidth :: Int
+narrowWidth = 1280
 
 -- Shorten some common types
 type ML = ModifiedLayout
@@ -126,13 +133,17 @@ full = rename fullName $ smartBorders Full
 
 type ABitFullLayout = ML Rename
                        (ML AvoidStruts
-                        (ML WithBorder
-                         (ML TopBarDecoration
-                          (ML Spacing
-                           Full))))
+                        (ML Gaps
+                         (ML WithBorder
+                          (ML TopBarDecoration
+                           (ML Spacing
+                            Full)))))
 aBitFull :: ABitFullLayout Window
 aBitFull = rename fullName
            $ avoidStruts
+           $ gaps' [ ((L, narrowWidth `quot` 2), False)
+                   , ((R, narrowWidth `quot` 2), False)
+                   ]
            $ noBorders
            $ topBarDecoration
            $ spacing windowGaps
@@ -167,6 +178,8 @@ float = rename floatName
 rename :: String -> l a -> ML Rename l a
 rename s = renamed [Replace s]
 
+-- Toggles
+
 data ToggleFull = ToggleVeryFull
                 | ToggleABitFull
                 deriving (Show, Read, Eq, Typeable)
@@ -181,17 +194,20 @@ toggleFull :: LayoutClass l Window
            -> ToggleFullMultiToggle l Window
 toggleFull = mkToggle (ToggleVeryFull ?? ToggleABitFull ?? EOT)
 
+-- Main embellishments
+
 type EmbellishedLayout a = ToggleFullMultiToggle
                            (ML Rename
                             (ML FullscreenFocus
                              (ML AvoidStruts
-                              (ML WindowNavigation
-                               (ML WithBorder
-                                (ML TopBarDecoration
-                                 (ML (Decoration TabbedDecoration DefaultShrinker)
-                                  (ML (Sublayout Simplest)
-                                   (ML Spacing
-                                    a)))))))))
+                              (ML Gaps
+                               (ML WindowNavigation
+                                (ML WithBorder
+                                 (ML TopBarDecoration
+                                  (ML (Decoration TabbedDecoration DefaultShrinker)
+                                   (ML (Sublayout Simplest)
+                                    (ML Spacing
+                                     a))))))))))
 embellish :: LayoutClass l Window
           => String
           -> l Window
@@ -200,6 +216,10 @@ embellish s l = toggleFull                     -- use a message to toggle fullsc
               $ rename s                       -- renamed layout
               $ fullscreenFocus                -- only allow EWMH fullscreen when focused
               $ avoidStruts                    -- avoid docks, bars, etc
+              $ gaps'                          -- width for narrow mode, initially off
+                [ ((L, narrowWidth `quot` 2), False)
+                , ((R, narrowWidth `quot` 2), False)
+                ]
               $ windowNavigation               -- needed for subLayouts
               $ noBorders                      -- disable borders, we'll use a theme
               $ topBarDecoration               -- add top bar theme

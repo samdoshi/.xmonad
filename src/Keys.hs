@@ -47,6 +47,7 @@ import           XMonad.Layout                      (ChangeLayout (NextLayout),
 import           XMonad.Layout.BinarySpacePartition (ResizeDirectional (ExpandTowards, ShrinkFrom),
                                                      Rotate (Rotate),
                                                      Swap (Swap))
+import           XMonad.Layout.Gaps                 (GapMessage (ToggleGaps))
 import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
 import           XMonad.Layout.SubLayouts           (GroupMsg (UnMerge),
@@ -166,10 +167,12 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- reset the layouts on the current workspace to default
     , ((mm .|. sm,        xK_space     ), setLayout (XC.layoutHook conf))
       -- resize viewed windows to the correct size
-    , ((mm,               xK_n         ), refresh)
+    , ((mm .|. sm,        xK_n         ), refresh)
       -- toggle fullscreen
     , ((mm,               xK_f         ), sendMessage $ Toggle ToggleABitFull)
     , ((mm .|. sm,        xK_f         ), sendMessage $ Toggle ToggleVeryFull)
+      -- toggle narrowing
+    , ((mm,               xK_n         ), sendMessage ToggleGaps)
       -- toggle struts
     , ((mm,               xK_b         ), sendMessage ToggleStruts)
 
