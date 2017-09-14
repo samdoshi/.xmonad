@@ -16,7 +16,6 @@ import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
 import           XMonad.Core                 (LayoutClass, ManageHook, X,
                                               XConfig)
 import qualified XMonad.Core                 as XC (XConfig (..))
-import           XMonad.Hooks.EwmhDesktops   (fullscreenEventHook)
 import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
                                               manageDocks)
 import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
@@ -24,6 +23,8 @@ import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
                                               SuppressWhen (Focused),
                                               UrgencyConfig (UrgencyConfig),
                                               withUrgencyHookC)
+import           XMonad.Layout.Fullscreen    (fullscreenEventHook,
+                                              fullscreenManageHook)
 import           XMonad.Util.Cursor          (setDefaultCursor)
 import           XMonad.Util.Run             (safeSpawn)
 
@@ -53,12 +54,14 @@ pureConfig l = withNavigation2DConfig navigation2DConfig $
                    }
 
 handleEventHook :: Event -> X All
-handleEventHook = fullscreenEventHook -- extra hook to get chrome to work
-                                      -- not included in ewmh
+handleEventHook = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
+                                      -- of XMonad.Hooks.EwmhDesktops
                   <> docksEventHook   -- make xmobar (et al.) appear immediately
 
 manageHook :: ManageHook
 manageHook = manageDocks
+             <> fullscreenManageHook  -- can also use fullscreenManageHookWith
+                                      -- to control what can go fullscreen
 
 logHook :: X ()
 logHook = pure ()

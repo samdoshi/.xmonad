@@ -25,6 +25,8 @@ import           XMonad.Layout.Decoration           (Decoration,
                                                      DefaultShrinker, Theme,
                                                      shrinkText)
 import qualified XMonad.Layout.Decoration           as T (Theme (..))
+import           XMonad.Layout.Fullscreen           (FullscreenFocus,
+                                                     fullscreenFocus)
 import           XMonad.Layout.Grid                 (Grid (Grid))
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
 import           XMonad.Layout.MultiToggle          (EOT, HCons, MultiToggle,
@@ -158,27 +160,29 @@ toggleFull = mkToggle (single ToggleFull)
 
 type EmbellishedLayout a = MultiToggle (HCons ToggleFull EOT)
                            (ML Rename
-                            (ML AvoidStruts
-                             (ML WindowNavigation
-                              (ML WithBorder
-                               (ML TopBarDecoration
-                                (ML (Decoration TabbedDecoration DefaultShrinker)
-                                 (ML (Sublayout Simplest)
-                                  (ML Spacing
-                                   a))))))))
+                            (ML FullscreenFocus
+                             (ML AvoidStruts
+                              (ML WindowNavigation
+                               (ML WithBorder
+                                (ML TopBarDecoration
+                                 (ML (Decoration TabbedDecoration DefaultShrinker)
+                                  (ML (Sublayout Simplest)
+                                   (ML Spacing
+                                    a)))))))))
 embellish :: LayoutClass l Window
           => String
           -> l Window
           -> EmbellishedLayout l Window
-embellish s l = toggleFull
-              $ rename s
-              $ avoidStruts
-              $ windowNavigation -- needed for subLayouts
-              $ noBorders
-              $ topBarDecoration
-              $ addTabs shrinkText floatTheme
-              $ subLayout [] Simplest
-              $ spacing 6
+embellish s l = toggleFull                     -- use a message to toggle fullscreen
+              $ rename s                       -- renamed layout
+              $ fullscreenFocus                -- only allow EWMH fullscreen when focused
+              $ avoidStruts                    -- avoid docks, bars, etc
+              $ windowNavigation               -- needed for subLayouts
+              $ noBorders                      -- disable borders, we'll use a theme
+              $ topBarDecoration               -- add top bar theme
+              $ addTabs shrinkText floatTheme  -- tabs support
+              $ subLayout [] Simplest          -- tabs support
+              $ spacing 6                      -- window spacing
               l
 
 -- Themes
