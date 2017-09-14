@@ -178,7 +178,7 @@ embellish s l = toggleFull
               $ topBarDecoration
               $ addTabs shrinkText floatTheme
               $ subLayout [] Simplest
-              $ spacing 3
+              $ spacing 6
               l
 
 -- Themes
@@ -197,8 +197,8 @@ floatTheme = def { T.activeColor = active
                  , T.activeTextColor = base2
                  , T.inactiveTextColor = base1
                  , T.urgentTextColor = base2
-                 , T.fontName = "xft:Roboto Mono:pixelsize=10"
-                 , T.decoHeight = 16
+                 , T.fontName = "xft:Roboto Mono:pixelsize=16"
+                 , T.decoHeight = 24
                  }
 
 type TopBarDecoration = Decoration NoFrillsDecoration DefaultShrinker
@@ -216,5 +216,5 @@ topBarTheme = def { T.activeColor = active
                   , T.inactiveTextColor = inactive
                   , T.urgentTextColor = red
                   , T.fontName = "xft:Roboto Mono:pixelsize=5"
-                  , T.decoHeight = 6
+                  , T.decoHeight = 12
                   }

@@ -1,13 +1,13 @@
 Config
   { -- appearance
-    font             = "xft:Roboto Mono:pixelsize=14"
-  , additionalFonts  = [ "xft:Roboto Mono:style=bold:pixelsize=14"
-                       , "xft:FontAwesome:pixelsize=14"
+    font             = "xft:Roboto Mono:pixelsize=20"
+  , additionalFonts  = [ "xft:Roboto Mono:style=bold:pixelsize=20"
+                       , "xft:FontAwesome:pixelsize=20"
                        ]
   , bgColor          = "#073642"
   , fgColor          = "#839496"
-  , position         = TopSize C 100 24
-  , textOffset       = 16
+  , position         = TopSize C 100 32
+  , textOffset       = 22
   , border           = NoBorder
   , borderColor      = "#002b36"
   , borderWidth      = 3
