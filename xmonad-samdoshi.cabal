@@ -19,6 +19,7 @@ executable xmonad
                      , Keys
                      , Layouts
                      , OneBig
+                     , PassPrompt
                      , ProgramHelper
                      , PromptConfig
                      , Solarized
@@ -30,6 +31,7 @@ executable xmonad
                      , data-default
                      , filepath
                      , mtl
+                     , process
                      , X11
                      , xmonad
                      , xmonad-contrib

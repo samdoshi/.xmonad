@@ -16,12 +16,12 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      mod1Mask, shiftMask, xK_0,
                                                      xK_1, xK_9, xK_Return,
                                                      xK_Tab, xK_apostrophe,
-                                                     xK_b, xK_c, xK_comma, xK_e,
-                                                     xK_f, xK_g, xK_h, xK_i,
-                                                     xK_j, xK_k, xK_l, xK_m,
-                                                     xK_m, xK_n, xK_o, xK_p,
-                                                     xK_period, xK_q, xK_r,
-                                                     xK_s, xK_semicolon,
+                                                     xK_b, xK_backslash, xK_c,
+                                                     xK_comma, xK_e, xK_f, xK_g,
+                                                     xK_h, xK_i, xK_j, xK_k,
+                                                     xK_l, xK_m, xK_n, xK_o,
+                                                     xK_p, xK_period, xK_q,
+                                                     xK_r, xK_s, xK_semicolon,
                                                      xK_space, xK_t, xK_u, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
@@ -65,6 +65,7 @@ import           GridHelpers
 import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleFull),
                                                      fullName)
+import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
 import           Workspaces
@@ -145,6 +146,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- launch dmenu
     , ((mm .|. sm,        xK_p         ), safeSpawnProg "dmenu_run")
+      -- 1passkell
+    , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpConfig)
       -- raise next or run
     , ((mm,               xK_u         ), raiseNextMaybe runTerminal isTerminal')
     , ((mm .|. sm,        xK_u         ), runTerminal)
