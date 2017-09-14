@@ -63,7 +63,7 @@ import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
 import           GridHelpers
 import           GridSelectConfig
-import           Layouts                            (ToggleFull (ToggleFull),
+import           Layouts                            (ToggleFull (ToggleABitFull, ToggleVeryFull),
                                                      fullName)
 import           PassPrompt
 import           ProgramHelper
@@ -167,8 +167,9 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_space     ), setLayout (XC.layoutHook conf))
       -- resize viewed windows to the correct size
     , ((mm,               xK_n         ), refresh)
-    , -- toggle fullscreen
-      ((mm,               xK_f         ), sendMessage $ Toggle ToggleFull)
+      -- toggle fullscreen
+    , ((mm,               xK_f         ), sendMessage $ Toggle ToggleABitFull)
+    , ((mm .|. sm,        xK_f         ), sendMessage $ Toggle ToggleVeryFull)
       -- toggle struts
     , ((mm,               xK_b         ), sendMessage ToggleStruts)
 
@@ -176,8 +177,8 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_g         ), goToSelected $ gsConfig mm)
       -- bring window
     , ((mm .|. sm,        xK_g         ), bringSelected $ gsConfig mm)
-    , -- copy window to focus workspace (make it sticky)
-      ((mm,               xK_s         ), bringWindowCopy $ gsConfig mm)
+      -- copy window to focus workspace (make it sticky)
+    , ((mm,               xK_s         ), bringWindowCopy $ gsConfig mm)
       -- move window to minimsed workspace
     , ((mm,               xK_m         ), withFocused
                                           $ windows . W.shiftWin minimisedWS)

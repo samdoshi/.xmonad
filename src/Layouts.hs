@@ -8,7 +8,7 @@ module Layouts ( layoutHook
                , bigName
                , fullName
                , floatName
-               , ToggleFull(ToggleFull)
+               , ToggleFull(ToggleVeryFull, ToggleABitFull)
                ) where
 
 import           Data.Default                       (def)
@@ -29,9 +29,10 @@ import           XMonad.Layout.Fullscreen           (FullscreenFocus,
                                                      fullscreenFocus)
 import           XMonad.Layout.Grid                 (Grid (Grid))
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
-import           XMonad.Layout.MultiToggle          (EOT, HCons, MultiToggle,
+import           XMonad.Layout.MultiToggle          (EOT (EOT), HCons,
+                                                     MultiToggle,
                                                      Transformer (transform),
-                                                     mkToggle, single)
+                                                     mkToggle, (??))
 import           XMonad.Layout.NoBorders            (SmartBorder, WithBorder,
                                                      noBorders, smartBorders)
 import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
@@ -53,6 +54,11 @@ import           OneBig                             (OneBig (OneBig))
 import           Solarized
 import           Workspaces
 
+-- Constants
+
+windowGaps :: Int
+windowGaps = 6
+
 -- Shorten some common types
 type ML = ModifiedLayout
 type CH = Choose
@@ -73,13 +79,13 @@ type DefaultChoice = CH TiledLayout BSPLayout
 defaultChoice :: DefaultChoice Window
 defaultChoice = tiled ||| bsp
 
-type FloatChoice = CH FloatLayout FullLayout
+type FloatChoice = FloatLayout
 floatChoice :: FloatChoice Window
-floatChoice = float ||| full
+floatChoice = float
 
-type MediaChoice = CH BigLayout FullLayout
+type MediaChoice = BigLayout
 mediaChoice :: MediaChoice Window
-mediaChoice = big ||| full
+mediaChoice = big
 
 type MinimisedChoice = GridLayout
 minimisedChoice :: MinimisedChoice Window
@@ -110,13 +116,27 @@ big :: BigLayout Window
 big = embellish bigName
       $ OneBig (3/4) (3/4)
 
--- Full screen layout
+-- Full screen layouts
 fullName :: String
 fullName = "full"
 
-type FullLayout = ML Rename (ML SmartBorder Full)
-full :: FullLayout a
+type VeryFullLayout = ML Rename (ML SmartBorder Full)
+full :: VeryFullLayout a
 full = rename fullName $ smartBorders Full
+
+type ABitFullLayout = ML Rename
+                       (ML AvoidStruts
+                        (ML WithBorder
+                         (ML TopBarDecoration
+                          (ML Spacing
+                           Full))))
+aBitFull :: ABitFullLayout Window
+aBitFull = rename fullName
+           $ avoidStruts
+           $ noBorders
+           $ topBarDecoration
+           $ spacing windowGaps
+           Full
 
 -- Grid layout
 gridName :: String
@@ -147,18 +167,21 @@ float = rename floatName
 rename :: String -> l a -> ML Rename l a
 rename s = renamed [Replace s]
 
-data ToggleFull = ToggleFull
+data ToggleFull = ToggleVeryFull
+                | ToggleABitFull
                 deriving (Show, Read, Eq, Typeable)
 
 instance Transformer ToggleFull Window where
-  transform ToggleFull x k = k full (const x)
+  transform ToggleVeryFull x k = k full (const x)
+  transform ToggleABitFull x k = k aBitFull (const x)
 
+type ToggleFullMultiToggle a = MultiToggle (HCons ToggleFull (HCons ToggleFull EOT)) a
 toggleFull :: LayoutClass l Window
            => l Window
-           -> MultiToggle (HCons ToggleFull EOT) l Window
-toggleFull = mkToggle (single ToggleFull)
+           -> ToggleFullMultiToggle l Window
+toggleFull = mkToggle (ToggleVeryFull ?? ToggleABitFull ?? EOT)
 
-type EmbellishedLayout a = MultiToggle (HCons ToggleFull EOT)
+type EmbellishedLayout a = ToggleFullMultiToggle
                            (ML Rename
                             (ML FullscreenFocus
                              (ML AvoidStruts
@@ -182,7 +205,7 @@ embellish s l = toggleFull                     -- use a message to toggle fullsc
               $ topBarDecoration               -- add top bar theme
               $ addTabs shrinkText floatTheme  -- tabs support
               $ subLayout [] Simplest          -- tabs support
-              $ spacing 6                      -- window spacing
+              $ spacing windowGaps             -- window spacing
               l
 
 -- Themes
