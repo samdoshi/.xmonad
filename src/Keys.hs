@@ -47,6 +47,7 @@ import           XMonad.Layout                      (ChangeLayout (NextLayout),
 import           XMonad.Layout.BinarySpacePartition (ResizeDirectional (ExpandTowards, ShrinkFrom),
                                                      Rotate (Rotate),
                                                      Swap (Swap))
+import           XMonad.Layout.Fullscreen           (FullscreenMessage (RemoveFullscreen))
 import           XMonad.Layout.Gaps                 (GapMessage (ToggleGaps))
 import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
@@ -61,6 +62,7 @@ import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
 import           XMonad.Util.Run                    (safeSpawnProg)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
+
 
 import           GridHelpers
 import           GridSelectConfig
@@ -171,6 +173,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
       -- toggle fullscreen
     , ((mm,               xK_f         ), sendMessage $ Toggle ToggleABitFull)
     , ((mm .|. sm,        xK_f         ), sendMessage $ Toggle ToggleVeryFull)
+    , ((mm .|. am,        xK_f         ), withFocused $ \w -> sendMessage $ RemoveFullscreen w)
       -- toggle narrowing
     , ((mm,               xK_n         ), sendMessage ToggleGaps)
       -- toggle struts
