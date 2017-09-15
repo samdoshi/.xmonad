@@ -39,7 +39,9 @@ toClassNameQuery :: (String -> Bool) -> Query Bool
 toClassNameQuery f = fmap f className
 
 runBrowser :: MonadIO m => m ()
-runBrowser = safeSpawn "chromium" ["--force-device-scale-factor=1.75"]
+runBrowser = safeSpawn "chromium" [ "--force-device-scale-factor=1.75"
+                                  , "--disk-cache-dir=/tmp/cache/chromium"
+                                  ]
 
 runEmacs :: MonadIO m => m ()
 runEmacs = safeSpawn "emacsclient" ["--create-frame"]
