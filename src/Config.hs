@@ -29,10 +29,12 @@ import           XMonad.Layout.Fullscreen    (fullscreenEventHook)
 import           XMonad.ManageHook           (className, doF, (-->), (=?))
 import           XMonad.StackSet             (sink)
 import           XMonad.Util.Cursor          (setDefaultCursor)
+import           XMonad.Util.NamedScratchpad (namedScratchpadManageHook)
 import           XMonad.Util.Run             (safeSpawn)
 
 import           Keys                        (keys, mouseBindings,
                                               navigation2DConfig)
+import           Scratchpads
 import           Solarized
 import           Workspaces
 
@@ -67,6 +69,7 @@ handleEventHook = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
 manageHook :: ManageHook
 manageHook = mconcat
   [ manageDocks
+  , namedScratchpadManageHook scratchpads
   -- things that are allowed to go fullscreen at startup
   -- className =? "some class" --> XMonad.Layout.Fullscreen.fullscreenManageHook
   , className =? "Pinentry" --> doCenterFloat

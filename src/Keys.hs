@@ -15,13 +15,15 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      button3, controlMask,
                                                      mod1Mask, shiftMask, xK_0,
                                                      xK_1, xK_9, xK_Return,
-                                                     xK_Tab, xK_apostrophe,
-                                                     xK_b, xK_backslash, xK_c,
-                                                     xK_comma, xK_e, xK_f, xK_g,
-                                                     xK_h, xK_i, xK_j, xK_k,
-                                                     xK_l, xK_m, xK_n, xK_o,
-                                                     xK_p, xK_period, xK_q,
-                                                     xK_r, xK_s, xK_semicolon,
+                                                     xK_Tab, xK_a,
+                                                     xK_apostrophe, xK_b,
+                                                     xK_backslash, xK_c,
+                                                     xK_comma, xK_d, xK_e, xK_f,
+                                                     xK_g, xK_h, xK_i, xK_j,
+                                                     xK_k, xK_l, xK_m, xK_minus,
+                                                     xK_n, xK_o, xK_p,
+                                                     xK_period, xK_q, xK_r,
+                                                     xK_s, xK_semicolon,
                                                      xK_space, xK_t, xK_u, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
@@ -35,6 +37,7 @@ import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      layoutNavigation,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
+import           XMonad.Actions.Submap              (submap)
 import           XMonad.Actions.WindowGo            (raiseNextMaybe)
 import           XMonad.Core                        (Layout, Message, X,
                                                      XConfig (XConfig),
@@ -60,6 +63,7 @@ import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      windows, withFocused)
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
+import           XMonad.Util.NamedScratchpad        (namedScratchpadAction)
 import           XMonad.Util.Run                    (safeSpawnProg)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
@@ -71,6 +75,7 @@ import           Layouts                            (ToggleFull (ToggleABitFull,
 import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
+import           Scratchpads
 import           Workspaces
 
 sm :: KeyMask
@@ -190,12 +195,17 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
                                           $ windows . W.shiftWin minimisedWS)
     , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
                                           $ gsConfig mm)
+
+      -- named scratchpads submap
+    , ((mm,               xK_a         ), submap . M.fromList $
+        [ ((mm, xK_d), namedScratchpadAction scratchpads goldenDictScratchpad)
+        ])
     ]
     ++
     -- mod-[1..9] - switch to workspace N
     -- mod-shift-[1..9] - move client to workspace N
     [((mm .|. m, k), windows $ f i)
-        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0, xK_minus])
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
     -- mod-{w,e,r} - switch to physical/Xinerama screens 1, 2, or 3
