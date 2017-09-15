@@ -4,10 +4,11 @@
 module Config ( pureConfig
               ) where
 
-import           Data.Monoid                 (All, (<>))
+import           Data.Monoid                 (All, mconcat, (<>))
 import           System.Environment          (setEnv)
 
 import           Control.Monad.IO.Class      (liftIO)
+import           Control.Monad.Reader        (ask)
 import           Data.Default                (def)
 import           Graphics.X11.Types          (Window, mod4Mask)
 import           Graphics.X11.Xlib.Cursor    (xC_left_ptr)
@@ -18,20 +19,22 @@ import           XMonad.Core                 (LayoutClass, ManageHook, X,
 import qualified XMonad.Core                 as XC (XConfig (..))
 import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
                                               manageDocks)
+import           XMonad.Hooks.ManageHelpers  (doCenterFloat, isDialog)
 import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
                                               RemindWhen (Dont),
                                               SuppressWhen (Focused),
                                               UrgencyConfig (UrgencyConfig),
                                               withUrgencyHookC)
-import           XMonad.Layout.Fullscreen    (fullscreenEventHook,
-                                              fullscreenManageHook)
+import           XMonad.Layout.Fullscreen    (fullscreenEventHook)
+import           XMonad.ManageHook           (className, doF, (-->), (=?))
+import           XMonad.StackSet             (sink)
 import           XMonad.Util.Cursor          (setDefaultCursor)
 import           XMonad.Util.Run             (safeSpawn)
 
 import           Keys                        (keys, mouseBindings,
                                               navigation2DConfig)
 import           Solarized
-import           Workspaces                  (workspaces)
+import           Workspaces
 
 pureConfig :: LayoutClass a Window => a Window -> XConfig a
 pureConfig l = withNavigation2DConfig navigation2DConfig $
@@ -58,10 +61,19 @@ handleEventHook = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
                                       -- of XMonad.Hooks.EwmhDesktops
                   <> docksEventHook   -- make xmobar (et al.) appear immediately
 
+-- | My ManageHook
+--
+-- n.b. hooks are processed bottom to top!
 manageHook :: ManageHook
-manageHook = manageDocks
-             <> fullscreenManageHook  -- can also use fullscreenManageHookWith
-                                      -- to control what can go fullscreen
+manageHook = mconcat
+  [ manageDocks
+  -- things that are allowed to go fullscreen at startup
+  -- className =? "some class" --> XMonad.Layout.Fullscreen.fullscreenManageHook
+  , className =? "Pinentry" --> doCenterFloat
+  , isDialog --> doCenterFloat
+  , unfloat  -- unfloat everything
+  ]
+  where unfloat = ask >>= doF . sink
 
 logHook :: X ()
 logHook = pure ()
