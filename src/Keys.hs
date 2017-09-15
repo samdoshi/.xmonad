@@ -14,17 +14,17 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
                                                      mod1Mask, shiftMask, xK_0,
-                                                     xK_1, xK_9, xK_Return,
-                                                     xK_Tab, xK_a,
+                                                     xK_1, xK_9, xK_BackSpace,
+                                                     xK_Return, xK_Tab, xK_a,
                                                      xK_apostrophe, xK_b,
-                                                     xK_backslash, xK_c,
-                                                     xK_comma, xK_d, xK_e, xK_f,
-                                                     xK_g, xK_h, xK_i, xK_j,
-                                                     xK_k, xK_l, xK_m, xK_minus,
-                                                     xK_n, xK_o, xK_p,
-                                                     xK_period, xK_q, xK_r,
-                                                     xK_s, xK_semicolon,
-                                                     xK_space, xK_t, xK_u, xK_w)
+                                                     xK_backslash, xK_comma,
+                                                     xK_d, xK_e, xK_f, xK_g,
+                                                     xK_h, xK_i, xK_j, xK_k,
+                                                     xK_l, xK_m, xK_minus, xK_n,
+                                                     xK_o, xK_p, xK_period,
+                                                     xK_q, xK_r, xK_s,
+                                                     xK_semicolon, xK_space,
+                                                     xK_t, xK_u, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -165,7 +165,7 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_o         ), runEmacs)
 
       -- kill the focused window
-    , ((mm .|. sm,        xK_c         ), kill1)
+    , ((mm,               xK_BackSpace ), kill1)
       -- unfloat the current window
     , ((mm,               xK_t         ), withFocused $ windows . W.sink)
 
