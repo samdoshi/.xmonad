@@ -29,8 +29,9 @@ isEmacs' :: Query Bool
 isEmacs' = toClassNameQuery isEmacs
 
 isTerminal :: String -> Bool
-isTerminal "URxvt" = True
-isTerminal _       = False
+isTerminal "Termite" = True
+isTerminal "URxvt"   = True
+isTerminal _         = False
 
 isTerminal' :: Query Bool
 isTerminal' = toClassNameQuery isTerminal
@@ -47,4 +48,4 @@ runEmacs :: MonadIO m => m ()
 runEmacs = safeSpawn "emacsclient" ["--create-frame"]
 
 runTerminal :: MonadIO m => m()
-runTerminal = safeSpawn "urxvt" []
+runTerminal = safeSpawn "termite" []
