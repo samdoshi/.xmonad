@@ -1,4 +1,5 @@
-module ProgramHelper ( isBrowser
+module ProgramHelper ( defaultTerminal
+                     , isBrowser
                      , isBrowser'
                      , isEmacs
                      , isEmacs'
@@ -13,6 +14,9 @@ import           Control.Monad.Trans (MonadIO)
 import           XMonad.Core         (Query)
 import           XMonad.ManageHook   (className)
 import           XMonad.Util.Run     (safeSpawn)
+
+defaultTerminal :: String
+defaultTerminal = "termite"
 
 isBrowser :: String -> Bool
 isBrowser "Chromium" = True
@@ -48,4 +52,4 @@ runEmacs :: MonadIO m => m ()
 runEmacs = safeSpawn "emacsclient" ["--create-frame"]
 
 runTerminal :: MonadIO m => m()
-runTerminal = safeSpawn "termite" []
+runTerminal = safeSpawn defaultTerminal []

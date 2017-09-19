@@ -34,6 +34,7 @@ import           XMonad.Util.Run             (safeSpawn)
 
 import           Keys                        (keys, mouseBindings,
                                               navigation2DConfig)
+import           ProgramHelper
 import           Scratchpads
 import           Theme
 import           Workspaces
@@ -42,7 +43,7 @@ pureConfig :: LayoutClass a Window => a Window -> XConfig a
 pureConfig l = withNavigation2DConfig navigation2DConfig $
                withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
                def { XC.modMask            = mod4Mask
-                   , XC.terminal           = "urxvt"
+                   , XC.terminal           = defaultTerminal
                    , XC.borderWidth        = 2
                    , XC.normalBorderColor  = inactive
                    , XC.focusedBorderColor = active
