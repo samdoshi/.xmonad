@@ -152,8 +152,6 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_Return    ), runTerminal)
       -- launch prompt
     , ((mm,               xK_p         ), shellPrompt xpConfig)
-      -- launch dmenu
-    , ((mm .|. sm,        xK_p         ), safeSpawnProg "dmenu_run")
       -- 1passkell
     , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpConfig)
       -- raise next or run
