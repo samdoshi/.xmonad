@@ -1,8 +1,8 @@
 Config
   { -- appearance
-    font             = "xft:Roboto Mono:pixelsize=20"
-  , additionalFonts  = [ "xft:Roboto Mono:style=bold:pixelsize=20"
-                       , "xft:FontAwesome:pixelsize=20"
+    font             = "xft:Monospace:pixelsize=20"
+  , additionalFonts  = [ "xft:Monospace:style=bold:pixelsize=20"
+                       , "xft:FontAwesome:pixelsize=16"
                        ]
   , bgColor          = "#073642"
   , fgColor          = "#839496"
@@ -90,7 +90,7 @@ Config
 
     -- time and date indicator
     --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
-    , Run Date "<fn=2>\xf073</fn> %a %F <fc=#eee8d5><fn=1>%T</fn></fc>" "date" 10
+    , Run Date "<fn=2>\xf073</fn> %a %F  <fc=#eee8d5><fn=2>\xf017</fn> <fn=1>%T</fn></fc>" "date" 10
 
     , Run StdinReader
     ]

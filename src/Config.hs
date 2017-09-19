@@ -35,7 +35,7 @@ import           XMonad.Util.Run             (safeSpawn)
 import           Keys                        (keys, mouseBindings,
                                               navigation2DConfig)
 import           Scratchpads
-import           Solarized
+import           Theme
 import           Workspaces
 
 pureConfig :: LayoutClass a Window => a Window -> XConfig a

@@ -53,7 +53,7 @@ import           XMonad.Layout.WindowNavigation     (WindowNavigation,
                                                      windowNavigation)
 
 import           OneBig                             (OneBig (OneBig))
-import           Solarized
+import           Theme
 import           Workspaces
 
 -- Constants
@@ -244,7 +244,7 @@ floatTheme = def { T.activeColor = active
                  , T.activeTextColor = base2
                  , T.inactiveTextColor = base1
                  , T.urgentTextColor = base2
-                 , T.fontName = "xft:Roboto Mono:pixelsize=16"
+                 , T.fontName = font 16
                  , T.decoHeight = 24
                  }
 
@@ -262,6 +262,6 @@ topBarTheme = def { T.activeColor = active
                   , T.activeTextColor = active
                   , T.inactiveTextColor = inactive
                   , T.urgentTextColor = red
-                  , T.fontName = "xft:Roboto Mono:pixelsize=5"
+                  , T.fontName = font 5
                   , T.decoHeight = 12
                   }

@@ -15,14 +15,14 @@ import           XMonad.Core               (X, runQuery)
 import           XMonad.ManageHook         (className)
 
 import           ProgramHelper
-import           Solarized
+import           Theme
 
 gsConfig :: KeyMask -> GSConfig Window
 gsConfig mm = def { GS.gs_cellheight   = 80
                   , GS.gs_cellwidth    = 500
                   , GS.gs_cellpadding  = 10
                   , GS.gs_colorizer    = windowClassColouriser
-                  , GS.gs_font         = "xft:Roboto Mono:pixelsize=24"
+                  , GS.gs_font         = font 24
                   , GS.gs_navigate     = navigation mm
                   , GS.gs_originFractX = 1/2
                   , GS.gs_originFractY = 1/3

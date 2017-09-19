@@ -23,7 +23,7 @@ executable xmonad
                      , ProgramHelper
                      , PromptConfig
                      , Scratchpads
-                     , Solarized
+                     , Theme
                      , Tile
                      , Workspaces
                      , XmobarConfig

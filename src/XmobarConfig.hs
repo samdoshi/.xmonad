@@ -10,7 +10,7 @@ import           XMonad.Hooks.DynamicLog (PP (..), dynamicLogWithPP,
                                           xmobarColor)
 import           XMonad.Util.Run         (hPutStrLn, spawnPipe)
 
-import           Solarized
+import           Theme
 import           Workspaces
 
 xmobar :: XConfig a -> IO (XConfig a)

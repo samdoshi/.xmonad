@@ -1,4 +1,4 @@
-module Solarized where
+module Theme where
 
 base03, base02, base01, base00, base0, base1, base2, base3 :: String
 yellow, orange, red, magenta, violet, blue, cyan, green :: String
@@ -24,3 +24,6 @@ active, inactive, urgent :: String
 active = orange
 inactive = base01
 urgent = magenta
+
+font :: Int -> String
+font pixelSize = "xft:Monospace:pixelsize=" ++ show pixelSize
