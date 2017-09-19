@@ -84,7 +84,7 @@ logHook = pure ()
 startupHook :: X ()
 startupHook = do
   liftIO $ setEnv "_JAVA_AWT_WM_NONREPARENTING" "1" -- fix Java (e.g. Arduino)
-  safeSpawn "xsetroot" ["-solid", base0]
+  safeSpawn "hsetroot" ["-solid", base0]
   setDefaultCursor xC_left_ptr
   docksStartupHook
 
