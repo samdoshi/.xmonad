@@ -64,7 +64,6 @@ import           XMonad.Operations                  (focus, mouseMoveWindow,
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
 import           XMonad.Util.NamedScratchpad        (namedScratchpadAction)
-import           XMonad.Util.Run                    (safeSpawnProg)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
 
