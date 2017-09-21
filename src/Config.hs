@@ -32,7 +32,7 @@ import           XMonad.Util.Cursor          (setDefaultCursor)
 import           XMonad.Util.NamedScratchpad (namedScratchpadManageHook)
 import           XMonad.Util.Run             (safeSpawn)
 
-import           Keys                        (keys, mouseBindings,
+import           Keys                        (keyBindings, mouseBindings,
                                               navigation2DConfig)
 import           ProgramHelper
 import           Scratchpads
@@ -55,7 +55,7 @@ pureConfig l = withNavigation2DConfig navigation2DConfig $
                    , XC.manageHook         = manageHook
                    , XC.layoutHook         = l
                    , XC.startupHook        = startupHook
-                   , XC.keys               = keys
+                   , XC.keys               = keyBindings
                    , XC.mouseBindings      = mouseBindings
                    }
 

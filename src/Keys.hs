@@ -1,5 +1,5 @@
 module Keys ( navigation2DConfig
-            , keys
+            , keyBindings
             , mouseBindings
             ) where
 
@@ -13,8 +13,9 @@ import           System.Exit                        (exitSuccess)
 import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
-                                                     mod1Mask, shiftMask, xK_0,
-                                                     xK_1, xK_9, xK_BackSpace,
+                                                     mod1Mask, noModMask,
+                                                     shiftMask, xK_0, xK_1,
+                                                     xK_9, xK_BackSpace,
                                                      xK_Return, xK_Tab, xK_a,
                                                      xK_apostrophe, xK_b,
                                                      xK_backslash, xK_comma,
@@ -95,8 +96,16 @@ navigation2DConfig = def { defaultTiledNavigation = hybridNavigation
 tryMsg :: (Message a, Message b) => a -> b -> X ()
 tryMsg x y = tryMessage_ x y >> refresh
 
-keys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-keys conf@XConfig {XC.modMask = mm} = M.fromList $
+-- | Make a submap where each keybinding works with and without a modmask
+makeSubmap :: KeyMask -> [(KeySym, X ())] -> X ()
+makeSubmap mm sub = submap $ M.fromList $ concatMap keys sub
+  where keys (ks, x) = [ ((noModMask, ks), x)
+                       , ((mm       , ks), x)
+                       ]
+
+
+keyBindings :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
+keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     [
       -- quit
       ((mm .|. sm,        xK_q         ), liftIO exitSuccess)
@@ -194,9 +203,9 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
                                           $ gsConfig mm)
 
       -- applications submap
-    , ((mm,               xK_a         ), submap . M.fromList $
-        [ ((mm, xK_d), namedScratchpadAction scratchpads goldenDictScratchpad)
-        , ((mm, xK_m), raiseNextMaybe runMutt isMutt')
+    , ((mm,               xK_a         ), makeSubmap mm
+        [ (xK_d, namedScratchpadAction scratchpads goldenDictScratchpad)
+        , (xK_m, raiseNextMaybe runMutt isMutt')
         ])
     ]
     ++
