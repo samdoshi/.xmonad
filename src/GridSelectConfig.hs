@@ -68,4 +68,5 @@ colourForClass :: String -> String
 colourForClass c | isBrowser c  = blue
                  | isEmacs c    = violet
                  | isTerminal c = yellow
+                 | isMutt c     = green
                  | otherwise    = base1

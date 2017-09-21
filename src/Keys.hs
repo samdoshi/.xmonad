@@ -193,9 +193,10 @@ keys conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
                                           $ gsConfig mm)
 
-      -- named scratchpads submap
+      -- applications submap
     , ((mm,               xK_a         ), submap . M.fromList $
         [ ((mm, xK_d), namedScratchpadAction scratchpads goldenDictScratchpad)
+        , ((mm, xK_m), raiseNextMaybe runMutt isMutt')
         ])
     ]
     ++
