@@ -44,7 +44,7 @@ pureConfig l = withNavigation2DConfig navigation2DConfig $
                withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
                def { XC.modMask            = mod4Mask
                    , XC.terminal           = defaultTerminal
-                   , XC.borderWidth        = 2
+                   , XC.borderWidth        = 5
                    , XC.normalBorderColor  = inactive
                    , XC.focusedBorderColor = active
                    , XC.focusFollowsMouse  = False
