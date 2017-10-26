@@ -38,7 +38,6 @@ awesome x | x == homeWS      = fnAwesome "\xf015"
           | x == gamesWS     = fnAwesome "\xf11b"
           | x == floatWS     = fnAwesome "\xf2d2"
           | x == minimisedWS = fnAwesome "\xf00a"
-          | x == nspWS       = fnAwesome "\xf2d1"
           | otherwise = x
 
 hideEmpty :: String -> String

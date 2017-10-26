@@ -13,33 +13,30 @@ import           System.Exit                        (exitSuccess)
 import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
-                                                     mod1Mask, noModMask,
-                                                     shiftMask, xK_0, xK_1,
-                                                     xK_9, xK_BackSpace,
+                                                     mod1Mask, shiftMask, xK_0,
+                                                     xK_1, xK_9, xK_BackSpace,
                                                      xK_Return, xK_Tab, xK_a,
                                                      xK_apostrophe, xK_b,
-                                                     xK_backslash, xK_c,
-                                                     xK_comma, xK_d, xK_e, xK_f,
-                                                     xK_g, xK_h, xK_i, xK_j,
-                                                     xK_k, xK_l, xK_m, xK_minus,
-                                                     xK_n, xK_o, xK_p,
+                                                     xK_backslash, xK_comma,
+                                                     xK_e, xK_f, xK_g, xK_h,
+                                                     xK_j, xK_k, xK_l, xK_m,
+                                                     xK_minus, xK_n, xK_p,
                                                      xK_period, xK_q, xK_r,
                                                      xK_s, xK_semicolon,
-                                                     xK_space, xK_t, xK_u, xK_w)
+                                                     xK_space, xK_t, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
 import           XMonad.Actions.MessageFeedback     (tryMessage_)
 import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      centerNavigation,
+                                                     centerNavigation,
                                                      defaultTiledNavigation,
-                                                     fullScreenRect,
-                                                     hybridNavigation,
+                                                     fullScreenRect, hybridOf,
                                                      layoutNavigation,
+                                                     lineNavigation,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
-import           XMonad.Actions.Submap              (submap)
-import           XMonad.Actions.WindowGo            (raiseNextMaybe)
 import           XMonad.Core                        (Layout, Message, X,
                                                      XConfig (XConfig),
                                                      whenJust)
@@ -64,7 +61,6 @@ import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      windows, withFocused)
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
-import           XMonad.Util.NamedScratchpad        (namedScratchpadAction)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
 
 
@@ -75,7 +71,6 @@ import           Layouts                            (ToggleFull (ToggleABitFull,
 import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
-import           Scratchpads
 import           Workspaces
 
 sm :: KeyMask
@@ -88,7 +83,7 @@ am :: KeyMask
 am = mod1Mask
 
 navigation2DConfig :: Navigation2DConfig
-navigation2DConfig = def { defaultTiledNavigation = hybridNavigation
+navigation2DConfig = def { defaultTiledNavigation = hybridOf lineNavigation centerNavigation
                          , layoutNavigation       = [(fullName, centerNavigation)]
                          , unmappedWindowRect     = [(fullName, fullScreenRect)]
                          }
@@ -96,12 +91,12 @@ navigation2DConfig = def { defaultTiledNavigation = hybridNavigation
 tryMsg :: (Message a, Message b) => a -> b -> X ()
 tryMsg x y = tryMessage_ x y >> refresh
 
--- | Make a submap where each keybinding works with and without a modmask
-makeSubmap :: KeyMask -> [(KeySym, X ())] -> X ()
-makeSubmap mm sub = submap $ M.fromList $ concatMap keys sub
-  where keys (ks, x) = [ ((noModMask, ks), x)
-                       , ((mm       , ks), x)
-                       ]
+-- -- | Make a submap where each keybinding works with and without a modmask
+-- makeSubmap :: KeyMask -> [(KeySym, X ())] -> X ()
+-- makeSubmap mm sub = submap $ M.fromList $ concatMap keys sub
+--   where keys (ks, x) = [ ((noModMask, ks), x)
+--                        , ((mm       , ks), x)
+--                        ]
 
 
 keyBindings :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
@@ -162,14 +157,6 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- 1passkell
     , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpConfig)
-      -- raise next or run
-    , ((mm,               xK_u         ), raiseNextMaybe runTerminal isTerminal')
-    , ((mm .|. sm,        xK_u         ), runTerminal)
-    , ((mm,               xK_i         ), raiseNextMaybe runBrowser isBrowser')
-    , ((mm .|. sm,        xK_i         ), runBrowser)
-    , ((mm,               xK_o         ), raiseNextMaybe runEmacs isEmacs')
-    , ((mm .|. sm,        xK_o         ), runEmacs)
-
       -- kill the focused window
     , ((mm,               xK_BackSpace ), kill1)
       -- unfloat the current window
@@ -201,13 +188,8 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
                                           $ windows . W.shiftWin minimisedWS)
     , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
                                           $ gsConfig mm)
-
       -- applications submap
-    , ((mm,               xK_a         ), makeSubmap mm
-        [ (xK_c, namedScratchpadAction scratchpads qalculateScrachpad)
-        , (xK_d, namedScratchpadAction scratchpads goldenDictScratchpad)
-        , (xK_m, raiseNextMaybe runMutt isMutt')
-        ])
+    , ((mm,               xK_a         ), launchersMap mm)
     ]
     ++
     -- mod-[1..9] - switch to workspace N

@@ -22,7 +22,6 @@ executable xmonad
                      , PassPrompt
                      , ProgramHelper
                      , PromptConfig
-                     , Scratchpads
                      , Theme
                      , Tile
                      , Workspaces
