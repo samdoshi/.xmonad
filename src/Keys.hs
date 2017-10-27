@@ -157,6 +157,7 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- 1passkell
     , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpConfig)
+    , ((mm .|. sm,        xK_backslash ), sendPasswordPrompt xpConfig)
       -- kill the focused window
     , ((mm,               xK_BackSpace ), kill1)
       -- unfloat the current window

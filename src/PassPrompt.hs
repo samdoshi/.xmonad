@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 
 module PassPrompt ( sendUsernamePasswordPrompt
+                  , sendPasswordPrompt
                   ) where
 
 import           Control.Monad       (join)
@@ -60,6 +61,20 @@ sendUsernamePasswordFn passwords passLabel = do
     Nothing    -> pure ()
     Just uuid' -> sendUsernamePassword uuid'
 
+-- | A prompt to send just the password to the current window
+sendPasswordPrompt :: XPConfig -> X ()
+sendPasswordPrompt = mkPassPrompt
+                     "Send password"
+                     sendPasswordFn
+
+-- | Given a password, find the UUID, retrieve the password and send it to a window
+sendPasswordFn :: PasswordFunction
+sendPasswordFn passwords passLabel = do
+  let uuid = fst <$> find (\(_, name) -> name == passLabel) passwords
+  case uuid of
+    Nothing    -> pure ()
+    Just uuid' -> sendPassword uuid'
+
 -- | Ask 1passkell to unlock passwords
 unlockPasswords :: X ()
 unlockPasswords = safeSpawn "1passkell" ["unlock"]
@@ -72,6 +87,13 @@ sendUsernamePassword uuid =
     Just (username, password) -> do pasteString username
                                     sendKey noModMask xK_Tab
                                     pasteString password
+
+-- | Send "username", <TAB>, "password" to current window
+sendPassword :: String -> X ()
+sendPassword uuid =
+  liftIO (getUsernamePassword uuid) >>= \case
+    Nothing  -> pure ()
+    Just (_, password) -> pasteString password
 
 -- | Retrieve a username and password from a UUID
 getUsernamePassword :: String -> IO (Maybe (String, String))
