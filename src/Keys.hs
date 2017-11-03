@@ -178,11 +178,13 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
       -- toggle struts
     , ((mm,               xK_b         ), sendMessage ToggleStruts)
 
-      -- go to window
+      -- grid: go to window
     , ((mm,               xK_g         ), goToSelected $ gsConfig mm)
-      -- bring window
+      -- grid: go to window (mapped to Logitech MX Master thumb button, no 'mm')
+    , ((cm .|. am,        xK_Tab       ), goToSelected $ gsConfig mm)
+      -- grid: bring window
     , ((mm .|. sm,        xK_g         ), bringSelected $ gsConfig mm)
-      -- copy window to focus workspace (make it sticky)
+      -- grid: copy window to focus workspace (make it sticky)
     , ((mm,               xK_s         ), bringWindowCopy $ gsConfig mm)
       -- move window to minimsed workspace
     , ((mm,               xK_m         ), withFocused
