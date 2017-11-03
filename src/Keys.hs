@@ -188,7 +188,8 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_s         ), bringWindowCopy $ gsConfig mm)
       -- move window to minimsed workspace
     , ((mm,               xK_m         ), withFocused
-                                          $ windows . W.shiftWin minimisedWS)
+                                          $ \w -> windows (W.shiftWin minimisedWS w) >>
+                                                  windows (W.sink w))
     , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
                                           $ gsConfig mm)
       -- applications submap
