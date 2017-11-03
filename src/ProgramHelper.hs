@@ -4,6 +4,7 @@ module ProgramHelper ( defaultTerminal
                      , isTerminal
                      , isMutt
                      , runTerminal
+                     , quickTerm
                      , launcherManageHook
                      , launchersMap
                      ) where
@@ -38,6 +39,10 @@ launchers = [ (xK_b, browserLauncher)
             , (xK_m, muttLauncher)
             ]
 
+additionalLaunchers :: [Launcher]
+additionalLaunchers = [ quickTermLauncher
+                      ]
+
 
 -- Terminal
 
@@ -51,6 +56,19 @@ isTerminal _         = False
 
 runTerminal :: MonadIO m => m ()
 runTerminal = safeSpawn defaultTerminal []
+
+quickTermLauncher :: Launcher
+quickTermLauncher = Launcher { launcherCommand = unsafeSpawn $ defaultTerminal ++ " --class=" ++ cls
+                             , launcherAction = LaunchOrBring
+                             , launcherSecondaryAction = NoAction
+                             , launcherTertiaryAction = NoAction
+                             , launcherQuery = className =? cls
+                             , launcherHook = centreTopFloat
+                             }
+  where cls = "quickTerm"
+
+quickTerm :: X ()
+quickTerm = doLauncherAction (launcherAction quickTermLauncher) quickTermLauncher
 
 -- Browser
 
@@ -149,6 +167,8 @@ runInTerminalWithClass cmd cls =
 centreFloat :: ManageHook
 centreFloat = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
 
+centreTopFloat :: ManageHook
+centreTopFloat = doRectFloat $ W.RationalRect (1/6) (1/36) (2/3) (5/6)
 
 -- Launcher
 
@@ -179,7 +199,7 @@ doLauncherAction (Other x) _ = x
 doLauncherAction NoAction _ = pure ()
 
 launcherManageHook :: ManageHook
-launcherManageHook = composeAll $ mh . snd <$> launchers
+launcherManageHook = composeAll $ mh <$> (additionalLaunchers ++ (snd <$> launchers))
   where mh l = launcherQuery l --> launcherHook l
 
 launchersMap :: KeyMask -> X ()

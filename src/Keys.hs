@@ -18,9 +18,9 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_Return, xK_Tab, xK_a,
                                                      xK_apostrophe, xK_b,
                                                      xK_backslash, xK_comma,
-                                                     xK_e, xK_f, xK_g, xK_h,
-                                                     xK_j, xK_k, xK_l, xK_m,
-                                                     xK_minus, xK_n, xK_p,
+                                                     xK_e, xK_f, xK_g, xK_grave,
+                                                     xK_h, xK_j, xK_k, xK_l,
+                                                     xK_m, xK_minus, xK_n, xK_p,
                                                      xK_period, xK_q, xK_r,
                                                      xK_s, xK_semicolon,
                                                      xK_space, xK_t, xK_w)
@@ -158,6 +158,7 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
       -- 1passkell
     , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpConfig)
     , ((mm .|. sm,        xK_backslash ), sendPasswordPrompt xpConfig)
+    , ((mm,               xK_grave     ), quickTerm)
       -- kill the focused window
     , ((mm,               xK_BackSpace ), kill1)
       -- unfloat the current window
