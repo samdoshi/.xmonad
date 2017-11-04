@@ -4,7 +4,6 @@
 
 module Layouts ( layoutHook
                , tiledName
-
                , bspName
                , bigName
                , fullName
@@ -52,6 +51,7 @@ import           XMonad.Layout.WindowArranger       (WindowArranger)
 import           XMonad.Layout.WindowNavigation     (WindowNavigation,
                                                      windowNavigation)
 
+import           Flip
 import           OneBig                             (OneBig (OneBig))
 import           Theme
 import           Workspaces
@@ -72,11 +72,13 @@ type CH = Choose
 type PW = PerWorkspace
 
 -- The main layout hook, uses `PerWorkspace`
-type LayoutHook = PW FloatChoice
-                  (PW MediaChoice
-                   (PW MinimisedChoice DefaultChoice))
+type LayoutHook = PW HomeChoice
+                  (PW FloatChoice
+                   (PW MediaChoice
+                    (PW MinimisedChoice DefaultChoice)))
 layoutHook :: LayoutHook Window
-layoutHook = onWorkspace floatWS floatChoice
+layoutHook = onWorkspace homeWS homeChoice
+             $ onWorkspace floatWS floatChoice
              $ onWorkspace mediaWS mediaChoice
              $ onWorkspace minimisedWS minimisedChoice
              defaultChoice
@@ -85,6 +87,10 @@ layoutHook = onWorkspace floatWS floatChoice
 type DefaultChoice = CH TiledLayout BSPLayout
 defaultChoice :: DefaultChoice Window
 defaultChoice = tiled ||| bsp
+
+type HomeChoice = CH HomeTiledLayout BSPLayout
+homeChoice :: HomeChoice Window
+homeChoice = homeTiled ||| bsp
 
 type FloatChoice = FloatLayout
 floatChoice :: FloatChoice Window
@@ -105,6 +111,15 @@ tiledName = "tiled"
 type TiledLayout = EmbellishedLayout ResizableTall
 tiled :: TiledLayout Window
 tiled = embellish tiledName $ ResizableTall 1 (2/100) (1/2) []
+
+-- Home tiled layout
+-- (speical tiled layout for the home workspace)
+homeTiledName :: String
+homeTiledName = "home-tiled"
+
+type HomeTiledLayout = EmbellishedLayout (ML Flip ResizableTall)
+homeTiled :: HomeTiledLayout Window
+homeTiled = embellish homeTiledName $ flipLayout $ ResizableTall 1 (2/100) (2/3) []
 
 -- BSP layout
 bspName :: String
