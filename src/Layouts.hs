@@ -27,7 +27,7 @@ import           XMonad.Layout.Decoration           (Decoration,
 import qualified XMonad.Layout.Decoration           as T (Theme (..))
 import           XMonad.Layout.Fullscreen           (FullscreenFocus,
                                                      fullscreenFocus)
-import           XMonad.Layout.Gaps
+import           XMonad.Layout.Gaps                 (Gaps, gaps')
 import           XMonad.Layout.Grid                 (Grid (Grid))
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
 import           XMonad.Layout.MultiToggle          (EOT (EOT), HCons,
@@ -50,6 +50,7 @@ import           XMonad.Layout.Tabbed               (TabbedDecoration, addTabs)
 import           XMonad.Layout.WindowArranger       (WindowArranger)
 import           XMonad.Layout.WindowNavigation     (WindowNavigation,
                                                      windowNavigation)
+import           XMonad.Util.Types                  (Direction2D (L, R))
 
 import           Flip
 import           OneBig                             (OneBig (OneBig))
