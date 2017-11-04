@@ -4,7 +4,7 @@
 module Config ( pureConfig
               ) where
 
-import           Data.Monoid                 (All, mconcat, (<>))
+import           Data.Monoid                 (All, (<>))
 import           System.Environment          (setEnv)
 
 import           Control.Monad.IO.Class      (liftIO)
@@ -17,16 +17,20 @@ import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
 import           XMonad.Core                 (LayoutClass, ManageHook, X,
                                               XConfig)
 import qualified XMonad.Core                 as XC (XConfig (..))
+import           XMonad.Hooks.InsertPosition (Focus (Newer),
+                                              Position (Below, End, Master),
+                                              insertPosition)
 import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
                                               manageDocks)
-import           XMonad.Hooks.ManageHelpers  (doCenterFloat, isDialog)
+import           XMonad.Hooks.ManageHelpers  (composeOne, currentWs,
+                                              doCenterFloat, isDialog, (-?>))
 import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
                                               RemindWhen (Dont),
                                               SuppressWhen (Focused),
                                               UrgencyConfig (UrgencyConfig),
                                               withUrgencyHookC)
 import           XMonad.Layout.Fullscreen    (fullscreenEventHook)
-import           XMonad.ManageHook           (className, doF, (-->), (=?))
+import           XMonad.ManageHook           (className, composeAll, doF, (=?))
 import           XMonad.StackSet             (sink)
 import           XMonad.Util.Cursor          (setDefaultCursor)
 import           XMonad.Util.Run             (safeSpawn)
@@ -67,13 +71,17 @@ handleEventHook = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
 --
 -- n.b. hooks are processed bottom to top!
 manageHook :: ManageHook
-manageHook = mconcat
+manageHook = composeAll
   [ manageDocks
   , launcherManageHook
+  , composeOne [ className =? "Pinentry" -?> doCenterFloat
+               , isDialog -?> doCenterFloat
+               , currentWs =? homeWS -?> insertPosition End Newer
+               , currentWs =? mediaWS -?> insertPosition Master Newer
+               , Just <$> insertPosition Below Newer
+               ]
   -- things that are allowed to go fullscreen at startup
   --, className =? "Kodi" --> fullscreenManageHook
-  , className =? "Pinentry" --> doCenterFloat
-  , isDialog --> doCenterFloat
   , unfloat  -- unfloat everything
   ]
   where unfloat = ask >>= doF . sink
