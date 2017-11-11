@@ -16,7 +16,7 @@ import           Data.Monoid                ((<>))
 
 import           Graphics.X11.Types         (KeyMask, KeySym, controlMask,
                                              noModMask, shiftMask, xK_b, xK_c,
-                                             xK_d, xK_e, xK_m)
+                                             xK_d, xK_e, xK_m, xK_n)
 import           XMonad.Actions.Submap      (submap)
 import           XMonad.Actions.WindowGo    (ifWindow, raiseNext,
                                              raiseNextMaybe)
@@ -37,6 +37,7 @@ launchers = [ (xK_b, browserLauncher)
             , (xK_d, dictionaryLauncher)
             , (xK_e, emacsLauncher)
             , (xK_m, muttLauncher)
+            , (xK_n, ncmpcppLauncher)
             ]
 
 additionalLaunchers :: [Launcher]
@@ -153,6 +154,24 @@ isMutt _      = False
 
 runMutt :: MonadIO m => m ()
 runMutt = runInTerminalWithClass "neomutt" "Mutt"
+
+-- ncmpcpp
+
+ncmpcppLauncher :: Launcher
+ncmpcppLauncher = Launcher { launcherCommand = runNCMPCpp
+                           , launcherAction = LaunchOrGoto
+                           , launcherSecondaryAction = LaunchOrBring
+                           , launcherTertiaryAction = NoAction
+                           , launcherQuery = toClassNameQuery isNCMPCpp
+                           , launcherHook = idHook
+                           }
+
+isNCMPCpp :: String -> Bool
+isNCMPCpp "NCMPCpp" = True
+isNCMPCpp _         = False
+
+runNCMPCpp :: MonadIO m => m ()
+runNCMPCpp = runInTerminalWithClass "ncmpcpp" "NCMPCpp"
 
 
 -- Helpers
