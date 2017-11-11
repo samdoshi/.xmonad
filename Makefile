@@ -10,5 +10,5 @@ clean-all:
 	stack clean
 
 install: build
-	stack install --silent --local-bin-path $(HOME)/.local/bin xmobar
+	stack install --silent --local-bin-path $(HOME)/.local/bin xmonad-samdoshi:xmonad-polybar-log
 	stack install --silent --local-bin-path $(HOME)/.local/bin xmonad-samdoshi:xmonad

@@ -20,7 +20,5 @@ sign_status=$(gpg_key_status $SIGN_ID)
 encrypt_status=$(gpg_key_status $ENCRYPT_ID)
 
 if [ $sign_status == "1" ] || [ $encrypt_status == "1" ]; then
-    echo -e '<fc=#cb4b16><fn=2>\uf13e</fn></fc>'
-else
-    echo -e '<fn=2>\uf023</fn>'
+    echo -ne '%{F#d33682}%{F-}'
 fi

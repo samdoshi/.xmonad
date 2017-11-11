@@ -1,0 +1,142 @@
+[base16]
+base00 = ${xrdb:color0:#002b36}
+base01 = ${xrdb:color18:#073642}
+base02 = ${xrdb:color19:#586e75}
+base03 = ${xrdb:color8:#657b83}
+base04 = ${xrdb:color20:#839496}
+base05 = ${xrdb:color7:#93a1a1}
+base06 = ${xrdb:color21:#eee8d5}
+base07 = ${xrdb:color15:#fdf6e3}
+base08 = ${xrdb:color1:#dc322f}
+base09 = ${xrdb:color16:#cb4b16}
+base0A = ${xrdb:color3:#b58900}
+base0B = ${xrdb:color2:#859900}
+base0C = ${xrdb:color6:#2aa198}
+base0D = ${xrdb:color4:#268bd2}
+base0E = ${xrdb:color5:#6c71c4}
+base0F = ${xrdb:color17:#d33682}
+
+[colors]
+background        = ${base16.base01}
+foreground        = ${base16.base05}
+foreground-bright = ${base16.base06}
+red               = ${base16.base08}
+orange            = ${base16.base09}
+yellow            = ${base16.base0A}
+green             = ${base16.base0B}
+cyan              = ${base16.base0C}
+blue              = ${base16.base0D}
+purple            = ${base16.base0E}
+magenta           = ${base16.base0F}
+
+[bar/main]
+width = 100%
+height = 34
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 4
+line-color = ${colors.blue}
+
+border-size = 0
+border-color = ${colors.foreground}
+
+padding-left = 1
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = Monospace:pixelsize=16;0
+font-1 = Monospace:pixelsize=16:weight=bold;0
+font-2 = Material Icons:pixelsize=16;2
+
+modules-left = xmonad
+modules-center = mpd
+modules-right = filesystem memory cpu temperature eth icons date
+
+[module/xmonad]
+type = custom/script
+exec = xmonad-polybar-log
+tail = true
+
+[module/mpd]
+type = internal/mpd
+format-online = <label-song> <label-time>
+format-paused =
+label-song-maxlen = 50
+label-song-ellipsis = true
+label-song-foreground = ${colors.foreground-bright}
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+mount-0 = /
+label-mounted = %mountpoint%:%percentage_used:2%%
+format-mounted-underline = ${colors.yellow}
+
+[module/memory]
+type = internal/memory
+interval = 2
+format-prefix = "mem:"
+format-underline = ${colors.green}
+label = %percentage_used:2%%
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = "cpu:"
+format-underline = ${colors.cyan}
+label = %percentage:2%%
+
+[module/temperature]
+type = internal/temperature
+thermal-zone = 0
+warn-temperature = 60
+format = <label>
+format-prefix = "temp:"
+format-underline = ${colors.blue}
+format-warn = <label-warn>
+format-warn-underline = ${colors.red}
+label = %temperature%
+label-warn = %temperature%
+label-warn-foreground = ${colors.red}
+
+[module/eth]
+type = internal/network
+interface = enp0s25
+interval = 3.0
+format-connected-prefix = "net:"
+format-connected-prefix-foreground = ${colors.foreground}
+label-connected = %upspeed:9% %downspeed:9%
+format-disconnected =
+format-connected-underline = ${colors.purple}
+
+[module/date]
+type = internal/date
+interval = 1
+date = " %Y-%m-%d"
+time = %H:%M:%S
+label = %date% %{T2}%time%%{T-}
+format-prefix = ""
+format-foreground = ${colors.foreground-bright}
+format-underline = ${self.format-foreground}
+
+[module/icons]
+type = custom/script
+interval = 5
+exec = ~/.xmonad/bin/polybar-icons.sh
+tail = false
+format-underline = ${colors.magenta}
+
+[settings]
+screenchange-reload = true
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+; vim:ft=dosini

@@ -10,7 +10,7 @@ cabal-version:       >=1.10
 executable xmonad
   hs-source-dirs:      src
   -- don't use -threaded
-  ghc-options:         -Wall
+  ghc-options:         -Wall -O2
   main-is:             xmonad.hs
   default-language:    Haskell2010
   other-modules:       Config
@@ -21,18 +21,28 @@ executable xmonad
                      , Layouts
                      , OneBig
                      , PassPrompt
+                     , PolybarConfig
                      , ProgramHelper
                      , PromptConfig
                      , Theme
                      , Tile
                      , Workspaces
-                     , XmobarConfig
   build-depends:       base >= 4.9 && < 5
                      , containers
                      , data-default
+                     , dbus
                      , filepath
                      , mtl
                      , process
+                     , utf8-string
                      , X11
                      , xmonad
                      , xmonad-contrib
+
+executable xmonad-polybar-log
+  hs-source-dirs:      polybar
+  ghc-options:         -Wall -O2 -threaded
+  main-is:             xmonad-polybar-log.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.9 && < 5
+                     , dbus
