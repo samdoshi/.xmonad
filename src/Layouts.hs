@@ -116,7 +116,7 @@ tiled = embellish tiledName $ ResizableTall 1 (2/100) (1/2) []
 -- Home tiled layout
 -- (speical tiled layout for the home workspace)
 homeTiledName :: String
-homeTiledName = "home-tiled"
+homeTiledName = "home"
 
 type HomeTiledLayout = EmbellishedLayout (ML Flip ResizableTall)
 homeTiled :: HomeTiledLayout Window

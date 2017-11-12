@@ -33,12 +33,13 @@ dbusOutput dbus str = do
     memberName = D.memberName_ "Update"
 
 pp :: D.Client -> PP
-pp dbus = def { ppCurrent         = foreground orange . fnBold . material
-              , ppHidden          = foreground base1 . material
-              , ppHiddenNoWindows = foreground base03 . material . hideEmpty
-              , ppTitle           = foreground blue . fnBold . shorten 128
+pp dbus = def { ppCurrent         = foreground base2 . background orange . fnBold . wrapSp . material
+              , ppHidden          = foreground base1 . wrapSp . material
+              , ppHiddenNoWindows = foreground base03 . wrapSp . material . hideEmpty
+              , ppTitle           = foreground base2 . background blue . fnBold . shorten 128 . wrapSp
               , ppVisible         = wrap "(" ")" -- Xinerama only
-              , ppUrgent          = foreground urgent . fnBold . material
+              , ppUrgent          = foreground urgent . fnBold . wrapSp . material
+              , ppLayout          = pad 6
               , ppSep             = "  "
               , ppWsSep           = " "
               , ppOutput          = dbusOutput dbus
@@ -46,13 +47,16 @@ pp dbus = def { ppCurrent         = foreground orange . fnBold . material
 
 material :: WorkspaceId -> String
 material x | x == homeWS      = "\xe88a"
-           | x == alphaWS     = "\x03b1"
-           | x == betaWS      = "\x03b2"
+           | x == alphaWS     = "\xe400"
+           | x == betaWS      = "\xe401"
            | x == mediaWS     = "\xe54d"
            | x == gamesWS     = "\xe338"
            | x == floatWS     = "\xe8aa"
+           | x == "7"         = "\xe3d7"
+           | x == "8"         = "\xe3d8"
+           | x == "9"         = "\xe3d9"
            | x == minimisedWS = "\xe5c3"
-           | otherwise = x
+           | otherwise        = x
 
 hideEmpty :: String -> String
 hideEmpty x | x `elem` ["7", "8", "9"] = ""
@@ -64,18 +68,27 @@ fnBold = polybarFormat "T" "2"
 foreground :: String -> String -> String
 foreground = polybarFormat "F"
 
+background :: String -> String -> String
+background = polybarFormat "B"
+
 polybarFormat :: String -> String -> String -> String
 polybarFormat _   _     ""     = ""
 polybarFormat tag value string = "%{" ++ tag ++ value ++ "}" ++ string ++ "%{" ++ tag ++ "-}"
-
 
 wrap :: String -> String -> String -> String
 wrap _ _ "" = ""
 wrap l r m  = l ++ m ++ r
 
+wrapSp :: String -> String
+wrapSp = wrap " " " "
+
 shorten :: Int -> String -> String
 shorten n xs | length xs < n = xs
              | otherwise     = take (n - length end) xs ++ end
+
+pad :: Int -> String -> String
+pad n xs | length xs >= n = xs
+         | otherwise      = xs ++ replicate (n - length xs)  ' '
 
 end :: String
 end = "..."

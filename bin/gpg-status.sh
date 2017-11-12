@@ -20,5 +20,5 @@ sign_status=$(gpg_key_status $SIGN_ID)
 encrypt_status=$(gpg_key_status $ENCRYPT_ID)
 
 if [ $sign_status == "1" ] || [ $encrypt_status == "1" ]; then
-    echo -ne '%{F#d33682}%{F-}'
+    echo -ne ''
 fi
