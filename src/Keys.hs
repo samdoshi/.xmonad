@@ -20,7 +20,7 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_backslash, xK_comma,
                                                      xK_e, xK_f, xK_g, xK_grave,
                                                      xK_h, xK_j, xK_k, xK_l,
-                                                     xK_m, xK_minus, xK_n, xK_p,
+                                                     xK_m, xK_n, xK_p,
                                                      xK_period, xK_q, xK_r,
                                                      xK_s, xK_semicolon,
                                                      xK_space, xK_t, xK_w)
@@ -200,7 +200,7 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     -- mod-[1..9] - switch to workspace N
     -- mod-shift-[1..9] - move client to workspace N
     [((mm .|. m, k), windows $ f i)
-        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0, xK_minus])
+        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
     -- mod-{w,e,r} - switch to physical/Xinerama screens 1, 2, or 3
