@@ -1,18 +1,6 @@
-resolver: lts-9.10
+resolver: lts-9.13
 packages:
-- location: .
-- location: vendor/xmonad
-  extra-dep: true
-- location: vendor/xmonad-contrib
-  extra-dep: true
+- .
 extra-deps:
-- X11-1.8
-- X11-xft-0.3.1
-- xmobar-0.24.5
-flags:
-  xmobar:
-    with_inotify: true
-    with_mpd: true
-    with_utf8: true
-    with_xft: true
-    with_xpm: true
+- vendor/xmonad
+- vendor/xmonad-contrib
