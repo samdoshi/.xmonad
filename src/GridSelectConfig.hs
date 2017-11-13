@@ -22,7 +22,7 @@ gsConfig mm = def { GS.gs_cellheight   = 80
                   , GS.gs_cellwidth    = 500
                   , GS.gs_cellpadding  = 10
                   , GS.gs_colorizer    = windowClassColouriser
-                  , GS.gs_font         = font 24
+                  , GS.gs_font         = boldFont 24
                   , GS.gs_navigate     = navigation mm
                   , GS.gs_originFractX = 1/2
                   , GS.gs_originFractY = 1/3

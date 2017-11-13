@@ -27,3 +27,6 @@ urgent = magenta
 
 font :: Int -> String
 font pixelSize = "xft:Monospace:pixelsize=" ++ show pixelSize
+
+boldFont :: Int -> String
+boldFont pixelSize = font pixelSize ++ ":style=bold"
