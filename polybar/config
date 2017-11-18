@@ -57,7 +57,7 @@ font-3 = M+ 1m:pixelsize=16;3
 
 modules-left = xmonad
 modules-center = mpd
-modules-right = filesystem memory cpu temperature eth icons date
+modules-right = fs-root fs-home fs-data memory cpu temperature eth icons date
 
 [module/xmonad]
 type = custom/script
@@ -77,15 +77,26 @@ label-song-foreground = ${colors.foreground-bright}
 format-foreground = ${base16.base00}
 format-padding = 1
 
-[module/filesystem]
+[common/filesystem]
 inherit = common/right
 type = internal/fs
 interval = 25
-mount-0 = /
-label-mounted = %mountpoint%:%percentage_used:2%%
+label-mounted = %mountpoint%: %free%
 format-mounted-foreground = ${self.format-foreground}
 format-mounted-background = ${colors.yellow}
 format-mounted-padding = ${self.format-padding}
+
+[module/fs-root]
+inherit = common/filesystem
+mount-0 = /
+
+[module/fs-home]
+inherit = common/filesystem
+mount-0 = /home
+
+[module/fs-data]
+inherit = common/filesystem
+mount-0 = /data
 
 [module/memory]
 inherit = common/right
