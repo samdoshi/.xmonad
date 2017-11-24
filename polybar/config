@@ -29,7 +29,7 @@ blue              = ${base16.base0D}
 purple            = ${base16.base0E}
 magenta           = ${base16.base0F}
 
-[bar/main]
+[common/bar]
 width = 100%
 height = 30
 radius = 0
@@ -55,15 +55,32 @@ font-1 = Monospace:pixelsize=16:weight=bold;3
 font-2 = Material Icons:pixelsize=16;5
 font-3 = M+ 1m:pixelsize=16;3
 
-modules-left = xmonad
-modules-center = mpd
+[bar/left]
+inherit = common/bar
+monitor = DisplayPort-0
+modules-left = xmonad-left
+modules-right = mpd
+
+[bar/right]
+inherit = common/bar
+monitor = HDMI-A-0
+modules-left = xmonad-right
 modules-right = fs-root fs-home fs-data memory cpu temperature eth icons date
 
-[module/xmonad]
+[module/xmonad-left]
 type = custom/script
-exec = xmonad-polybar-log
+exec = "xmonad-polybar-log left"
 tail = true
 
+[module/xmonad-right]
+type = custom/script
+exec = "xmonad-polybar-log right"
+tail = true
+
+[module/xmonad-one]
+type = custom/script
+exec = xmonad-polybar-log one
+tail = true
 
 [module/mpd]
 type = internal/mpd
