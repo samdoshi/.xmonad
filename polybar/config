@@ -59,7 +59,7 @@ font-3 = M+ 1m:pixelsize=16;3
 inherit = common/bar
 monitor = DisplayPort-0
 modules-left = xmonad-left
-modules-right = mpd
+modules-right = mpd date
 
 [bar/right]
 inherit = common/bar
