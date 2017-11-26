@@ -53,7 +53,8 @@ module-margin-right = 1
 font-0 = Monospace:pixelsize=16;3
 font-1 = Monospace:pixelsize=16:weight=bold;3
 font-2 = Material Icons:pixelsize=16;5
-font-3 = M+ 1m:pixelsize=16;3
+font-3 = FontAwesome:pixelsize=16;4
+font-4 = M+ 1m:pixelsize=16;3
 
 [bar/left]
 inherit = common/bar
@@ -65,7 +66,7 @@ modules-right = mpd date
 inherit = common/bar
 monitor = HDMI-A-0
 modules-left = xmonad-right
-modules-right = fs-root fs-home fs-data memory cpu temperature eth icons date
+modules-right = fs-root fs-home fs-data memory cpu temperature eth gpg dropbox mail date
 
 [module/xmonad-left]
 type = custom/script
@@ -158,11 +159,27 @@ format-connected-padding = ${self.format-padding}
 label-connected = %upspeed:9% %downspeed:9%
 format-disconnected =
 
-[module/icons]
+[module/mail]
 inherit = common/right
 type = custom/script
 interval = 5
-exec = ~/.xmonad/bin/polybar-icons.sh
+exec = ~/.xmonad/bin/new-mail.sh
+tail = false
+format-background = ${colors.magenta}
+
+[module/gpg]
+inherit = common/right
+type = custom/script
+interval = 5
+exec = ~/.xmonad/bin/gpg-status.sh
+tail = false
+format-background = ${colors.magenta}
+
+[module/dropbox]
+inherit = common/right
+type = custom/script
+interval = 5
+exec = ~/.xmonad/bin/dropbox.sh
 tail = false
 format-background = ${colors.magenta}
 
