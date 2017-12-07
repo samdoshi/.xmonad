@@ -115,10 +115,10 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_Return    ), windows W.swapMaster)
 
       -- 2D navigation
-    , ((mm,               xK_h         ), windowGo L True)
-    , ((mm,               xK_j         ), windowGo D True)
-    , ((mm,               xK_k         ), windowGo U True)
-    , ((mm,               xK_l         ), windowGo R True)
+    , ((mm,               xK_h         ), windowGo L False)
+    , ((mm,               xK_j         ), windowGo D False)
+    , ((mm,               xK_k         ), windowGo U False)
+    , ((mm,               xK_l         ), windowGo R False)
 
       -- 2D swapping
     , ((mm .|. cm,        xK_h         ), windowSwap L False)
