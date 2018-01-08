@@ -34,8 +34,7 @@ import           XMonad.Layout.MultiToggle          (EOT (EOT), HCons,
                                                      MultiToggle,
                                                      Transformer (transform),
                                                      mkToggle, (??))
-import           XMonad.Layout.NoBorders            (SmartBorder, WithBorder,
-                                                     noBorders, smartBorders)
+import           XMonad.Layout.NoBorders            (WithBorder, noBorders)
 import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
                                                      noFrillsDeco)
 import           XMonad.Layout.PerWorkspace         (PerWorkspace, onWorkspace)
@@ -143,9 +142,9 @@ big = embellish bigName
 fullName :: String
 fullName = "full"
 
-type VeryFullLayout = ML Rename (ML SmartBorder Full)
-full :: VeryFullLayout a
-full = rename fullName $ smartBorders Full
+type VeryFullLayout = ML Rename (ML WithBorder Full)
+full :: VeryFullLayout Window
+full = rename fullName $ noBorders Full
 
 type ABitFullLayout = ML Rename
                        (ML AvoidStruts
