@@ -34,7 +34,7 @@ import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      defaultTiledNavigation,
                                                      fullScreenRect, hybridOf,
                                                      layoutNavigation,
-                                                     lineNavigation,
+                                                     sideNavigationWithBias,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
 import           XMonad.Core                        (Layout, Message, X,
@@ -83,7 +83,7 @@ am :: KeyMask
 am = mod1Mask
 
 navigation2DConfig :: Navigation2DConfig
-navigation2DConfig = def { defaultTiledNavigation = hybridOf lineNavigation centerNavigation
+navigation2DConfig = def { defaultTiledNavigation = hybridOf (sideNavigationWithBias 0) centerNavigation
                          , layoutNavigation       = [(fullName, centerNavigation)]
                          , unmappedWindowRect     = [(fullName, fullScreenRect)]
                          }
