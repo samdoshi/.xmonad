@@ -74,7 +74,7 @@ manageHook :: ManageHook
 manageHook = composeAll
   [ manageDocks
   , launcherManageHook
-  , composeOne [ className =? "Pinentry" -?> doCenterFloat
+  , composeOne [ className =? "Pinentry-gtk-2" -?> doCenterFloat
                , isDialog -?> doCenterFloat
                , currentWs =? homeWS -?> insertPosition End Newer
                , currentWs =? mediaWS -?> insertPosition Master Newer
