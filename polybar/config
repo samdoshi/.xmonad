@@ -67,7 +67,7 @@ modules-right = mpd date
 inherit = common/bar
 monitor = HDMI-A-0
 modules-left = xmonad-right
-modules-right = fs-root fs-home fs-data memory cpu temperature eth gpg dropbox mail date
+modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
 
 [module/xmonad-left]
 type = custom/script
@@ -132,6 +132,15 @@ interval = 2
 format-prefix = "cpu:"
 format-background = ${colors.cyan}
 label = %percentage:2%%
+
+[module/cpu-freq]
+inherit = common/right
+type = custom/script
+interval = 2
+exec = cpupower frequency-info -fm | grep -oP '(?<=frequency: )([^ ]+ [^ ]+)'
+tail = false
+format-prefix = "freq:"
+format-background = ${colors.cyan}
 
 [module/temperature]
 inherit = common/right
