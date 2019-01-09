@@ -48,11 +48,12 @@ additionalLaunchers = [ quickTermLauncher
 -- Terminal
 
 defaultTerminal :: String
-defaultTerminal = "termite"
+defaultTerminal = "kitty"
 
 isTerminal :: String -> Bool
 isTerminal "Termite" = True
 isTerminal "URxvt"   = True
+isTerminal "kitty"   = True
 isTerminal _         = False
 
 runTerminal :: MonadIO m => m ()
@@ -181,7 +182,7 @@ toClassNameQuery f = fmap f className
 
 runInTerminalWithClass :: MonadIO m => String -> String -> m ()
 runInTerminalWithClass cmd cls =
-  unsafeSpawn $ defaultTerminal ++ " --exec=\"zsh -ic " ++ cmd ++ "\" --class=" ++ cls
+  unsafeSpawn $ defaultTerminal ++ " --class=" ++ cls ++ " zsh -ic " ++ cmd
 
 centreFloat :: ManageHook
 centreFloat = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)

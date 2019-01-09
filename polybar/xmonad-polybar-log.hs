@@ -42,10 +42,15 @@ printMessage s = forM_ (signalBody s) $ \v ->
     Just str -> putStrLn str
     Nothing  -> putStrLn "Unknown"
 
+-- https://ghc.haskell.org/trac/ghc/ticket/7325
+-- https://stackoverflow.com/questions/31845305/does-threaddelay-maxbound-int-trip-a-ghc-bug-or-what
+delay :: Int
+delay = 10000000000
+
 main :: IO ()
 main = do
   mode <- getRecord "xmonad-polybar-log"
   hSetBuffering stdout LineBuffering
   client <- connectSession
   _ <- addMatch client (matchRule mode) printMessage
-  forever (threadDelay maxBound)
+  forever (threadDelay delay)
