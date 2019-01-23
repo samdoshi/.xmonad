@@ -126,12 +126,13 @@ titleBar screen ws title | isActiveScreen ws screen = format title
 descriptionBar :: ScreenId -> WindowSet -> String
 descriptionBar screen ws = pad 6 $ screenDescription screen ws
 
+-- https://github.com/google/material-design-icons/blob/master/iconfont/codepoints
 material :: WorkspaceId -> String
 material x | x == homeWS      = "\xe88a"
            | x == alphaWS     = "\xe400"
            | x == betaWS      = "\xe401"
            | x == mediaWS     = "\xe54d"
-           | x == gamesWS     = "\xe338"
+           | x == vmWS        = "\xe30b"
            | x == floatWS     = "\xe8aa"
            | x == "7"         = "\xe3d7"
            | x == "8"         = "\xe3d8"

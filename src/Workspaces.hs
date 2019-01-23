@@ -14,8 +14,8 @@ betaWS = "beta"
 mediaWS :: WorkspaceId
 mediaWS = "media"
 
-gamesWS :: WorkspaceId
-gamesWS = "games"
+vmWS :: WorkspaceId
+vmWS = "vm"
 
 floatWS :: WorkspaceId
 floatWS = "float"
@@ -24,7 +24,7 @@ minimisedWS :: WorkspaceId
 minimisedWS = "minimised"
 
 workspaces :: [WorkspaceId]
-workspaces = [ homeWS, alphaWS, betaWS, mediaWS, floatWS, gamesWS
+workspaces = [ homeWS, alphaWS, betaWS, mediaWS, floatWS, vmWS
              , "7", "8", "9"
              , minimisedWS
              ]
