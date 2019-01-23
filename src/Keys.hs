@@ -27,7 +27,8 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
-import           XMonad.Actions.MessageFeedback     (tryMessage_)
+import           XMonad.Actions.MessageFeedback     (sendSomeMessageB,
+                                                     tryMessageB)
 import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      centerNavigation,
                                                      centerNavigation,
@@ -89,7 +90,7 @@ navigation2DConfig = def { defaultTiledNavigation = hybridOf (sideNavigationWith
                          }
 
 tryMsg :: (Message a, Message b) => a -> b -> X ()
-tryMsg x y = tryMessage_ x y >> refresh
+tryMsg x y = tryMessageB sendSomeMessageB x y >> pure ()
 
 -- -- | Make a submap where each keybinding works with and without a modmask
 -- makeSubmap :: KeyMask -> [(KeySym, X ())] -> X ()

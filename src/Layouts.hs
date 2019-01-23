@@ -43,7 +43,8 @@ import           XMonad.Layout.ResizableTile        (ResizableTall (ResizableTal
 import           XMonad.Layout.Simplest             (Simplest (Simplest))
 import           XMonad.Layout.SimplestFloat        (SimplestFloat,
                                                      simplestFloat)
-import           XMonad.Layout.Spacing              (Spacing, spacing)
+import           XMonad.Layout.Spacing              (Border (..), Spacing,
+                                                     spacingRaw)
 import           XMonad.Layout.SubLayouts           (Sublayout, subLayout)
 import           XMonad.Layout.Tabbed               (TabbedDecoration, addTabs)
 import           XMonad.Layout.WindowArranger       (WindowArranger)
@@ -59,12 +60,16 @@ import           Workspaces
 -- Constants
 
 -- How much gap between windows
-windowGaps :: Int
-windowGaps = 6
+windowGaps :: Border
+windowGaps = uniformBorder 6
 
 -- How wide should windows be in narrow mode
 narrowWidth :: Int
 narrowWidth = 1280
+
+-- Helpers
+uniformBorder :: Integer -> Border
+uniformBorder i = Border i i i i
 
 -- Shorten some common types
 type ML = ModifiedLayout
@@ -161,7 +166,7 @@ aBitFull = rename fullName
                    ]
            $ noBorders
            $ topBarDecoration
-           $ spacing windowGaps
+           $ spacingRaw False (uniformBorder 0) False windowGaps True
            Full
 
 -- Grid layout
@@ -240,7 +245,7 @@ embellish s l = toggleFull                     -- use a message to toggle fullsc
               $ topBarDecoration               -- add top bar theme
               $ addTabs shrinkText floatTheme  -- tabs support
               $ subLayout [] Simplest          -- tabs support
-              $ spacing windowGaps             -- window spacing
+              $ spacingRaw False (uniformBorder 0) False windowGaps True -- spacing
               l
 
 -- Themes
