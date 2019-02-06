@@ -156,8 +156,8 @@ format-warn = <label-warn>
 format-warn-background = ${colors.red}
 format-warn-foreground = ${self.format-foreground}
 format-warn-padding = ${self.format-padding}
-label = %temperature%
-label-warn = %temperature%
+label = %temperature-c%
+label-warn = %temperature-c%
 
 [module/eth]
 inherit = common/right
