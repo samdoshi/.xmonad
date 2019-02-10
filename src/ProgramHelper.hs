@@ -1,4 +1,6 @@
-module ProgramHelper ( defaultTerminal
+module ProgramHelper ( oneMonitor
+                     , twoMonitors
+                     , defaultTerminal
                      , isBrowser
                      , isEmacs
                      , isTerminal
@@ -44,6 +46,14 @@ additionalLaunchers :: [Launcher]
 additionalLaunchers = [ quickTermLauncher
                       ]
 
+
+-- change screens
+
+oneMonitor :: MonadIO m => m ()
+oneMonitor = safeSpawn "/home/sam/.xmonad/bin/one-monitor.sh" []
+
+twoMonitors :: MonadIO m => m ()
+twoMonitors = safeSpawn "/home/sam/.xmonad/bin/two-monitors.sh" []
 
 -- Terminal
 

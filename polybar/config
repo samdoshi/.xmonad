@@ -62,7 +62,6 @@ inherit = common/bar
 monitor = DisplayPort-0
 modules-left = xmonad-left
 modules-right = mpd date
-
 tray-position = right
 
 [bar/right]
@@ -70,6 +69,13 @@ inherit = common/bar
 monitor = HDMI-A-0
 modules-left = xmonad-right
 modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
+
+[bar/one]
+inherit = common/bar
+monitor = DisplayPort-0
+modules-left = onebar xmonad-one
+modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
+tray-position = right
 
 [module/xmonad-left]
 type = custom/script
@@ -83,7 +89,7 @@ tail = true
 
 [module/xmonad-one]
 type = custom/script
-exec = xmonad-polybar-log one
+exec = "xmonad-polybar-log one"
 tail = true
 
 [module/mpd]
@@ -205,8 +211,15 @@ label = %date% %{T2}%time%%{T-}
 format-prefix = " "
 format-background = ${colors.foreground-bright}
 
+[module/onebar]
+type = custom/text
+content = %{T2}ONE%{T-}
+content-padding = 1
+content-background = ${colors.orange}
+content-foreground = ${colors.foreground-bright}
+
 [settings]
-screenchange-reload = true
+screenchange-reload = false
 
 [global/wm]
 margin-top = 0

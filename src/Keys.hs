@@ -14,8 +14,9 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
                                                      mod1Mask, shiftMask, xK_0,
-                                                     xK_1, xK_9, xK_BackSpace,
-                                                     xK_Return, xK_Tab, xK_a,
+                                                     xK_1, xK_2, xK_9,
+                                                     xK_BackSpace, xK_Return,
+                                                     xK_Tab, xK_a,
                                                      xK_apostrophe, xK_b,
                                                      xK_backslash, xK_comma,
                                                      xK_e, xK_f, xK_g, xK_grave,
@@ -175,6 +176,7 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm,               xK_f         ), sendMessage $ Toggle ToggleABitFull)
     , ((mm .|. sm,        xK_f         ), sendMessage $ Toggle ToggleVeryFull)
     , ((mm .|. am,        xK_f         ), withFocused $ \w -> sendMessage $ RemoveFullscreen w)
+
       -- toggle narrowing
     , ((mm,               xK_n         ), sendMessage ToggleGaps)
       -- toggle struts
@@ -196,6 +198,9 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
                                           $ gsConfig mm)
       -- applications submap
     , ((mm,               xK_a         ), launchersMap mm)
+
+    , ((mm .|. am .|. cm ,xK_1         ), oneMonitor)
+    , ((mm .|. am .|. cm ,xK_2         ), twoMonitors)
     ]
     ++
     -- mod-[1..9] - switch to workspace N
