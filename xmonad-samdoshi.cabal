@@ -48,3 +48,12 @@ executable xmonad-polybar-log
   build-depends:       base >= 4.9 && < 5
                      , dbus
                      , optparse-generic
+
+executable polybar-world-time
+  hs-source-dirs:      polybar
+  ghc-options:         -Wall -O2 -threaded
+  main-is:             polybar-world-time.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.9 && < 5
+                     , time
+                     , tz
