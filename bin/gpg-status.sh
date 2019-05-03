@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 # store cache ids, SIGN_ID, ENCRYPT_ID  in gpg-cache-ids.sh
@@ -19,7 +19,7 @@ function gpg_key_status() {
 sign_status=$(gpg_key_status $SIGN_ID)
 encrypt_status=$(gpg_key_status $ENCRYPT_ID)
 
-if [ $sign_status == "1" ] || [ $encrypt_status == "1" ]; then
+if [ "$sign_status" == "1" ] || [ "$encrypt_status" == "1" ]; then
     echo ''
 else
     echo ''

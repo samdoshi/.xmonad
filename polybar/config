@@ -77,9 +77,16 @@ modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg 
 
 [bar/one]
 inherit = common/bar
-monitor = DisplayPort-0
+monitor =
 modules-left = onebar xmonad-one
 modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
+tray-position = right
+
+[bar/tablet]
+inherit = common/bar
+monitor =
+modules-left = xmonad-one
+modules-right = fs-root memory cpu cpu-freq temperature eth battery mail date
 tray-position = right
 
 [module/xmonad-left]
@@ -181,6 +188,20 @@ format-connected-background = ${colors.purple}
 format-connected-padding = ${self.format-padding}
 label-connected = %upspeed:9% %downspeed:9%
 format-disconnected =
+
+[module/battery]
+inherit = common/right
+type = internal/battery
+battery = BAT1
+adaptor = ADP1
+format-charging-padding = 1
+format-charging-prefix = "charging:"
+format-charging-foreground = ${self.format-foreground}
+format-charging-background = ${colors.purple}
+format-discharging-padding = 1
+format-discharging-prefix = "discharging:"
+format-discharging-foreground = ${self.format-foreground}
+format-discharging-background = ${colors.orange}
 
 [module/mail]
 inherit = common/right

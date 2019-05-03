@@ -2,3 +2,4 @@
 /bin/gpg-cache-ids.sh
 /prompt-history
 /xmonad.state
+**/result
