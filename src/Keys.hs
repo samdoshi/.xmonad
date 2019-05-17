@@ -70,6 +70,7 @@ import           GridHelpers
 import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleABitFull, ToggleVeryFull),
                                                      fullName)
+import           Machines                           (Machine)
 import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
@@ -101,13 +102,13 @@ tryMsg x y = tryMessageB sendSomeMessageB x y >> pure ()
 --                        ]
 
 
-keyBindings :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
+keyBindings :: Machine -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
+keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     [
       -- quit
       ((mm .|. sm,        xK_q         ), liftIO exitSuccess)
       -- restart
-    , ((mm,               xK_q         ), restart "xmonad" True)
+    , ((mm,               xK_q         ), restart ("xmonad " ++ show mch) True)
 
       -- move focus up or down the window stack
     , ((mm,               xK_Tab       ), windows W.focusDown)
@@ -215,8 +216,8 @@ keyBindings conf@XConfig {XC.modMask = mm} = M.fromList $
         | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-mouseBindings :: XConfig Layout -> M.Map (KeyMask, Button) (Window -> X ())
-mouseBindings XConfig {XC.modMask = mm} = M.fromList
+mouseBindings :: Machine -> XConfig Layout -> M.Map (KeyMask, Button) (Window -> X ())
+mouseBindings _ XConfig {XC.modMask = mm} = M.fromList
     -- set the window to floating mode and move by dragging
     [ ((mm, button1), \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster)
     -- raise the window to the top of the stack

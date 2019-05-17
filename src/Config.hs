@@ -38,40 +38,41 @@ import           XMonad.Util.Run             (safeSpawn)
 
 import           Keys                        (keyBindings, mouseBindings,
                                               navigation2DConfig)
+import           Machines                    (Machine)
 import           ProgramHelper
 import           Theme
 import           Workspaces
 
-pureConfig :: LayoutClass a Window => a Window -> XConfig a
-pureConfig l = withNavigation2DConfig navigation2DConfig $
-               withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
-               def { XC.modMask            = mod4Mask
-                   , XC.terminal           = defaultTerminal
-                   , XC.borderWidth        = 6
-                   , XC.normalBorderColor  = inactive
-                   , XC.focusedBorderColor = active
-                   , XC.focusFollowsMouse  = False
-                   , XC.clickJustFocuses   = False
-                   , XC.workspaces         = workspaces
-                   , XC.handleEventHook    = handleEventHook
-                   , XC.logHook            = logHook
-                   , XC.manageHook         = manageHook
-                   , XC.layoutHook         = l
-                   , XC.startupHook        = startupHook
-                   , XC.keys               = keyBindings
-                   , XC.mouseBindings      = mouseBindings
-                   }
+pureConfig :: LayoutClass a Window => Machine -> (Machine -> a Window) -> XConfig a
+pureConfig mch l = withNavigation2DConfig navigation2DConfig $
+                   withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
+                   def { XC.modMask            = mod4Mask
+                       , XC.terminal           = defaultTerminal
+                       , XC.borderWidth        = 6
+                       , XC.normalBorderColor  = inactive
+                       , XC.focusedBorderColor = active
+                       , XC.focusFollowsMouse  = False
+                       , XC.clickJustFocuses   = False
+                       , XC.workspaces         = workspaces mch
+                       , XC.handleEventHook    = handleEventHook mch
+                       , XC.logHook            = logHook mch
+                       , XC.manageHook         = manageHook mch
+                       , XC.layoutHook         = l mch
+                       , XC.startupHook        = startupHook mch
+                       , XC.keys               = keyBindings mch
+                       , XC.mouseBindings      = mouseBindings mch
+                       }
 
-handleEventHook :: Event -> X All
-handleEventHook = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
-                                      -- of XMonad.Hooks.EwmhDesktops
-                  <> docksEventHook   -- make xmobar (et al.) appear immediately
+handleEventHook :: Machine -> Event -> X All
+handleEventHook _ = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
+                                        -- of XMonad.Hooks.EwmhDesktops
+                    <> docksEventHook   -- make xmobar (et al.) appear immediately
 
 -- | My ManageHook
 --
 -- n.b. hooks are processed bottom to top!
-manageHook :: ManageHook
-manageHook = composeAll
+manageHook :: Machine -> ManageHook
+manageHook _ = composeAll
   [ manageDocks
   , launcherManageHook
   , composeOne [ className =? "Pinentry-gtk-2" -?> doCenterFloat
@@ -86,11 +87,11 @@ manageHook = composeAll
   ]
   where unfloat = ask >>= doF . sink
 
-logHook :: X ()
-logHook = pure ()
+logHook :: Machine -> X ()
+logHook _ = pure ()
 
-startupHook :: X ()
-startupHook = do
+startupHook :: Machine -> X ()
+startupHook _ = do
   liftIO $ setEnv "_JAVA_AWT_WM_NONREPARENTING" "1" -- fix Java (e.g. Arduino)
   safeSpawn "hsetroot" ["-solid", base0]
   setDefaultCursor xC_left_ptr

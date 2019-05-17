@@ -2,6 +2,8 @@ module Workspaces where
 
 import           XMonad.Core (WorkspaceId)
 
+import           Machines    (Machine)
+
 homeWS :: WorkspaceId
 homeWS = "home"
 
@@ -23,8 +25,8 @@ floatWS = "float"
 minimisedWS :: WorkspaceId
 minimisedWS = "minimised"
 
-workspaces :: [WorkspaceId]
-workspaces = [ homeWS, alphaWS, betaWS, mediaWS, floatWS, vmWS
-             , "7", "8", "9"
-             , minimisedWS
-             ]
+workspaces :: Machine -> [WorkspaceId]
+workspaces _ = [ homeWS, alphaWS, betaWS, mediaWS, floatWS, vmWS
+               , "7", "8", "9"
+               , minimisedWS
+               ]

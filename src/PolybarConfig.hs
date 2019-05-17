@@ -23,21 +23,22 @@ import           XMonad.Util.NamedWindows     (getName)
 import           XMonad.Util.Run              (unsafeSpawn)
 import           XMonad.Util.WorkspaceCompare (WorkspaceSort, getSortByIndex)
 
+import           Machines
 import           Theme
 import           Workspaces
 
 
 data Bar = BarLeft | BarRight | BarOne
 
-polybar :: XConfig a -> IO (XConfig a)
-polybar xc = do
+polybar :: Machine -> XConfig a -> IO (XConfig a)
+polybar mch xc = do
   homeDir <- getHomeDirectory
   unsafeSpawn $ homeDir </> ".xmonad/polybar/launch.sh"
   dbus <- D.connectSession
   pure xc { XC.logHook = XC.logHook xc
-                         >> polybarHook dbus BarLeft
-                         >> polybarHook dbus BarRight
-                         >> polybarHook dbus BarOne
+                         >> polybarHook dbus mch BarLeft
+                         >> polybarHook dbus mch BarRight
+                         >> polybarHook dbus mch BarOne
           }
 
 screenForBar :: Bar -> ScreenId
@@ -59,8 +60,8 @@ dbusOutput dbus bar str = do
     interfaceName = "com.samdoshi.xmonad"
     memberName = "Update"
 
-polybarHook :: D.Client -> Bar -> X ()
-polybarHook dbus bar =
+polybarHook :: D.Client -> Machine -> Bar -> X ()
+polybarHook dbus _ bar =
   do ws <- gets windowset
      urgents <- readUrgents
      title <- maybe (return "") (fmap show . getName) . S.peek $ ws

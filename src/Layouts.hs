@@ -53,6 +53,7 @@ import           XMonad.Layout.WindowNavigation     (WindowNavigation,
 import           XMonad.Util.Types                  (Direction2D (L, R))
 
 import           Flip
+import           Machines                           (Machine)
 import           OneBig                             (OneBig (OneBig))
 import           Theme
 import           Workspaces
@@ -81,12 +82,12 @@ type LayoutHook = PW HomeChoice
                   (PW FloatChoice
                    (PW MediaChoice
                     (PW MinimisedChoice DefaultChoice)))
-layoutHook :: LayoutHook Window
-layoutHook = onWorkspace homeWS homeChoice
-             $ onWorkspace floatWS floatChoice
-             $ onWorkspace mediaWS mediaChoice
-             $ onWorkspace minimisedWS minimisedChoice
-             defaultChoice
+layoutHook :: Machine -> LayoutHook Window
+layoutHook _ = onWorkspace homeWS homeChoice
+               $ onWorkspace floatWS floatChoice
+               $ onWorkspace mediaWS mediaChoice
+               $ onWorkspace minimisedWS minimisedChoice
+               defaultChoice
 
 -- Predefined layout choices
 type DefaultChoice = CH TiledLayout BSPLayout
