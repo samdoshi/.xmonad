@@ -1,14 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 MONITOR_COUNT=$(xrandr | awk '/\ connected/ && /[[:digit:]]x[[:digit:]].*+/{print $1}' | wc -l)
+
+CONFIG_FILE="$HOME/Linux/xmonad/polybar/config"
 
 killall -qu polybar
 
 if ((MONITOR_COUNT <= 1)); then
     echo One
-    polybar --config="$HOME/.xmonad/polybar/config" one &
+    polybar --config=$CONFIG_FILE one &
 else
     echo Multiple
-    polybar --config="$HOME/.xmonad/polybar/config" left &
-    polybar --config="$HOME/.xmonad/polybar/config" right &
+    polybar --config=$CONFIG_FILE left &
+    polybar --config=$CONFIG_FILE right &
 fi;

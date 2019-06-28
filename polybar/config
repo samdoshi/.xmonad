@@ -207,7 +207,7 @@ format-discharging-background = ${colors.orange}
 inherit = common/right
 type = custom/script
 interval = 5
-exec = ~/.xmonad/bin/new-mail.sh
+exec = ~/Linux/xmonad/bin/new-mail.sh
 tail = false
 format-background = ${colors.magenta}
 
@@ -215,7 +215,7 @@ format-background = ${colors.magenta}
 inherit = common/right
 type = custom/script
 interval = 5
-exec = ~/.xmonad/bin/gpg-status.sh
+exec = ~/Linux/xmonad/bin/gpg-status.sh
 tail = false
 format-background = ${colors.magenta}
 
@@ -223,7 +223,7 @@ format-background = ${colors.magenta}
 inherit = common/right
 type = custom/script
 interval = 5
-exec = ~/.xmonad/bin/dropbox.sh
+exec = ~/Linux/xmonad/bin/dropbox.sh
 tail = false
 format-background = ${colors.magenta}
 
