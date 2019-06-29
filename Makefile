@@ -1,15 +1,13 @@
 .PHONY: build clean clean-all install
 
 build:
-	stack build
+	nix build -f . xmonad-samdoshi
 
 clean:
-	stack clean xmonad-samdoshi
+	rm -rf dist
+	rm -rf dist-newstyle
+	rm -rf .ghc.environment*
+	rm -rf result
 
-clean-all:
-	stack clean
-
-install: build
-	stack install --silent --local-bin-path $(HOME)/.local/bin xmonad-samdoshi:xmonad-polybar-log
-	stack install --silent --local-bin-path $(HOME)/.local/bin xmonad-samdoshi:polybar-world-time
-	stack install --silent --local-bin-path $(HOME)/.local/bin xmonad-samdoshi:xmonad
+install:
+	nix-env -f . -iA xmonad-samdoshi
