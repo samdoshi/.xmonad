@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 xrandr --output HDMI-A-0 --off
-~/.xmonad/polybar/launch.sh
+~/Linux/xmonad/polybar/launch.sh

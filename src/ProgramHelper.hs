@@ -50,10 +50,10 @@ additionalLaunchers = [ quickTermLauncher
 -- change screens
 
 oneMonitor :: MonadIO m => m ()
-oneMonitor = safeSpawn "/home/sam/.xmonad/bin/one-monitor.sh" []
+oneMonitor = safeSpawn "/home/sam/Linux/xmonad/bin/one-monitor.sh" []
 
 twoMonitors :: MonadIO m => m ()
-twoMonitors = safeSpawn "/home/sam/.xmonad/bin/two-monitors.sh" []
+twoMonitors = safeSpawn "/home/sam/Linux/xmonad/bin/two-monitors.sh" []
 
 -- Terminal
 

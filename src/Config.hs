@@ -11,7 +11,6 @@ import           Control.Monad.IO.Class      (liftIO)
 import           Control.Monad.Reader        (ask)
 import           Data.Default                (def)
 import           Graphics.X11.Types          (Window, mod4Mask)
-import           Graphics.X11.Xlib.Cursor    (xC_left_ptr)
 import           Graphics.X11.Xlib.Extras    (Event)
 import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
 import           XMonad.Core                 (LayoutClass, ManageHook, X,
@@ -32,7 +31,6 @@ import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
 import           XMonad.Layout.Fullscreen    (fullscreenEventHook)
 import           XMonad.ManageHook           (className, composeAll, doF, (=?))
 import           XMonad.StackSet             (sink)
-import           XMonad.Util.Cursor          (setDefaultCursor)
 import           XMonad.Util.Run             (safeSpawn)
 
 
@@ -75,7 +73,7 @@ manageHook :: Machine -> ManageHook
 manageHook _ = composeAll
   [ manageDocks
   , launcherManageHook
-  , composeOne [ className =? "Pinentry-gtk-2" -?> doCenterFloat
+  , composeOne [ className =? "Pinentry" -?> doCenterFloat
                , isDialog -?> doCenterFloat
                , currentWs =? homeWS -?> insertPosition End Newer
                , currentWs =? mediaWS -?> insertPosition Master Newer
@@ -94,6 +92,4 @@ startupHook :: Machine -> X ()
 startupHook _ = do
   liftIO $ setEnv "_JAVA_AWT_WM_NONREPARENTING" "1" -- fix Java (e.g. Arduino)
   safeSpawn "hsetroot" ["-solid", base0]
-  setDefaultCursor xC_left_ptr
   docksStartupHook
-

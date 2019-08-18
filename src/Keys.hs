@@ -200,8 +200,8 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
       -- applications submap
     , ((mm,               xK_a         ), launchersMap mm)
 
-    , ((mm .|. am .|. cm ,xK_1         ), oneMonitor)
-    , ((mm .|. am .|. cm ,xK_2         ), twoMonitors)
+    , ((mm .|. am .|. cm, xK_1         ), oneMonitor)
+    , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
     ]
     ++
     -- mod-[1..9] - switch to workspace N

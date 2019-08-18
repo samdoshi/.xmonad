@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-dropbox=$(dropbox.py status 2>&1)
+dropbox=$(/home/sam/.local/bin/dropbox.py status 2>&1)
 
 if [[ $dropbox != "Up to date" ]]; then
     echo ''
