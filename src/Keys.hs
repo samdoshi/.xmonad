@@ -108,7 +108,7 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
       -- quit
       ((mm .|. sm,        xK_q         ), liftIO exitSuccess)
       -- restart
-    , ((mm,               xK_q         ), restart ("xmonad " ++ show mch) True)
+    , ((mm,               xK_q         ), restart "xmonad" True)
 
       -- move focus up or down the window stack
     , ((mm,               xK_Tab       ), windows W.focusDown)
