@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MONITOR_COUNT=$(xrandr | awk '/\ connected/ && /[[:digit:]]x[[:digit:]].*+/{print $1}' | wc -l)
+MONITOR_COUNT=$(xrandr | awk '/ connected/ && /[[:digit:]]x[[:digit:]].*+/{print $1}' | wc -l)
 
 CONFIG_FILE="$HOME/Linux/xmonad/polybar/config"
 
