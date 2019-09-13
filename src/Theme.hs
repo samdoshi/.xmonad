@@ -26,7 +26,7 @@ inactive = base01
 urgent = magenta
 
 font :: Int -> String
-font pixelSize = "xft:Monospace:pixelsize=" ++ show pixelSize
+font pixelSize = "xft:Iosevka:pixelsize=" ++ show pixelSize
 
 boldFont :: Int -> String
 boldFont pixelSize = font pixelSize ++ ":style=bold"
