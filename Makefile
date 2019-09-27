@@ -1,7 +1,7 @@
 .PHONY: build clean clean-all install
 
 build:
-	nix build -f . xmonad-samdoshi
+	nix-build -A xmonad-samdoshi
 
 clean:
 	rm -rf dist
