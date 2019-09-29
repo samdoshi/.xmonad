@@ -155,7 +155,7 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_apostrophe), toSubl NextLayout)
 
       -- launch terminal
-    , ((mm .|. sm,        xK_Return    ), runTerminal)
+    , ((mm .|. sm,        xK_Return    ), runTerminal mch)
       -- launch prompt
     , ((mm,               xK_p         ), shellPrompt xpConfig)
       -- 1passkell

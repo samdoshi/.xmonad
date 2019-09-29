@@ -36,17 +36,15 @@ import           Machines                   (Machine (..))
 
 launchers :: Machine -> [(KeySym, Launcher)]
 launchers mch = [ (xK_b, browserLauncher mch)
-              , (xK_c, calculatorLauncher)
-              , (xK_d, dictionaryLauncher)
-              , (xK_e, emacsLauncher)
-              , (xK_m, muttLauncher)
-              , (xK_n, ncmpcppLauncher)
-              ]
+                , (xK_c, calculatorLauncher)
+                , (xK_d, dictionaryLauncher)
+                , (xK_e, emacsLauncher)
+                , (xK_m, muttLauncher mch)
+                , (xK_n, ncmpcppLauncher mch)
+                ]
 
 additionalLaunchers :: [Launcher]
-additionalLaunchers = [ quickTermLauncher
-
-                      ]
+additionalLaunchers = [ quickTermLauncher ]
 
 
 -- change screens
@@ -68,8 +66,9 @@ isTerminal "URxvt"   = True
 isTerminal "kitty"   = True
 isTerminal _         = False
 
-runTerminal :: MonadIO m => m ()
-runTerminal = safeSpawn defaultTerminal []
+runTerminal :: MonadIO m => Machine -> m ()
+runTerminal mch = safeSpawn defaultTerminal
+  ["--override", "font_size=" ++ kittyTerminalSize mch Normal]
 
 quickTermLauncher :: Launcher
 quickTermLauncher = Launcher { launcherCommand = unsafeSpawn $ defaultTerminal ++ " --class=" ++ cls
@@ -157,39 +156,39 @@ runEmacs = safeSpawn "emacsclient" ["--create-frame"]
 
 -- Mutt
 
-muttLauncher :: Launcher
-muttLauncher = Launcher { launcherCommand = runMutt
-                        , launcherAction = LaunchOrGoto
-                        , launcherSecondaryAction = LaunchOrBring
-                        , launcherTertiaryAction = NoAction
-                        , launcherQuery = toClassNameQuery isMutt
-                        , launcherHook = idHook
-                        }
+muttLauncher :: Machine -> Launcher
+muttLauncher mch = Launcher { launcherCommand = runMutt mch
+                            , launcherAction = LaunchOrGoto
+                            , launcherSecondaryAction = LaunchOrBring
+                            , launcherTertiaryAction = NoAction
+                            , launcherQuery = toClassNameQuery isMutt
+                            , launcherHook = idHook
+                            }
 
 isMutt :: String -> Bool
 isMutt "Mutt" = True
 isMutt _      = False
 
-runMutt :: MonadIO m => m ()
-runMutt = runInTerminalWithClass "neomutt" "Mutt"
+runMutt :: MonadIO m => Machine -> m ()
+runMutt mch = runInTerminalWithClass mch Small "neomutt" "Mutt"
 
 -- ncmpcpp
 
-ncmpcppLauncher :: Launcher
-ncmpcppLauncher = Launcher { launcherCommand = runNCMPCpp
-                           , launcherAction = LaunchOrGoto
-                           , launcherSecondaryAction = LaunchOrBring
-                           , launcherTertiaryAction = NoAction
-                           , launcherQuery = toClassNameQuery isNCMPCpp
-                           , launcherHook = idHook
-                           }
+ncmpcppLauncher :: Machine -> Launcher
+ncmpcppLauncher mch = Launcher { launcherCommand = runNCMPCpp mch
+                               , launcherAction = LaunchOrGoto
+                               , launcherSecondaryAction = LaunchOrBring
+                               , launcherTertiaryAction = NoAction
+                               , launcherQuery = toClassNameQuery isNCMPCpp
+                               , launcherHook = idHook
+                               }
 
 isNCMPCpp :: String -> Bool
 isNCMPCpp "NCMPCpp" = True
 isNCMPCpp _         = False
 
-runNCMPCpp :: MonadIO m => m ()
-runNCMPCpp = runInTerminalWithClass "ncmpcpp" "NCMPCpp"
+runNCMPCpp :: MonadIO m => Machine -> m ()
+runNCMPCpp mch = runInTerminalWithClass mch Normal "ncmpcpp" "NCMPCpp"
 
 
 -- Helpers
@@ -197,9 +196,22 @@ runNCMPCpp = runInTerminalWithClass "ncmpcpp" "NCMPCpp"
 toClassNameQuery :: (String -> Bool) -> Query Bool
 toClassNameQuery f = fmap f className
 
-runInTerminalWithClass :: MonadIO m => String -> String -> m ()
-runInTerminalWithClass cmd cls =
-  unsafeSpawn $ defaultTerminal ++ " --class=" ++ cls ++ " zsh -ic " ++ cmd
+runInTerminalWithClass :: MonadIO m => Machine -> TerminalSize -> String -> String -> m ()
+runInTerminalWithClass mch size cmd cls =
+  unsafeSpawn $ defaultTerminal
+                ++ " --override font_size=" ++ kittyTerminalSize mch size
+                ++ " --class=" ++ cls
+                ++ " zsh -ic " ++ cmd
+
+data TerminalSize = Small | Normal
+
+kittyTerminalSize :: Machine -> TerminalSize -> String
+kittyTerminalSize Carbon Small   = "9"
+kittyTerminalSize Carbon Normal  = "12"
+kittyTerminalSize Cobalt Small   = "12"
+kittyTerminalSize Cobalt Normal  = "15"
+kittyTerminalSize Unknown Small  = "9"
+kittyTerminalSize Unknown Normal = "12"
 
 centreFloat :: ManageHook
 centreFloat = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
