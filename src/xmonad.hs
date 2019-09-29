@@ -17,6 +17,7 @@ main = do
   mch <- determineMachine
   launch =<< polybar mch (ewmh $ pureConfig mch layoutHook)
 
+-- TODO change this to get machine from hostname
 determineMachine :: IO Machine
 determineMachine = do
   args <- getArgs
