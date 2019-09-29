@@ -30,20 +30,22 @@ import           XMonad.ManageHook          (className, composeAll, doShift,
 import qualified XMonad.StackSet            as W
 import           XMonad.Util.Run            (safeSpawn, unsafeSpawn)
 
+import           Machines                   (Machine (..))
 
 -- Launcher map
 
-launchers :: [(KeySym, Launcher)]
-launchers = [ (xK_b, browserLauncher)
-            , (xK_c, calculatorLauncher)
-            , (xK_d, dictionaryLauncher)
-            , (xK_e, emacsLauncher)
-            , (xK_m, muttLauncher)
-            , (xK_n, ncmpcppLauncher)
-            ]
+launchers :: Machine -> [(KeySym, Launcher)]
+launchers mch = [ (xK_b, browserLauncher mch)
+              , (xK_c, calculatorLauncher)
+              , (xK_d, dictionaryLauncher)
+              , (xK_e, emacsLauncher)
+              , (xK_m, muttLauncher)
+              , (xK_n, ncmpcppLauncher)
+              ]
 
 additionalLaunchers :: [Launcher]
 additionalLaunchers = [ quickTermLauncher
+
                       ]
 
 
@@ -84,29 +86,34 @@ quickTerm = doLauncherAction (launcherAction quickTermLauncher) quickTermLaunche
 
 -- Browser
 
-browserLauncher :: Launcher
-browserLauncher = Launcher { launcherCommand = runBrowser
-                           , launcherAction = Launch
-                           , launcherSecondaryAction = GotoProgram
-                           , launcherTertiaryAction = Other runPrivateBrowser
-                           , launcherQuery = toClassNameQuery isBrowser
-                           , launcherHook = idHook
-                           }
+browserLauncher :: Machine -> Launcher
+browserLauncher mch = Launcher { launcherCommand = runBrowser mch
+                               , launcherAction = Launch
+                               , launcherSecondaryAction = GotoProgram
+                               , launcherTertiaryAction = Other (runPrivateBrowser mch)
+                               , launcherQuery = toClassNameQuery isBrowser
+                               , launcherHook = idHook
+                               }
 
 isBrowser :: String -> Bool
 isBrowser "Chromium" = True
 isBrowser _          = False
 
-runBrowser :: MonadIO m => m ()
-runBrowser = safeSpawn "chromium" [ "--force-device-scale-factor=1.75"
-                                  , "--disk-cache-dir=/tmp/cache/chromium"
-                                  ]
+runBrowser :: MonadIO m => Machine -> m ()
+runBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor=" ++ browserScale mch
+                                      , "--disk-cache-dir=/tmp/cache/chromium"
+                                      ]
 
-runPrivateBrowser :: MonadIO m => m ()
-runPrivateBrowser = safeSpawn "chromium" [ "--force-device-scale-factor=1.75"
-                                         , "--disk-cache-dir=/tmp/cache/chromium"
-                                         , "--incognito"
-                                         ]
+runPrivateBrowser :: MonadIO m => Machine -> m ()
+runPrivateBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor" ++ browserScale mch
+                                             , "--disk-cache-dir=/tmp/cache/chromium"
+                                             , "--incognito"
+                                             ]
+
+browserScale :: Machine -> String
+browserScale Carbon  = "1.75"
+browserScale Cobalt  = "2"
+browserScale Unknown = "1"
 
 -- Calculator
 
@@ -228,12 +235,12 @@ doLauncherAction LaunchOrBring l =
 doLauncherAction (Other x) _ = x
 doLauncherAction NoAction _ = pure ()
 
-launcherManageHook :: ManageHook
-launcherManageHook = composeAll $ mh <$> (additionalLaunchers ++ (snd <$> launchers))
+launcherManageHook :: Machine -> ManageHook
+launcherManageHook mch = composeAll $ mh <$> (additionalLaunchers ++ (snd <$> launchers mch))
   where mh l = launcherQuery l --> launcherHook l
 
-launchersMap :: KeyMask -> X ()
-launchersMap mm = submap $ M.fromList $ concatMap keys launchers
+launchersMap :: Machine -> KeyMask -> X ()
+launchersMap mch mm = submap $ M.fromList $ concatMap keys (launchers mch)
   where keys (ks, l) = [ ((noModMask, ks), primaryAction l)
                        , ((mm       , ks), primaryAction l)
                        , ((noModMask .|. shiftMask, ks), secondaryAction l)

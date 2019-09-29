@@ -70,9 +70,9 @@ handleEventHook _ = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
 --
 -- n.b. hooks are processed bottom to top!
 manageHook :: Machine -> ManageHook
-manageHook _ = composeAll
+manageHook mch = composeAll
   [ manageDocks
-  , launcherManageHook
+  , launcherManageHook mch
   , composeOne [ className =? "Pinentry" -?> doCenterFloat
                , isDialog -?> doCenterFloat
                , currentWs =? homeWS -?> insertPosition End Newer

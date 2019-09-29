@@ -198,7 +198,7 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_m         ), bringWorkspaceWindow minimisedWS
                                           $ gsConfig mm)
       -- applications submap
-    , ((mm,               xK_a         ), launchersMap mm)
+    , ((mm,               xK_a         ), launchersMap mch mm)
 
     , ((mm .|. am .|. cm, xK_1         ), oneMonitor)
     , ((mm .|. am .|. cm, xK_2         ), twoMonitors)

@@ -33,7 +33,10 @@ data Bar = BarLeft | BarRight | BarOne
 polybar :: Machine -> XConfig a -> IO (XConfig a)
 polybar mch xc = do
   homeDir <- getHomeDirectory
-  unsafeSpawn $ homeDir </> "Linux/xmonad/polybar/launch.sh"
+  unsafeSpawn $ homeDir </> "Linux/xmonad/polybar" </>
+    case mch of
+      Carbon -> "launch-carbon.sh"
+      _      -> "launch-cobalt.sh"
   dbus <- D.connectSession
   pure xc { XC.logHook = XC.logHook xc
                          >> polybarHook dbus mch BarLeft

@@ -34,6 +34,7 @@ executable xmonad
                      , dbus
                      , directory
                      , filepath
+                     , hostname
                      , mtl
                      , process
                      , utf8-string

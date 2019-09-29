@@ -1,7 +1,4 @@
-import           Data.Maybe                (fromMaybe)
-import           System.Environment        (getArgs)
-import           Text.Read                 (readMaybe)
-
+import           Network.HostName          (getHostName)
 import           XMonad.Hooks.EwmhDesktops (ewmh)
 import           XMonad.Main               (launch)
 
@@ -17,10 +14,10 @@ main = do
   mch <- determineMachine
   launch =<< polybar mch (ewmh $ pureConfig mch layoutHook)
 
--- TODO change this to get machine from hostname
 determineMachine :: IO Machine
 determineMachine = do
-  args <- getArgs
-  pure $ case args of
-    [s] -> fromMaybe Unknown (readMaybe s)
-    _   -> Unknown
+  hn <- getHostName
+  pure $ case hn of
+    "carbon" -> Carbon
+    "cobalt" -> Cobalt
+    _        -> Unknown
