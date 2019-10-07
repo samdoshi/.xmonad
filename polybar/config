@@ -61,7 +61,7 @@ font-5 = M+ 1m:pixelsize=16;3
 inherit = common/bar
 monitor = DisplayPort-0
 modules-left = xmonad-left
-modules-right = mpd world-time date
+modules-right = world-time date
 tray-position = right
 
 [module/world-time]
@@ -103,14 +103,6 @@ tail = true
 type = custom/script
 exec = "xmonad-polybar-log one"
 tail = true
-
-[module/mpd]
-type = internal/mpd
-format-online = <label-song> <label-time>
-format-paused =
-label-song-maxlen = 50
-label-song-ellipsis = true
-label-song-foreground = ${colors.foreground-bright}
 
 [common/right]
 format-foreground = ${base16.base00}
