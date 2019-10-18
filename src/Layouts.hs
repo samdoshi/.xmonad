@@ -50,7 +50,8 @@ import           XMonad.Layout.WindowNavigation     (WindowNavigation,
 import           XMonad.Util.Types                  (Direction2D (L, R))
 
 import           Flip
-import           Machines                           (Machine)
+import           Machines                           (Conditional, Machine (..),
+                                                     onCarbon, onCobalt)
 import           OneBig                             (OneBig (OneBig))
 import           Theme
 import           Workspaces
@@ -73,18 +74,33 @@ uniformBorder i = Border i i i i
 type ML = ModifiedLayout
 type CH = Choose
 type PW = PerWorkspace
+type IF = Conditional
 
--- The main layout hook, uses `PerWorkspace`
-type LayoutHook = PW HomeChoice
-                  (PW FloatChoice
-                   (PW MediaChoice
-                    (PW MinimisedChoice DefaultChoice)))
+type LayoutHook = IF CarbonLayoutHook (IF CobaltLayoutHook DefaultChoice)
 layoutHook :: Machine -> LayoutHook Window
-layoutHook _ = onWorkspace homeWS homeChoice
-               $ onWorkspace floatWS floatChoice
-               $ onWorkspace mediaWS mediaChoice
-               $ onWorkspace minimisedWS minimisedChoice
+layoutHook m = onCarbon m carbonLayoutHook
+               $ onCobalt m cobaltLayoutHook
                defaultChoice
+
+type CarbonLayoutHook = PW HomeChoice
+                        (PW FloatChoice
+                         (PW MediaChoice
+                          (PW MinimisedChoice DefaultChoice)))
+carbonLayoutHook :: CarbonLayoutHook Window
+carbonLayoutHook = onWorkspace homeWS homeChoice
+                   $ onWorkspace floatWS floatChoice
+                   $ onWorkspace mediaWS mediaChoice
+                   $ onWorkspace minimisedWS minimisedChoice
+                   defaultChoice
+
+type CobaltLayoutHook = PW FloatChoice
+                        (PW MediaChoice
+                         (PW MinimisedChoice DefaultChoice))
+cobaltLayoutHook :: CobaltLayoutHook Window
+cobaltLayoutHook = onWorkspace floatWS floatChoice
+                   $ onWorkspace mediaWS mediaChoice
+                   $ onWorkspace minimisedWS minimisedChoice
+                   defaultChoice
 
 -- Predefined layout choices
 type DefaultChoice = CH TiledLayout BSPLayout
