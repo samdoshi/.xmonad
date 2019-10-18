@@ -71,7 +71,7 @@ tail = true
 
 [bar/right]
 inherit = common/bar
-monitor = HDMI-A-0
+monitor = DisplayPort-1
 modules-left = xmonad-right
 modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
 

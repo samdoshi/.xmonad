@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-xrandr --output HDMI-A-0 --off
-~/Linux/xmonad/polybar/launch.sh
+xrandr --output DisplayPort-1 --off
