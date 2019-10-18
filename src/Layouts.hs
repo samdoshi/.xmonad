@@ -40,13 +40,10 @@ import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
 import           XMonad.Layout.PerWorkspace         (PerWorkspace, onWorkspace)
 import           XMonad.Layout.Renamed              (Rename (Replace), renamed)
 import           XMonad.Layout.ResizableTile        (ResizableTall (ResizableTall))
-import           XMonad.Layout.Simplest             (Simplest (Simplest))
 import           XMonad.Layout.SimplestFloat        (SimplestFloat,
                                                      simplestFloat)
 import           XMonad.Layout.Spacing              (Border (..), Spacing,
                                                      spacingRaw)
-import           XMonad.Layout.SubLayouts           (Sublayout, subLayout)
-import           XMonad.Layout.Tabbed               (TabbedDecoration, addTabs)
 import           XMonad.Layout.WindowArranger       (WindowArranger)
 import           XMonad.Layout.WindowNavigation     (WindowNavigation,
                                                      windowNavigation)
@@ -225,10 +222,8 @@ type EmbellishedLayout a = ToggleFullMultiToggle
                                (ML WindowNavigation
                                 (ML WithBorder
                                  (ML TopBarDecoration
-                                  (ML (Decoration TabbedDecoration DefaultShrinker)
-                                   (ML (Sublayout Simplest)
-                                    (ML Spacing
-                                     a))))))))))
+                                  (ML Spacing
+                                   a))))))))
 embellish :: LayoutClass l Window
           => String
           -> l Window
@@ -244,8 +239,6 @@ embellish s l = toggleFull                     -- use a message to toggle fullsc
               $ windowNavigation               -- needed for subLayouts
               $ noBorders                      -- disable borders, we'll use a theme
               $ topBarDecoration               -- add top bar theme
-              $ addTabs shrinkText floatTheme  -- tabs support
-              $ subLayout [] Simplest          -- tabs support
               $ spacingRaw False (uniformBorder 0) False windowGaps True -- spacing
               l
 

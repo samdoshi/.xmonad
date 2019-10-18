@@ -16,15 +16,13 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      mod1Mask, shiftMask, xK_0,
                                                      xK_1, xK_2, xK_9,
                                                      xK_BackSpace, xK_Return,
-                                                     xK_Tab, xK_a,
-                                                     xK_apostrophe, xK_b,
+                                                     xK_Tab, xK_a, xK_b,
                                                      xK_backslash, xK_comma,
                                                      xK_e, xK_f, xK_g, xK_grave,
                                                      xK_h, xK_j, xK_k, xK_l,
                                                      xK_m, xK_n, xK_p,
                                                      xK_period, xK_q, xK_r,
-                                                     xK_s, xK_semicolon,
-                                                     xK_space, xK_t, xK_w)
+                                                     xK_s, xK_space, xK_t, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -54,8 +52,6 @@ import           XMonad.Layout.Fullscreen           (FullscreenMessage (RemoveFu
 import           XMonad.Layout.Gaps                 (GapMessage (ToggleGaps))
 import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
-import           XMonad.Layout.SubLayouts           (GroupMsg (UnMerge),
-                                                     onGroup, pullGroup, toSubl)
 import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      mouseResizeWindow, refresh,
                                                      restart, screenWorkspace,
@@ -143,16 +139,6 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
       -- or rotate and swap in BSP
     , ((mm,               xK_comma     ), tryMsg Rotate (IncMasterN 1))
     , ((mm,               xK_period    ), tryMsg Swap (IncMasterN (-1)))
-
-      -- tabs
-    , ((mm .|. am,        xK_h         ), sendMessage $ pullGroup L)
-    , ((mm .|. am,        xK_j         ), sendMessage $ pullGroup D)
-    , ((mm .|. am,        xK_k         ), sendMessage $ pullGroup U)
-    , ((mm .|. am,        xK_l         ), sendMessage $ pullGroup R)
-    , ((mm,               xK_semicolon ), onGroup W.focusDown')
-    , ((mm,               xK_apostrophe), onGroup W.focusUp')
-    , ((mm .|. sm,        xK_semicolon ), withFocused (sendMessage . UnMerge))
-    , ((mm .|. sm,        xK_apostrophe), toSubl NextLayout)
 
       -- launch terminal
     , ((mm .|. sm,        xK_Return    ), runTerminal mch)
