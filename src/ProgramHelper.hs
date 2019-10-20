@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module ProgramHelper ( oneMonitor
                      , twoMonitors
                      , defaultTerminal
@@ -11,14 +13,17 @@ module ProgramHelper ( oneMonitor
                      , launchersMap
                      ) where
 
-import           Control.Monad.Trans        (MonadIO)
+import           Control.Concurrent         (threadDelay)
+import           Control.Monad.Trans        (MonadIO, liftIO)
 import           Data.Bits                  ((.|.))
 import qualified Data.Map                   as M
 import           Data.Monoid                ((<>))
+import           System.Environment         (lookupEnv)
 
 import           Graphics.X11.Types         (KeyMask, KeySym, controlMask,
                                              noModMask, shiftMask, xK_b, xK_c,
-                                             xK_d, xK_e, xK_m, xK_n)
+                                             xK_d, xK_e, xK_l, xK_m, xK_n)
+import           System.FilePath            (dropFileName, (</>))
 import           XMonad.Actions.Submap      (submap)
 import           XMonad.Actions.WindowGo    (ifWindow, raiseNext,
                                              raiseNextMaybe)
@@ -28,7 +33,7 @@ import           XMonad.Hooks.ManageHelpers (doRectFloat)
 import           XMonad.ManageHook          (className, composeAll, doShift,
                                              idHook, (-->), (=?))
 import qualified XMonad.StackSet            as W
-import           XMonad.Util.Run            (safeSpawn, unsafeSpawn)
+import           XMonad.Util.Run            (safeSpawn, seconds, unsafeSpawn)
 
 import           Machines                   (Machine (..))
 
@@ -42,6 +47,9 @@ launchers mch = [ (xK_b, browserLauncher mch)
                 , (xK_m, muttLauncher mch)
                 , (xK_n, ncmpcppLauncher mch)
                 ]
+
+simpleLaunchers :: Machine -> [(KeySym, X ())]
+simpleLaunchers mch = [ (xK_l, runHLedger mch) ]
 
 additionalLaunchers :: [Launcher]
 additionalLaunchers = [ quickTermLauncher ]
@@ -154,6 +162,7 @@ isEmacs _       = False
 runEmacs :: MonadIO m => m ()
 runEmacs = safeSpawn "emacsclient" ["--create-frame"]
 
+
 -- Mutt
 
 muttLauncher :: Machine -> Launcher
@@ -170,7 +179,7 @@ isMutt "Mutt" = True
 isMutt _      = False
 
 runMutt :: MonadIO m => Machine -> m ()
-runMutt mch = runInTerminalWithClass mch Small "neomutt" "Mutt"
+runMutt mch = runInTerminalWithClass mch Small "Mutt" "neomutt"
 
 -- ncmpcpp
 
@@ -188,8 +197,23 @@ isNCMPCpp "NCMPCpp" = True
 isNCMPCpp _         = False
 
 runNCMPCpp :: MonadIO m => Machine -> m ()
-runNCMPCpp mch = runInTerminalWithClass mch Normal "ncmpcpp" "NCMPCpp"
+runNCMPCpp mch = runInTerminalWithClass mch Normal "NCMPCpp" "ncmpcpp"
 
+
+-- hledger
+
+runHLedger :: MonadIO m => Machine -> m ()
+runHLedger mch = liftIO (lookupEnv "LEDGER_FILE") >>= \case
+  Nothing -> pure ()
+  Just ledgerFile -> let ledgerDir = dropFileName ledgerFile in do
+    openInEmacs $ ledgerDir </> "pending.ledger"
+    liftIO $ threadDelay delay
+    openInEmacs $ ledgerDir </> "main.ledger"
+    liftIO $ threadDelay delay
+    runInTerminalWithClass mch Small "" "hledger-statement --watch"
+    liftIO $ threadDelay delay
+    runInTerminalWithClass mch Small "" "hledger-iadd"
+  where delay = seconds 0.2
 
 -- Helpers
 
@@ -197,11 +221,11 @@ toClassNameQuery :: (String -> Bool) -> Query Bool
 toClassNameQuery f = fmap f className
 
 runInTerminalWithClass :: MonadIO m => Machine -> TerminalSize -> String -> String -> m ()
-runInTerminalWithClass mch size cmd cls =
+runInTerminalWithClass mch size cls cmd=
   unsafeSpawn $ defaultTerminal
                 ++ " --override font_size=" ++ kittyTerminalSize mch size
                 ++ " --class=" ++ cls
-                ++ " zsh -ic " ++ cmd
+                ++ " zsh -ic '" ++ cmd ++ "'"
 
 data TerminalSize = Small | Normal
 
@@ -212,6 +236,9 @@ kittyTerminalSize Cobalt Small   = "12"
 kittyTerminalSize Cobalt Normal  = "15"
 kittyTerminalSize Unknown Small  = "9"
 kittyTerminalSize Unknown Normal = "12"
+
+openInEmacs :: MonadIO m => FilePath -> m ()
+openInEmacs fp = safeSpawn "emacsclient" ["--create-frame", fp]
 
 centreFloat :: ManageHook
 centreFloat = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
@@ -252,7 +279,7 @@ launcherManageHook mch = composeAll $ mh <$> (additionalLaunchers ++ (snd <$> la
   where mh l = launcherQuery l --> launcherHook l
 
 launchersMap :: Machine -> KeyMask -> X ()
-launchersMap mch mm = submap $ M.fromList $ concatMap keys (launchers mch)
+launchersMap mch mm = submap $ M.fromList $ concatMap keys (launchers mch) ++ concatMap simpleKeys (simpleLaunchers mch)
   where keys (ks, l) = [ ((noModMask, ks), primaryAction l)
                        , ((mm       , ks), primaryAction l)
                        , ((noModMask .|. shiftMask, ks), secondaryAction l)
@@ -263,3 +290,6 @@ launchersMap mch mm = submap $ M.fromList $ concatMap keys (launchers mch)
         primaryAction l = doLauncherAction (launcherAction l) l
         secondaryAction l = doLauncherAction (launcherSecondaryAction l) l
         tertiaryAction l = doLauncherAction (launcherTertiaryAction l) l
+        simpleKeys (ks, x) = [ ((noModMask, ks), x)
+                             , ((mm       , ks), x)
+                             ]

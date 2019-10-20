@@ -3,11 +3,7 @@
 {-# LANGUAGE TypeSynonymInstances  #-}
 
 module Layouts ( layoutHook
-               , tiledName
-               , bspName
-               , bigName
                , fullName
-               , floatName
                , ToggleFull(ToggleVeryFull, ToggleABitFull)
                ) where
 
@@ -29,6 +25,8 @@ import           XMonad.Layout.Fullscreen           (FullscreenFocus,
                                                      fullscreenFocus)
 import           XMonad.Layout.Gaps                 (Gaps, gaps')
 import           XMonad.Layout.Grid                 (Grid (Grid))
+import           XMonad.Layout.LayoutBuilder        (LayoutB, layoutAll,
+                                                     layoutN, relBox)
 import           XMonad.Layout.LayoutModifier       (ModifiedLayout)
 import           XMonad.Layout.MultiToggle          (EOT (EOT), HCons,
                                                      MultiToggle,
@@ -40,6 +38,7 @@ import           XMonad.Layout.NoFrillsDecoration   (NoFrillsDecoration,
 import           XMonad.Layout.PerWorkspace         (PerWorkspace, onWorkspace)
 import           XMonad.Layout.Renamed              (Rename (Replace), renamed)
 import           XMonad.Layout.ResizableTile        (ResizableTall (ResizableTall))
+import           XMonad.Layout.Simplest             (Simplest (Simplest))
 import           XMonad.Layout.SimplestFloat        (SimplestFloat,
                                                      simplestFloat)
 import           XMonad.Layout.Spacing              (Border (..), Spacing,
@@ -55,6 +54,7 @@ import           Machines                           (Conditional, Machine (..),
 import           OneBig                             (OneBig (OneBig))
 import           Theme
 import           Workspaces
+
 
 -- Constants
 
@@ -85,11 +85,13 @@ layoutHook m = onCarbon m carbonLayoutHook
 type CarbonLayoutHook = PW HomeChoice
                         (PW FloatChoice
                          (PW MediaChoice
-                          (PW MinimisedChoice DefaultChoice)))
+                          (PW HLedgerChoice
+                           (PW MinimisedChoice DefaultChoice))))
 carbonLayoutHook :: CarbonLayoutHook Window
 carbonLayoutHook = onWorkspace homeWS homeChoice
                    $ onWorkspace floatWS floatChoice
                    $ onWorkspace mediaWS mediaChoice
+                   $ onWorkspace hledgerWS hledgerChoice
                    $ onWorkspace minimisedWS minimisedChoice
                    defaultChoice
 
@@ -119,42 +121,34 @@ type MediaChoice = BigLayout
 mediaChoice :: MediaChoice Window
 mediaChoice = big
 
+type HLedgerChoice = HLedgerLayout
+hledgerChoice :: HLedgerChoice Window
+hledgerChoice = hledger
+
 type MinimisedChoice = GridLayout
 minimisedChoice :: MinimisedChoice Window
 minimisedChoice = grid
 
 -- Standard tiled layout
-tiledName :: String
-tiledName = "tiled"
-
 type TiledLayout = EmbellishedLayout ResizableTall
 tiled :: TiledLayout Window
-tiled = embellish tiledName $ ResizableTall 1 (2/100) (1/2) []
+tiled = embellish "tiled" $ ResizableTall 1 (2/100) (1/2) []
 
 -- Home tiled layout
 -- (speical tiled layout for the home workspace)
-homeTiledName :: String
-homeTiledName = "home"
-
 type HomeTiledLayout = EmbellishedLayout (ML Flip ResizableTall)
 homeTiled :: HomeTiledLayout Window
-homeTiled = embellish homeTiledName $ flipLayout $ ResizableTall 1 (2/100) (2/3) []
+homeTiled = embellish "home" $ flipLayout $ ResizableTall 1 (2/100) (2/3) []
 
 -- BSP layout
-bspName :: String
-bspName = "bsp"
-
 type BSPLayout = ML BorderResize (EmbellishedLayout BinarySpacePartition)
 bsp :: BSPLayout Window
-bsp = borderResize $ embellish bspName emptyBSP
+bsp = borderResize $ embellish "bsp" emptyBSP
 
 -- Widescreen `OneBig` layout
-bigName :: String
-bigName = "big"
-
 type BigLayout = EmbellishedLayout OneBig
 big :: BigLayout Window
-big = embellish bigName
+big = embellish "big"
       $ OneBig (3/4) (3/4)
 
 -- Full screen layouts
@@ -184,29 +178,38 @@ aBitFull = rename fullName
            Full
 
 -- Grid layout
-gridName :: String
-gridName = "grid"
-
 type GridLayout = EmbellishedLayout Grid
 grid :: GridLayout Window
-grid = embellish gridName Grid
+grid = embellish "grid" Grid
 
 -- Floating layout
-floatName :: String
-floatName = "float"
-
 type FloatLayout = ML Rename
                    (ML AvoidStruts
                     (ML FloatDecoration
                      (ML MouseResize
                       (ML WindowArranger SimplestFloat))))
 float :: FloatLayout Window
-float = rename floatName
+float = rename "float"
         $ avoidStruts
         $ floatDecoration
         $ mouseResize
         simplestFloat
 
+-- HLedger layout
+
+type HLedgerLayout = EmbellishedLayout
+                     (LayoutB Simplest
+                      (LayoutB Simplest
+                       (LayoutB Simplest (LayoutB ResizableTall Full ()) ()) ()) ())
+hledger :: HLedgerLayout Window
+hledger = embellish "hledger"
+          $ layoutN 1 (relBox 0 0 ew 1)               (Just $ relBox 0 0 1 1)        Simplest
+          $ layoutN 1 (relBox ew 0 (ew / (1 - ew)) 1) (Just $ relBox ew 0 1 1)       Simplest
+          $ layoutN 1 (relBox (2 * ew) 0 1 hls)       (Just $ relBox (2 * ew) 0 1 1) Simplest
+          $ layoutAll (relBox (2 * ew) hls 1 1)                                      leftovers
+  where ew = 0.27  -- Emacs width
+        hls = 0.75 -- hls width
+        leftovers = ResizableTall 0 (2/100) (1/2) []
 -- Helpers
 
 rename :: String -> l a -> ML Rename l a

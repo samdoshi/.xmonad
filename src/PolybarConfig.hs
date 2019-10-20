@@ -141,6 +141,7 @@ material x | x == homeWS      = "\xe88a"
            | x == "7"         = "\xe3d7"
            | x == "8"         = "\xe3d8"
            | x == "9"         = "\xe3d9"
+           | x == hledgerWS   = "\xe263"
            | x == minimisedWS = "\xe5c3"
            | otherwise        = x
 
