@@ -119,7 +119,7 @@ runPrivateBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor" ++ 
 
 browserScale :: Machine -> String
 browserScale Carbon  = "1.75"
-browserScale Cobalt  = "2"
+browserScale Cobalt  = "2.5"
 browserScale Unknown = "1"
 
 -- Calculator
