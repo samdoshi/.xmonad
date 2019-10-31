@@ -14,10 +14,9 @@ let
   fsrc = src: pinned.nix-gitignore.gitignoreSource [] src;
 in
   rec {
-    dbus = pinned.haskell.lib.appendPatch hp.dbus ./dbus.patch;
     xmonad = c2n "xmonad" (fsrc ./vendor/xmonad) {};
     xmonad-contrib = c2n "xmonad-contrib" (fsrc ./vendor/xmonad-contrib) { inherit xmonad; };
-    xmonad-samdoshi = c2n "xmonad-samdoshi" (fsrc ./.) { inherit dbus xmonad xmonad-contrib; };
+    xmonad-samdoshi = c2n "xmonad-samdoshi" (fsrc ./.) { inherit xmonad xmonad-contrib; };
     env = hp.shellFor {
       name = "xmonad-samdoshi-env";
       withHoogle = true;
