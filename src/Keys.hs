@@ -16,14 +16,15 @@ import           Graphics.X11.ExtraTypes.XF86       (xF86XK_AudioLowerVolume,
 import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
-                                                     mod1Mask, shiftMask, xK_0,
-                                                     xK_1, xK_2, xK_9,
-                                                     xK_BackSpace, xK_Return,
-                                                     xK_Tab, xK_a, xK_b,
-                                                     xK_backslash, xK_comma,
-                                                     xK_e, xK_f, xK_g, xK_grave,
-                                                     xK_h, xK_j, xK_k, xK_l,
-                                                     xK_m, xK_n, xK_p,
+                                                     mod1Mask, noModMask,
+                                                     shiftMask, xK_0, xK_1,
+                                                     xK_2, xK_9, xK_BackSpace,
+                                                     xK_Return, xK_Tab, xK_a,
+                                                     xK_b, xK_backslash,
+                                                     xK_comma, xK_e, xK_equal,
+                                                     xK_f, xK_g, xK_grave, xK_h,
+                                                     xK_j, xK_k, xK_l, xK_m,
+                                                     xK_minus, xK_n, xK_p,
                                                      xK_period, xK_q, xK_r,
                                                      xK_s, xK_space, xK_t, xK_w)
 import           XMonad.Actions.CopyWindow          (kill1)
@@ -207,9 +208,13 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
          Carbon -> [ ((mm .|. am .|. cm, xK_1         ), oneMonitor)
                    , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
                    ]
-         Cobalt -> [ ((0, xF86XK_AudioMute), safeSpawn "pactl" ["set-sink-mute", "@DEFAULT_SINK@", "toggle"])
-                   , ((0, xF86XK_AudioLowerVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "-10%"])
-                   , ((0, xF86XK_AudioRaiseVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "+10%"])
+         Cobalt -> [ -- volume controls
+                     ((noModMask, xF86XK_AudioMute), safeSpawn "pactl" ["set-sink-mute", "@DEFAULT_SINK@", "toggle"])
+                   , ((noModMask, xF86XK_AudioLowerVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "-10%"])
+                   , ((noModMask, xF86XK_AudioRaiseVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "+10%"])
+                     -- brightness controls
+                   , ((mm .|. am, xK_minus), safeSpawn "brightnessctl" ["set", "5%-"])
+                   , ((mm .|. am, xK_equal), safeSpawn "brightnessctl" ["set", "+5%"])
                    ]
          _      -> []
 
