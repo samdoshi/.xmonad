@@ -86,7 +86,7 @@ tray-position = right
 inherit = common/bar
 monitor =
 modules-left = xmonad-one
-modules-right = fs-root memory cpu cpu-freq temperature eth battery mail date
+modules-right = fs-root memory cpu volume battery gpg mail date
 tray-position = right
 
 [module/xmonad-left]
@@ -180,6 +180,18 @@ format-connected-background = ${colors.purple}
 format-connected-padding = ${self.format-padding}
 label-connected = %upspeed:9% %downspeed:9%
 format-disconnected =
+
+[module/volume]
+inherit = common/right
+type = internal/pulseaudio
+format-volume = "vol: <label-volume>"
+format-volume-padding = 1
+format-volume-background = ${colors.blue}
+format-volume-foreground = ${self.format-foreground}
+format-muted = "MUTED"
+format-muted-padding = 1
+format-muted-foreground = ${colors.foreground-bright}
+format-muted-background = ${colors.red}
 
 [module/battery]
 inherit = common/right

@@ -10,6 +10,9 @@ import           Data.Map                           (Map)
 import qualified Data.Map                           as M
 import           System.Exit                        (exitSuccess)
 
+import           Graphics.X11.ExtraTypes.XF86       (xF86XK_AudioLowerVolume,
+                                                     xF86XK_AudioMute,
+                                                     xF86XK_AudioRaiseVolume)
 import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      Window, button1, button2,
                                                      button3, controlMask,
@@ -59,14 +62,14 @@ import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      windows, withFocused)
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
+import           XMonad.Util.Run                    (safeSpawn)
 import           XMonad.Util.Types                  (Direction2D (D, L, R, U))
-
 
 import           GridHelpers
 import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleABitFull, ToggleVeryFull),
                                                      fullName)
-import           Machines                           (Machine)
+import           Machines                           (Machine (..))
 import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
@@ -185,22 +188,30 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
                                           $ gsConfig mm)
       -- applications submap
     , ((mm,               xK_a         ), launchersMap mch mm)
-
-    , ((mm .|. am .|. cm, xK_1         ), oneMonitor)
-    , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
     ]
     ++
     -- mod-[1..9] - switch to workspace N
     -- mod-shift-[1..9] - move client to workspace N
-    [((mm .|. m, k), windows $ f i)
-        | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
-        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+    [ ((mm .|. m, k), windows $ f i)
+    | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+    , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
+    ]
     ++
     -- mod-{w,e,r} - switch to physical/Xinerama screens 1, 2, or 3
     -- mod-shift-{w,e,r} - move client to screen 1, 2, or 3
-    [((mm .|. m, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
-        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+    [ ((mm .|. m, key), screenWorkspace sc >>= flip whenJust (windows . f))
+    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
+    , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]
+    ]
+    ++ case mch of
+         Carbon -> [ ((mm .|. am .|. cm, xK_1         ), oneMonitor)
+                   , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
+                   ]
+         Cobalt -> [ ((0, xF86XK_AudioMute), safeSpawn "pactl" ["set-sink-mute", "@DEFAULT_SINK@", "toggle"])
+                   , ((0, xF86XK_AudioLowerVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "-10%"])
+                   , ((0, xF86XK_AudioRaiseVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "+10%"])
+                   ]
+         _      -> []
 
 mouseBindings :: Machine -> XConfig Layout -> M.Map (KeyMask, Button) (Window -> X ())
 mouseBindings _ XConfig {XC.modMask = mm} = M.fromList
