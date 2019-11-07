@@ -198,6 +198,7 @@ inherit = common/right
 type = internal/battery
 battery = BAT1
 adaptor = ADP1
+format-full =
 format-charging-padding = 1
 format-charging-prefix = "charging:"
 format-charging-foreground = ${self.format-foreground}
