@@ -17,7 +17,6 @@ import           Control.Concurrent         (threadDelay)
 import           Control.Monad.Trans        (MonadIO, liftIO)
 import           Data.Bits                  ((.|.))
 import qualified Data.Map                   as M
-import           Data.Monoid                ((<>))
 import           System.Environment         (lookupEnv)
 
 import           Graphics.X11.Types         (KeyMask, KeySym, controlMask,
@@ -103,24 +102,14 @@ browserLauncher mch = Launcher { launcherCommand = runBrowser mch
                                }
 
 isBrowser :: String -> Bool
-isBrowser "Chromium" = True
+isBrowser "Firefox" = True
 isBrowser _          = False
 
 runBrowser :: MonadIO m => Machine -> m ()
-runBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor=" ++ browserScale mch
-                                      , "--disk-cache-dir=/tmp/cache/chromium"
-                                      ]
+runBrowser _ = safeSpawn "firefox" []
 
 runPrivateBrowser :: MonadIO m => Machine -> m ()
-runPrivateBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor" ++ browserScale mch
-                                             , "--disk-cache-dir=/tmp/cache/chromium"
-                                             , "--incognito"
-                                             ]
-
-browserScale :: Machine -> String
-browserScale Carbon  = "1.75"
-browserScale Cobalt  = "2.5"
-browserScale Unknown = "1"
+runPrivateBrowser _ = safeSpawn "firefox" [ "--private-window" ]
 
 -- Calculator
 

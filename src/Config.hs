@@ -4,7 +4,7 @@
 module Config ( pureConfig
               ) where
 
-import           Data.Monoid                 (All, (<>))
+import           Data.Monoid                 (All)
 import           System.Environment          (setEnv)
 
 import           Control.Monad.IO.Class      (liftIO)
