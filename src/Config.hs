@@ -28,7 +28,8 @@ import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
                                               SuppressWhen (Focused),
                                               UrgencyConfig (UrgencyConfig),
                                               withUrgencyHookC)
-import           XMonad.Layout.Fullscreen    (fullscreenEventHook)
+import           XMonad.Layout.Fullscreen    (fullscreenEventHook,
+                                              fullscreenManageHook)
 import           XMonad.ManageHook           (className, composeAll, doF, (=?))
 import           XMonad.StackSet             (sink)
 import           XMonad.Util.Run             (safeSpawn)
@@ -73,6 +74,7 @@ manageHook :: Machine -> ManageHook
 manageHook mch = composeAll
   [ manageDocks
   , launcherManageHook mch
+  , fullscreenManageHook
   , composeOne [ className =? "Pinentry" -?> doCenterFloat
                , isDialog -?> doCenterFloat
                , currentWs =? homeWS -?> insertPosition End Newer
