@@ -163,6 +163,7 @@ format = <label>
 format-prefix = "temp:"
 format-background = ${colors.blue}
 format-warn = <label-warn>
+format-warn-prefix = "temp:"
 format-warn-background = ${colors.red}
 format-warn-foreground = ${self.format-foreground}
 format-warn-padding = ${self.format-padding}
