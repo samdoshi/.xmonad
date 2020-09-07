@@ -22,14 +22,11 @@ in
       withHoogle = true;
       packages = p: [ xmonad-samdoshi ];
       nativeBuildInputs = with pinned; [
-        cacert
+        hp.haskell-language-server
       ];
       buildInputs = with pinned; [
-        hp.apply-refact
         hp.cabal-install
-        hp.hasktags
-        hp.hlint
-        hp.stylish-haskell
+        hp.hpack
       ];
     };
   }
