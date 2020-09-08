@@ -57,29 +57,11 @@ font-3 = Font Awesome 5 Free:pixelsize=16;4
 font-4 = Font Awesome 5 Brands:pixelsize=16;4
 font-5 = M+ 1m:pixelsize=16;3
 
-[bar/left]
-inherit = common/bar
-monitor = DisplayPort-0
-modules-left = xmonad-left
-modules-right = world-time date
-tray-position = right
-
-[module/world-time]
-type = custom/script
-exec = polybar-world-time
-tail = true
-
-[bar/right]
-inherit = common/bar
-monitor = DisplayPort-1
-modules-left = xmonad-right
-modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
-
-[bar/one]
+[bar/desktop]
 inherit = common/bar
 monitor =
-modules-left = onebar xmonad-one
-modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail date
+modules-left = xmonad-one
+modules-right = fs-root fs-home fs-data memory cpu cpu-freq temperature eth gpg dropbox mail world-time date
 tray-position = right
 
 [bar/tablet]
@@ -102,6 +84,11 @@ tail = true
 [module/xmonad-one]
 type = custom/script
 exec = "xmonad-polybar-log one"
+tail = true
+
+[module/world-time]
+type = custom/script
+exec = polybar-world-time
 tail = true
 
 [common/right]
@@ -242,13 +229,6 @@ time = "%H:%M:%S"
 label = %date% %{T2}%time%%{T-}
 format-prefix = " "
 format-background = ${colors.foreground-bright}
-
-[module/onebar]
-type = custom/text
-content = %{T2}ONE%{T-}
-content-padding = 1
-content-background = ${colors.orange}
-content-foreground = ${colors.foreground-bright}
 
 [settings]
 screenchange-reload = false
