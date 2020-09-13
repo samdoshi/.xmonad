@@ -36,6 +36,7 @@ executable xmonad
                      , filepath
                      , hostname
                      , mtl
+                     , optparse-applicative
                      , process
                      , utf8-string
                      , X11

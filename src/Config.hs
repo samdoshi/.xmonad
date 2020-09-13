@@ -10,7 +10,7 @@ import           System.Environment          (setEnv)
 import           Control.Monad.IO.Class      (liftIO)
 import           Control.Monad.Reader        (ask)
 import           Data.Default                (def)
-import           Graphics.X11.Types          (Window, mod4Mask)
+import           Graphics.X11.Types          (KeyMask, Window)
 import           Graphics.X11.Xlib.Extras    (Event)
 import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
 import           XMonad.Core                 (LayoutClass, ManageHook, X,
@@ -42,25 +42,25 @@ import           ProgramHelper
 import           Theme
 import           Workspaces
 
-pureConfig :: LayoutClass a Window => Machine -> (Machine -> a Window) -> XConfig a
-pureConfig mch l = withNavigation2DConfig navigation2DConfig $
-                   withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
-                   def { XC.modMask            = mod4Mask
-                       , XC.terminal           = defaultTerminal
-                       , XC.borderWidth        = 6
-                       , XC.normalBorderColor  = inactive
-                       , XC.focusedBorderColor = active
-                       , XC.focusFollowsMouse  = False
-                       , XC.clickJustFocuses   = False
-                       , XC.workspaces         = workspaces mch
-                       , XC.handleEventHook    = handleEventHook mch
-                       , XC.logHook            = logHook mch
-                       , XC.manageHook         = manageHook mch
-                       , XC.layoutHook         = l mch
-                       , XC.startupHook        = startupHook mch
-                       , XC.keys               = keyBindings mch
-                       , XC.mouseBindings      = mouseBindings mch
-                       }
+pureConfig :: LayoutClass a Window => Machine -> KeyMask -> (Machine -> a Window) -> XConfig a
+pureConfig mch mm l = withNavigation2DConfig navigation2DConfig $
+                      withUrgencyHookC NoUrgencyHook (UrgencyConfig Focused Dont) $
+                      def { XC.modMask            = mm
+                          , XC.terminal           = defaultTerminal
+                          , XC.borderWidth        = 6
+                          , XC.normalBorderColor  = inactive
+                          , XC.focusedBorderColor = active
+                          , XC.focusFollowsMouse  = False
+                          , XC.clickJustFocuses   = False
+                          , XC.workspaces         = workspaces mch
+                          , XC.handleEventHook    = handleEventHook mch
+                          , XC.logHook            = logHook mch
+                          , XC.manageHook         = manageHook mch
+                          , XC.layoutHook         = l mch
+                          , XC.startupHook        = startupHook mch
+                          , XC.keys               = keyBindings mch
+                          , XC.mouseBindings      = mouseBindings mch
+                          }
 
 handleEventHook :: Machine -> Event -> X All
 handleEventHook _ = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
