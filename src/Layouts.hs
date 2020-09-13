@@ -64,7 +64,7 @@ windowGaps = uniformBorder 6
 
 -- How wide should windows be in narrow mode
 narrowWidth :: Int
-narrowWidth = 1280
+narrowWidth = 2560
 
 -- Helpers
 uniformBorder :: Integer -> Border
