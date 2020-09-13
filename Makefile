@@ -1,6 +1,9 @@
 .PHONY: build clean clean-all install
 
-build:
+build-cabal:
+	cabal new-build
+
+build-nix:
 	nix-build -A xmonad-samdoshi
 
 clean:

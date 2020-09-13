@@ -1,0 +1,8 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "exe:xmonad"
+    - path: "./polybar/xmonad-polybar-log.hs"
+      component: "exe:xmonad-polybar-log"
+    - path: "./polybar/polybar-world-time.hs"
+      component: "exe:polybar-world-time"
