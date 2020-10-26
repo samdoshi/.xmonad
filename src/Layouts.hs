@@ -62,9 +62,9 @@ import           Workspaces
 windowGaps :: Border
 windowGaps = uniformBorder 6
 
--- How wide should windows be in narrow mode
-narrowWidth :: Int
-narrowWidth = 2560
+-- How large should the left and right margins be in narrow mode
+narrowMargin :: Int
+narrowMargin = 1024
 
 -- Helpers
 uniformBorder :: Integer -> Border
@@ -169,8 +169,8 @@ type ABitFullLayout = ML Rename
 aBitFull :: ABitFullLayout Window
 aBitFull = rename fullName
            $ avoidStruts
-           $ gaps' [ ((L, narrowWidth `quot` 2), False)
-                   , ((R, narrowWidth `quot` 2), False)
+           $ gaps' [ ((L, narrowMargin), False)
+                   , ((R, narrowMargin), False)
                    ]
            $ noBorders
            $ topBarDecoration
@@ -252,8 +252,8 @@ embellish s l = toggleFull                     -- use a message to toggle fullsc
               $ fullscreenFocus                -- only allow EWMH fullscreen when focused
               $ avoidStruts                    -- avoid docks, bars, etc
               $ gaps'                          -- width for narrow mode, initially off
-                [ ((L, narrowWidth `quot` 2), False)
-                , ((R, narrowWidth `quot` 2), False)
+                [ ((L, narrowMargin), False)
+                , ((R, narrowMargin), False)
                 ]
               $ windowNavigation               -- needed for subLayouts
               $ noBorders                      -- disable borders, we'll use a theme
