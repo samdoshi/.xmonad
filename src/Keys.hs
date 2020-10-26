@@ -197,13 +197,6 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
     , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
     ]
-    ++
-    -- mod-{w,e,r} - switch to physical/Xinerama screens 1, 2, or 3
-    -- mod-shift-{w,e,r} - move client to screen 1, 2, or 3
-    [ ((mm .|. m, key), screenWorkspace sc >>= flip whenJust (windows . f))
-    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
-    , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]
-    ]
     ++ case mch of
          Carbon -> [ ((mm .|. am .|. cm, xK_1         ), oneMonitor)
                    , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
