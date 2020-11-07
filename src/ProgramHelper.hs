@@ -102,14 +102,25 @@ browserLauncher mch = Launcher { launcherCommand = runBrowser mch
                                }
 
 isBrowser :: String -> Bool
+isBrowser "Chromium" = True
 isBrowser "Firefox" = True
 isBrowser _          = False
 
 runBrowser :: MonadIO m => Machine -> m ()
-runBrowser _ = safeSpawn "firefox" []
+runBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor=" ++ browserScale mch
+                                      , "--disk-cache-dir=/tmp/cache/chromium"
+                                      ]
 
 runPrivateBrowser :: MonadIO m => Machine -> m ()
-runPrivateBrowser _ = safeSpawn "firefox" [ "--private-window" ]
+runPrivateBrowser mch = safeSpawn "chromium" [ "--force-device-scale-factor" ++ browserScale mch
+                                             , "--disk-cache-dir=/tmp/cache/chromium"
+                                             , "--incognito"
+                                             ]
+
+browserScale :: Machine -> String
+browserScale Carbon  = "1.75"
+browserScale Cobalt  = "2.5"
+browserScale Unknown = "1"
 
 -- Calculator
 
