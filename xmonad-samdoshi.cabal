@@ -21,7 +21,6 @@ executable xmonad
                      , Layouts
                      , Machines
                      , OneBig
-                     , PassPrompt
                      , PolybarConfig
                      , ProgramHelper
                      , PromptConfig

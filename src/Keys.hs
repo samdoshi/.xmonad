@@ -20,12 +20,12 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      shiftMask, xK_0, xK_1,
                                                      xK_9, xK_BackSpace,
                                                      xK_Return, xK_Tab, xK_a,
-                                                     xK_b, xK_backslash,
-                                                     xK_comma, xK_equal, xK_f,
-                                                     xK_g, xK_grave, xK_h, xK_j,
-                                                     xK_k, xK_l, xK_m, xK_minus,
-                                                     xK_n, xK_p, xK_period,
-                                                     xK_q, xK_s, xK_space, xK_t)
+                                                     xK_b, xK_comma, xK_equal,
+                                                     xK_f, xK_g, xK_grave, xK_h,
+                                                     xK_j, xK_k, xK_l, xK_m,
+                                                     xK_minus, xK_n, xK_p,
+                                                     xK_period, xK_q, xK_s,
+                                                     xK_space, xK_t)
 import           XMonad.Actions.CopyWindow          (copy, kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -69,7 +69,6 @@ import           GridSelectConfig
 import           Layouts                            (ToggleFull (ToggleABitFull, ToggleVeryFull),
                                                      fullName)
 import           Machines                           (Machine (..))
-import           PassPrompt
 import           ProgramHelper
 import           PromptConfig
 import           Workspaces
@@ -146,9 +145,6 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     , ((mm .|. sm,        xK_Return    ), runTerminal mch)
       -- launch prompt
     , ((mm,               xK_p         ), shellPrompt xpConfig)
-      -- 1passkell
-    , ((mm,               xK_backslash ), sendUsernamePasswordPrompt xpFuzzyConfig)
-    , ((mm .|. sm,        xK_backslash ), sendPasswordPrompt xpFuzzyConfig)
     , ((mm,               xK_grave     ), quickTerm)
       -- kill the focused window
     , ((mm,               xK_BackSpace ), kill1)
