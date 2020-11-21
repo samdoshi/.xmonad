@@ -173,8 +173,6 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
 
       -- grid: go to window
     , ((mm,               xK_g         ), goToSelected $ gsConfig mm)
-      -- grid: go to window (mapped to Logitech MX Master thumb button, no 'mm')
-    , ((cm .|. am,        xK_Tab       ), goToSelected $ gsConfig mm)
       -- grid: bring window
     , ((mm .|. sm,        xK_g         ), bringSelected $ gsConfig mm)
       -- grid: copy window to focus workspace (make it sticky)
