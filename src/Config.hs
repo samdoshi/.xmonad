@@ -4,40 +4,41 @@
 module Config ( pureConfig
               ) where
 
-import           Data.Monoid                 (All)
-import           System.Environment          (setEnv)
+import           Data.Monoid                   (All)
+import           System.Environment            (setEnv)
 
-import           Control.Monad.IO.Class      (liftIO)
-import           Control.Monad.Reader        (ask)
-import           Data.Default                (def)
-import           Graphics.X11.Types          (KeyMask, Window)
-import           Graphics.X11.Xlib.Extras    (Event)
-import           XMonad.Actions.Navigation2D (withNavigation2DConfig)
-import           XMonad.Core                 (LayoutClass, ManageHook, X,
-                                              XConfig)
-import qualified XMonad.Core                 as XC (XConfig (..))
-import           XMonad.Hooks.InsertPosition (Focus (Newer),
-                                              Position (Below, End, Master),
-                                              insertPosition)
-import           XMonad.Hooks.ManageDocks    (docksEventHook, docksStartupHook,
-                                              manageDocks)
-import           XMonad.Hooks.ManageHelpers  (composeOne, currentWs,
-                                              doCenterFloat, isDialog, (-?>))
-import           XMonad.Hooks.UrgencyHook    (NoUrgencyHook (NoUrgencyHook),
-                                              RemindWhen (Dont),
-                                              SuppressWhen (Focused),
-                                              UrgencyConfig (UrgencyConfig),
-                                              withUrgencyHookC)
-import           XMonad.Layout.Fullscreen    (fullscreenEventHook,
-                                              fullscreenManageHook)
-import           XMonad.ManageHook           (className, composeAll, doF, (=?))
-import           XMonad.StackSet             (sink)
-import           XMonad.Util.Run             (safeSpawn)
+import           Control.Monad.IO.Class        (liftIO)
+import           Control.Monad.Reader          (ask)
+import           Data.Default                  (def)
+import           Graphics.X11.Types            (KeyMask, Window)
+import           Graphics.X11.Xlib.Extras      (Event)
+import           XMonad.Actions.Navigation2D   (withNavigation2DConfig)
+import           XMonad.Core                   (LayoutClass, ManageHook, X,
+                                                XConfig)
+import qualified XMonad.Core                   as XC (XConfig (..))
+import           XMonad.Hooks.InsertPosition   (Focus (Newer),
+                                                Position (Below, End, Master),
+                                                insertPosition)
+import           XMonad.Hooks.ManageDocks      (docksEventHook,
+                                                docksStartupHook, manageDocks)
+import           XMonad.Hooks.ManageHelpers    (composeOne, currentWs,
+                                                doCenterFloat, isDialog, (-?>))
+import           XMonad.Hooks.UrgencyHook      (NoUrgencyHook (NoUrgencyHook),
+                                                RemindWhen (Dont),
+                                                SuppressWhen (Focused),
+                                                UrgencyConfig (UrgencyConfig),
+                                                withUrgencyHookC)
+import           XMonad.Hooks.WindowSwallowing (swallowEventHook)
+import           XMonad.Layout.Fullscreen      (fullscreenEventHook,
+                                                fullscreenManageHook)
+import           XMonad.ManageHook             (className, composeAll, doF,
+                                                (=?))
+import           XMonad.StackSet               (sink)
+import           XMonad.Util.Run               (safeSpawn)
 
-
-import           Keys                        (keyBindings, mouseBindings,
-                                              navigation2DConfig)
-import           Machines                    (Machine)
+import           Keys                          (keyBindings, mouseBindings,
+                                                navigation2DConfig)
+import           Machines                      (Machine)
 import           ProgramHelper
 import           Theme
 import           Workspaces
@@ -66,6 +67,7 @@ handleEventHook :: Machine -> Event -> X All
 handleEventHook _ = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
                                         -- of XMonad.Hooks.EwmhDesktops
                     <> docksEventHook   -- make xmobar (et al.) appear immediately
+                    <> swallowEventHook (className =? "kitty") (return True)
 
 -- | My ManageHook
 --
