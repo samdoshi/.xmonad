@@ -72,11 +72,11 @@ polybarHook dbus _ bar =
      wsSort <- getSortByIndex
      copies <- wsContainingCopies
      let screen = screenForBar bar
-     let segments = sepBy "  " [ workspaceBar screen ws wsSort urgents
-                               , descriptionBar screen ws
-                               , copiesBar copies
-                               , titleBar screen ws title
-                               ]
+     let segments = sepBy " " [ workspaceBar screen ws wsSort urgents
+                              , descriptionBar screen ws
+                              , copiesBar copies
+                              , titleBar screen ws title
+                              ]
      dbusOutput dbus bar segments
 
 activeScreenId :: WindowSet -> ScreenId
@@ -132,7 +132,7 @@ titleBar screen ws title | isActiveScreen ws screen = format title
 
 copiesBar :: [WorkspaceId] -> String
 copiesBar ws = sepBy " " $ fmap format ws
-  where format = foreground base2 . background orange . wrapSp . material
+  where format = foreground base2 . background blue . wrapSp . material
 
 descriptionBar :: ScreenId -> WindowSet -> String
 descriptionBar screen ws = pad 6 $ screenDescription screen ws
