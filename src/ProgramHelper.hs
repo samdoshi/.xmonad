@@ -73,7 +73,7 @@ quickTermLauncher = Launcher { launcherCommand = unsafeSpawn $ defaultTerminal +
                              , launcherSecondaryAction = NoAction
                              , launcherTertiaryAction = NoAction
                              , launcherQuery = className =? cls
-                             , launcherHook = centreTopFloat
+                             , launcherHook = centreFloat (1/2) (5/6)
                              }
   where cls = "quickTerm"
 
@@ -120,7 +120,7 @@ calculatorLauncher = Launcher { launcherCommand = safeSpawn "qalculate-gtk" []
                               , launcherSecondaryAction = NoAction
                               , launcherTertiaryAction = NoAction
                               , launcherQuery = className =? "Qalculate-gtk"
-                              , launcherHook = centreFloat
+                              , launcherHook = defCentreFloat
                               }
 
 -- Dictionary
@@ -131,7 +131,7 @@ dictionaryLauncher = Launcher { launcherCommand = safeSpawn "goldendict" []
                               , launcherSecondaryAction = NoAction
                               , launcherTertiaryAction = NoAction
                               , launcherQuery = className =? "GoldenDict"
-                              , launcherHook = centreFloat
+                              , launcherHook = defCentreFloat
                               }
 
 -- Emacs
@@ -230,11 +230,11 @@ kittyTerminalSize Unknown Normal = "12"
 openInEmacs :: MonadIO m => FilePath -> m ()
 openInEmacs fp = safeSpawn "emacsclient" ["--create-frame", fp]
 
-centreFloat :: ManageHook
-centreFloat = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
+centreFloat :: Rational -> Rational -> ManageHook
+centreFloat w h = doRectFloat $ W.RationalRect ((1 - w) / 2) ((1 - h) / 2) w h
 
-centreTopFloat :: ManageHook
-centreTopFloat = doRectFloat $ W.RationalRect (1/6) (1/36) (2/3) (5/6)
+defCentreFloat :: ManageHook
+defCentreFloat = centreFloat (1/2) (2/3)
 
 -- Launcher
 
