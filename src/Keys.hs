@@ -18,15 +18,14 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      button3, controlMask,
                                                      mod1Mask, noModMask,
                                                      shiftMask, xK_0, xK_1,
-                                                     xK_2, xK_9, xK_BackSpace,
+                                                     xK_9, xK_BackSpace,
                                                      xK_Return, xK_Tab, xK_a,
                                                      xK_b, xK_backslash,
-                                                     xK_comma, xK_e, xK_equal,
-                                                     xK_f, xK_g, xK_grave, xK_h,
-                                                     xK_j, xK_k, xK_l, xK_m,
-                                                     xK_minus, xK_n, xK_p,
-                                                     xK_period, xK_q, xK_r,
-                                                     xK_s, xK_space, xK_t, xK_w)
+                                                     xK_comma, xK_equal, xK_f,
+                                                     xK_g, xK_grave, xK_h, xK_j,
+                                                     xK_k, xK_l, xK_m, xK_minus,
+                                                     xK_n, xK_p, xK_period,
+                                                     xK_q, xK_s, xK_space, xK_t)
 import           XMonad.Actions.CopyWindow          (kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -42,8 +41,7 @@ import           XMonad.Actions.Navigation2D        (Navigation2DConfig,
                                                      unmappedWindowRect,
                                                      windowGo, windowSwap)
 import           XMonad.Core                        (Layout, Message, X,
-                                                     XConfig (XConfig),
-                                                     whenJust)
+                                                     XConfig (XConfig))
 import qualified XMonad.Core                        as XC (XConfig (..))
 import           XMonad.Hooks.ManageDocks           (ToggleStruts (ToggleStruts))
 import           XMonad.Layout                      (ChangeLayout (NextLayout),
@@ -58,9 +56,9 @@ import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
 import           XMonad.Layout.ResizableTile        (MirrorResize (MirrorExpand, MirrorShrink))
 import           XMonad.Operations                  (focus, mouseMoveWindow,
                                                      mouseResizeWindow, refresh,
-                                                     restart, screenWorkspace,
-                                                     sendMessage, setLayout,
-                                                     windows, withFocused)
+                                                     restart, sendMessage,
+                                                     setLayout, windows,
+                                                     withFocused)
 import           XMonad.Prompt.Shell                (shellPrompt)
 import qualified XMonad.StackSet                    as W
 import           XMonad.Util.Run                    (safeSpawn)
@@ -198,9 +196,6 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
     ]
     ++ case mch of
-         Carbon -> [ ((mm .|. am .|. cm, xK_1         ), oneMonitor)
-                   , ((mm .|. am .|. cm, xK_2         ), twoMonitors)
-                   ]
          Cobalt -> [ -- volume controls
                      ((noModMask, xF86XK_AudioMute), safeSpawn "pactl" ["set-sink-mute", "@DEFAULT_SINK@", "toggle"])
                    , ((noModMask, xF86XK_AudioLowerVolume), safeSpawn "pactl" ["set-sink-volume", "@DEFAULT_SINK@", "-10%"])

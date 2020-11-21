@@ -1,8 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module ProgramHelper ( oneMonitor
-                     , twoMonitors
-                     , defaultTerminal
+module ProgramHelper ( defaultTerminal
                      , isBrowser
                      , isEmacs
                      , isTerminal
@@ -54,14 +52,6 @@ additionalLaunchers :: [Launcher]
 additionalLaunchers = [ quickTermLauncher ]
 
 
--- change screens
-
-oneMonitor :: MonadIO m => m ()
-oneMonitor = safeSpawn "/home/sam/Linux/xmonad/bin/one-monitor.sh" []
-
-twoMonitors :: MonadIO m => m ()
-twoMonitors = safeSpawn "/home/sam/Linux/xmonad/bin/two-monitors.sh" []
-
 -- Terminal
 
 defaultTerminal :: String
@@ -103,7 +93,7 @@ browserLauncher mch = Launcher { launcherCommand = runBrowser mch
 
 isBrowser :: String -> Bool
 isBrowser "Chromium" = True
-isBrowser "Firefox" = True
+isBrowser "Firefox"  = True
 isBrowser _          = False
 
 runBrowser :: MonadIO m => Machine -> m ()
