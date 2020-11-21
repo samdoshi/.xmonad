@@ -25,7 +25,8 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_j, xK_k, xK_l, xK_m,
                                                      xK_minus, xK_n, xK_p,
                                                      xK_period, xK_q, xK_s,
-                                                     xK_space, xK_t)
+                                                     xK_slash, xK_space, xK_t,
+                                                     xK_u, xK_y)
 import           XMonad.Actions.CopyWindow          (copy, kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
@@ -47,9 +48,11 @@ import           XMonad.Hooks.ManageDocks           (ToggleStruts (ToggleStruts)
 import           XMonad.Layout                      (ChangeLayout (NextLayout),
                                                      IncMasterN (IncMasterN),
                                                      Resize (Expand, Shrink))
-import           XMonad.Layout.BinarySpacePartition (ResizeDirectional (ExpandTowards, ShrinkFrom),
+import           XMonad.Layout.BinarySpacePartition (FocusParent (FocusParent), ResizeDirectional (ExpandTowards, ShrinkFrom),
                                                      Rotate (Rotate),
-                                                     Swap (Swap))
+                                                     SelectMoveNode (MoveNode, SelectNode),
+                                                     Swap (Swap),
+                                                     TreeBalance (Balance, Equalize))
 import           XMonad.Layout.Fullscreen           (FullscreenMessage (RemoveFullscreen))
 import           XMonad.Layout.Gaps                 (GapMessage (ToggleGaps))
 import           XMonad.Layout.MultiToggle          (Toggle (Toggle))
@@ -140,6 +143,13 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
       -- or rotate and swap in BSP
     , ((mm,               xK_comma     ), tryMsg Rotate (IncMasterN 1))
     , ((mm,               xK_period    ), tryMsg Swap (IncMasterN (-1)))
+
+      -- BSP related
+    , ((mm,               xK_u         ), sendMessage FocusParent)
+    , ((mm,               xK_y         ), sendMessage SelectNode)
+    , ((mm .|. sm,        xK_y         ), sendMessage MoveNode)
+    , ((mm,               xK_slash     ), sendMessage Equalize)
+    , ((mm .|. sm,        xK_slash     ), sendMessage Balance)
 
       -- launch terminal
     , ((mm .|. sm,        xK_Return    ), runTerminal mch)
