@@ -26,7 +26,7 @@ import           Graphics.X11.Types                 (Button, KeyMask, KeySym,
                                                      xK_k, xK_l, xK_m, xK_minus,
                                                      xK_n, xK_p, xK_period,
                                                      xK_q, xK_s, xK_space, xK_t)
-import           XMonad.Actions.CopyWindow          (kill1)
+import           XMonad.Actions.CopyWindow          (copy, kill1)
 import           XMonad.Actions.GridSelect          (bringSelected,
                                                      goToSelected)
 import           XMonad.Actions.MessageFeedback     (sendSomeMessageB,
@@ -189,9 +189,12 @@ keyBindings mch conf@XConfig {XC.modMask = mm} = M.fromList $
     ++
     -- mod-[1..9] - switch to workspace N
     -- mod-shift-[1..9] - move client to workspace N
-    [ ((mm .|. m, k), windows $ f i)
-    | (i, k) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
-    , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
+    [ ((mm .|. modifier, key), windows $ f workspace)
+      | (workspace, key) <- zip (XC.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+      , (f, modifier) <- [ (W.greedyView, noModMask)
+                         , (W.shift, sm)
+                         , (copy, sm .|. cm)
+                         ]
     ]
     ++ case mch of
          Cobalt -> [ -- volume controls

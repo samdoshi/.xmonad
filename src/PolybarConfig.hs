@@ -13,6 +13,7 @@ import qualified DBus.Client                  as D
 import           Graphics.X11.Types           (Window)
 import           System.Directory             (getHomeDirectory)
 import           System.FilePath              ((</>))
+import           XMonad.Actions.CopyWindow    (wsContainingCopies)
 import           XMonad.Core                  (Layout, ScreenId, WindowSet,
                                                WorkspaceId, X, XConfig,
                                                XState (windowset), description)
@@ -69,9 +70,11 @@ polybarHook dbus _ bar =
      urgents <- readUrgents
      title <- maybe (return "") (fmap show . getName) . S.peek $ ws
      wsSort <- getSortByIndex
+     copies <- wsContainingCopies
      let screen = screenForBar bar
      let segments = sepBy "  " [ workspaceBar screen ws wsSort urgents
                                , descriptionBar screen ws
+                               , copiesBar copies
                                , titleBar screen ws title
                                ]
      dbusOutput dbus bar segments
@@ -126,6 +129,10 @@ titleBar :: ScreenId -> WindowSet -> String -> String
 titleBar screen ws title | isActiveScreen ws screen = format title
                          | otherwise                = ""
   where format = foreground base2 . background blue . bold . shorten 128 . wrapSp
+
+copiesBar :: [WorkspaceId] -> String
+copiesBar ws = sepBy " " $ fmap format ws
+  where format = foreground base2 . background orange . wrapSp . material
 
 descriptionBar :: ScreenId -> WindowSet -> String
 descriptionBar screen ws = pad 6 $ screenDescription screen ws
