@@ -17,7 +17,7 @@ import           XMonad.Core                   (LayoutClass, ManageHook, X,
                                                 XConfig)
 import qualified XMonad.Core                   as XC (XConfig (..))
 import           XMonad.Hooks.InsertPosition   (Focus (Newer),
-                                                Position (Below, End, Master),
+                                                Position (Below, Master),
                                                 insertPosition)
 import           XMonad.Hooks.ManageDocks      (docksEventHook,
                                                 docksStartupHook, manageDocks)
@@ -67,7 +67,7 @@ handleEventHook :: Machine -> Event -> X All
 handleEventHook _ = fullscreenEventHook -- use XMonad.Layout.Fullscreen instead
                                         -- of XMonad.Hooks.EwmhDesktops
                     <> docksEventHook   -- make xmobar (et al.) appear immediately
-                    <> swallowEventHook (className =? "kitty") (return True)
+                    <> swallowEventHook (className =? "kitty") (className =? "mpv")
 
 -- | My ManageHook
 --
@@ -79,7 +79,6 @@ manageHook mch = composeAll
   , fullscreenManageHook
   , composeOne [ className =? "Pinentry" -?> doCenterFloat
                , isDialog -?> doCenterFloat
-               , currentWs =? homeWS -?> insertPosition End Newer
                , currentWs =? mediaWS -?> insertPosition Master Newer
                , Just <$> insertPosition Below Newer
                ]
