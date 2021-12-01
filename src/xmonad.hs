@@ -4,6 +4,7 @@
 import           Graphics.X11.Types        (mod1Mask, mod4Mask)
 import           Network.HostName          (getHostName)
 import           Options.Applicative
+import           XMonad.Core               (getDirectories)
 import           XMonad.Hooks.EwmhDesktops (ewmh)
 import           XMonad.Main               (launch)
 
@@ -42,9 +43,11 @@ main :: IO ()
 main = do
   mch <- determineMachine
   opts <- execParser (optionsParserInfo mch)
-  let mm = if (oXephyr opts) then mod1Mask else mod4Mask
+  dirs <- getDirectories
+  let mm = if oXephyr opts then mod1Mask else mod4Mask
   print opts
-  launch =<< polybar mch (ewmh $ pureConfig (oMachine opts) mm layoutHook)
+  config <- polybar mch (ewmh $ pureConfig (oMachine opts) mm layoutHook)
+  launch config dirs
 
 determineMachine :: IO Machine
 determineMachine = do
