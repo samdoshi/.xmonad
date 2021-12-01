@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-dropbox=$(dropbox.py status 2>&1)
+dropbox=$(maestral status | grep Status)
 
-if [[ $dropbox != "Up to date" ]]; then
+if [[ $dropbox != "Status:       Up to date" ]]; then
     echo ''
 else
     echo ''
